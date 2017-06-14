@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -10,8 +10,7 @@ setup(
     author_email="vadim@sourced.tech",
     url="https://github.com/bblfsh/client-python",
     download_url='https://github.com/bblfsh/client-python',
-    packages=["bblfsh"],
-    package_dir={"bblfsh": "bblfsh"},
+    packages=find_packages(),
     exclude=["bblfsh/test.py"],
     keywords=["babelfish", "uast"],
     install_requires=["grpcio", "docker"],
