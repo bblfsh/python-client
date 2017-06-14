@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from bblfsh.client import BblfshClient
+from bblfsh.launcher import ensure_bblfsh_is_running
 
 
 def setup():
@@ -14,12 +15,17 @@ def setup():
                         help="File to parse.")
     parser.add_argument("-l", "--language", default=None,
                         help="File's language. The default is to autodetect.")
+    parser.add_argument("--disable-bblfsh-autorun", action="store_true",
+                        help="Do not automatically launch Babelfish server "
+                             "if it is not running.")
     args = parser.parse_args()
     return args
 
 
 def main():
     args = setup()
+    if not args.disable_bblfsh_autorun:
+        ensure_bblfsh_is_running()
     client = BblfshClient(args.endpoint)
     print(client.fetch_uast(args.file, args.language))
 

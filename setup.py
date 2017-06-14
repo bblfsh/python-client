@@ -14,7 +14,7 @@ setup(
     package_dir={"bblfsh": "bblfsh"},
     exclude=["bblfsh/test.py"],
     keywords=["babelfish", "uast"],
-    install_requires=[],
+    install_requires=["grpcio", "docker"],
     package_data={"": ["LICENSE", "README.md"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
