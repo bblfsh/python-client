@@ -1,6 +1,6 @@
 ## Babelfish Python client
 
-This a pure Python implementation of querying Babelfish server.
+This a pure Python implementation of querying [Babelfish](https://doc.bblf.sh/) server.
 
 ### Usage
 
@@ -9,12 +9,12 @@ API
 from bblfsh import BblfshClient
 
 client = BblfshClient("0.0.0.0:9432")
-print(client.fetch_uast("file.py", "Python"))
+print(client.fetch_uast("/path/to/file.py"))
 ```
 
 Command line
 ```
-python3 -m bblfsh -f file.py -l Python
+python3 -m bblfsh -f file.py
 ```
 
 ### Installation
