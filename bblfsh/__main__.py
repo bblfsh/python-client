@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from bblfsh.channel import BblfshClient
+from bblfsh.client import BblfshClient
 
 
 def setup():
@@ -12,8 +12,8 @@ def setup():
                         help="bblfsh gRPC endpoint.")
     parser.add_argument("-f", "--file", required=True,
                         help="File to parse.")
-    parser.add_argument("-l", "--language", required=True,
-                        help="File's language.")
+    parser.add_argument("-l", "--language", default=None,
+                        help="File's language. The default is to autodetect.")
     args = parser.parse_args()
     return args
 

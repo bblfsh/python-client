@@ -1,1 +1,1 @@
-from bblfsh.channel import BblfshClient
+from bblfsh.client import BblfshClient

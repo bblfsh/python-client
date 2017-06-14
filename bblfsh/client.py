@@ -27,7 +27,7 @@ class BblfshClient(object):
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
 
-    def fetch_uast(self, file_path, language, contents=None):
+    def fetch_uast(self, file_path, language=None, contents=None):
         """
         Queries the Babelfish server and receives the UAST for the specified
         file.
@@ -36,7 +36,7 @@ class BblfshClient(object):
                           is not None.
         :param language: The programming language of the file. Refer to \
                          https://doc.bblf.sh/languages.html for the list of \
-                         currently supported languages.
+                         currently supported languages. None means autodetect.
         :param contents: The contents of the file. IF None, it is read from \
                          file_path.
         :type file_path: str
@@ -55,6 +55,8 @@ class BblfshClient(object):
 
     @staticmethod
     def _scramble_language(lang):
+        if lang is None:
+            return None
         lang = lang.lower()
         lang = lang.replace(" ", "-")
         lang = lang.replace("+", "p")
