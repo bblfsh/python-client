@@ -1,4 +1,4 @@
-## Babelfish Python client
+## Babelfish Python client [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python)
 
 This a pure Python implementation of querying [Babelfish](https://doc.bblf.sh/) server.
 
