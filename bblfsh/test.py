@@ -26,17 +26,17 @@ class BblfshTests(unittest.TestCase):
         self.client = BblfshClient("0.0.0.0:9432")
 
     def testUASTDefaultLanguage(self):
-        uast = self.client.fetch_uast(__file__)
+        uast = self.client.parse_uast(__file__)
         self._validate_uast(uast)
 
     def testUASTPython(self):
-        uast = self.client.fetch_uast(__file__, language="Python")
+        uast = self.client.parse_uast(__file__, language="Python")
         self._validate_uast(uast)
 
     def testUASTFileContents(self):
         with open(__file__) as fin:
             contents = fin.read()
-        uast = self.client.fetch_uast("file.py", contents=contents)
+        uast = self.client.parse_uast("file.py", contents=contents)
         self._validate_uast(uast)
 
     def _validate_uast(self, uast):

@@ -9,7 +9,7 @@ API
 from bblfsh import BblfshClient
 
 client = BblfshClient("0.0.0.0:9432")
-print(client.fetch_uast("/path/to/file.py"))
+print(client.parse_uast("/path/to/file.py"))
 ```
 
 Command line
