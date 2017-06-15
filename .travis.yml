@@ -1,0 +1,19 @@
+language: python
+sudo: false
+services:
+  - docker
+cache:
+  directories:
+    - $HOME/.cache/pip
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+install:
+  - pip install --upgrade pip
+  - pip install grpcio
+  - CC=gcc-5 CXX=g++-5 pip install -e .
+script:
+  - python3 -m unittest discover .
+notifications:
+  email: false
