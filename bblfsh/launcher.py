@@ -8,7 +8,9 @@ import docker
 def ensure_bblfsh_is_running():
     client = docker.from_env(version="auto")
     try:
-        client.containers.get("bblfsh")
+        container = client.containers.get("bblfsh")
+        if container.status != "running":
+            raise docker.errors.NotFound()
         return True
     except docker.errors.NotFound:
         container = client.containers.run(
