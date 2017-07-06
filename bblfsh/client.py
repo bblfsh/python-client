@@ -27,7 +27,8 @@ class BblfshClient(object):
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
 
-    def parse_uast(self, filename, language=None, contents=None, timeout=None):
+    def parse_uast(self, filename, language=None, contents=None, timeout=None,
+                   unicode_errors="ignore"):
         """
         Queries the Babelfish server and receives the UAST for the specified
         file.
@@ -40,6 +41,8 @@ class BblfshClient(object):
         :param contents: The contents of the file. IF None, it is read from \
                          filename.
         :param timeout: The request timeout in seconds.
+        :param unicode_errors: This is passed to open() and changes the way \
+                               Unicode read errors are handled.
         :type filename: str
         :type language: str
         :type contents: str
@@ -47,7 +50,7 @@ class BblfshClient(object):
         :return: UAST object.
         """
         if contents is None:
-            with open(filename) as fin:
+            with open(filename, errors=unicode_errors) as fin:
                 contents = fin.read()
         request = ParseUASTRequest(filename=os.path.basename(filename),
                                    content=contents,
