@@ -22,11 +22,34 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='generated.proto',
   package='github.com.bblfsh.sdk.protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1egithub.com.bblfsh.sdk.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a*github.com/bblfsh/sdk/uast/generated.proto\"Q\n\x10ParseUASTRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x9f\x01\n\x11ParseUASTResponse\x12\x36\n\x06status\x18\x01 \x01(\x0e\x32&.github.com.bblfsh.sdk.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x38\n\x04uast\x18\x03 \x01(\x0b\x32 .github.com.bblfsh.sdk.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32\x83\x01\n\x0fProtocolService\x12p\n\tParseUAST\x12\x30.github.com.bblfsh.sdk.protocol.ParseUASTRequest\x1a\x31.github.com.bblfsh.sdk.protocol.ParseUASTResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1egithub.com.bblfsh.sdk.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a*github.com/bblfsh/sdk/uast/generated.proto\"\x89\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12:\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32(.github.com.bblfsh.sdk.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x9b\x01\n\rParseResponse\x12\x36\n\x06status\x18\x01 \x01(\x0e\x32&.github.com.bblfsh.sdk.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x38\n\x04uast\x18\x03 \x01(\x0b\x32 .github.com.bblfsh.sdk.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32w\n\x0fProtocolService\x12\x64\n\x05Parse\x12,.github.com.bblfsh.sdk.protocol.ParseRequest\x1a-.github.com.bblfsh.sdk.protocol.ParseResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
   ,
   dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,github_dot_com_dot_bblfsh_dot_sdk_dot_uast_dot_generated__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
+_ENCODING = _descriptor.EnumDescriptor(
+  name='Encoding',
+  full_name='github.com.bblfsh.sdk.protocol.Encoding',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UTF8', index=0, number=0,
+      options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004UTF8')),
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='BASE64', index=1, number=1,
+      options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006Base64')),
+      type=None),
+  ],
+  containing_type=None,
+  options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
+  serialized_start=440,
+  serialized_end=508,
+)
+_sym_db.RegisterEnumDescriptor(_ENCODING)
+
+Encoding = enum_type_wrapper.EnumTypeWrapper(_ENCODING)
 _STATUS = _descriptor.EnumDescriptor(
   name='Status',
   full_name='github.com.bblfsh.sdk.protocol.Status',
@@ -48,43 +71,52 @@ _STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
-  serialized_start=387,
-  serialized_end=469,
+  serialized_start=510,
+  serialized_end=592,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS)
 
 Status = enum_type_wrapper.EnumTypeWrapper(_STATUS)
+UTF8 = 0
+BASE64 = 1
 OK = 0
 ERROR = 1
 FATAL = 2
 
 
 
-_PARSEUASTREQUEST = _descriptor.Descriptor(
-  name='ParseUASTRequest',
-  full_name='github.com.bblfsh.sdk.protocol.ParseUASTRequest',
+_PARSEREQUEST = _descriptor.Descriptor(
+  name='ParseRequest',
+  full_name='github.com.bblfsh.sdk.protocol.ParseRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='filename', full_name='github.com.bblfsh.sdk.protocol.ParseUASTRequest.filename', index=0,
+      name='filename', full_name='github.com.bblfsh.sdk.protocol.ParseRequest.filename', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='language', full_name='github.com.bblfsh.sdk.protocol.ParseUASTRequest.language', index=1,
+      name='language', full_name='github.com.bblfsh.sdk.protocol.ParseRequest.language', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='content', full_name='github.com.bblfsh.sdk.protocol.ParseUASTRequest.content', index=2,
+      name='content', full_name='github.com.bblfsh.sdk.protocol.ParseRequest.content', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='encoding', full_name='github.com.bblfsh.sdk.protocol.ParseRequest.encoding', index=3,
+      number=4, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -100,34 +132,34 @@ _PARSEUASTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=142,
-  serialized_end=223,
+  serialized_start=143,
+  serialized_end=280,
 )
 
 
-_PARSEUASTRESPONSE = _descriptor.Descriptor(
-  name='ParseUASTResponse',
-  full_name='github.com.bblfsh.sdk.protocol.ParseUASTResponse',
+_PARSERESPONSE = _descriptor.Descriptor(
+  name='ParseResponse',
+  full_name='github.com.bblfsh.sdk.protocol.ParseResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='status', full_name='github.com.bblfsh.sdk.protocol.ParseUASTResponse.status', index=0,
+      name='status', full_name='github.com.bblfsh.sdk.protocol.ParseResponse.status', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='errors', full_name='github.com.bblfsh.sdk.protocol.ParseUASTResponse.errors', index=1,
+      name='errors', full_name='github.com.bblfsh.sdk.protocol.ParseResponse.errors', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='uast', full_name='github.com.bblfsh.sdk.protocol.ParseUASTResponse.uast', index=2,
+      name='uast', full_name='github.com.bblfsh.sdk.protocol.ParseResponse.uast', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -145,33 +177,41 @@ _PARSEUASTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=226,
-  serialized_end=385,
+  serialized_start=283,
+  serialized_end=438,
 )
 
-_PARSEUASTRESPONSE.fields_by_name['status'].enum_type = _STATUS
-_PARSEUASTRESPONSE.fields_by_name['uast'].message_type = github_dot_com_dot_bblfsh_dot_sdk_dot_uast_dot_generated__pb2._NODE
-DESCRIPTOR.message_types_by_name['ParseUASTRequest'] = _PARSEUASTREQUEST
-DESCRIPTOR.message_types_by_name['ParseUASTResponse'] = _PARSEUASTRESPONSE
+_PARSEREQUEST.fields_by_name['encoding'].enum_type = _ENCODING
+_PARSERESPONSE.fields_by_name['status'].enum_type = _STATUS
+_PARSERESPONSE.fields_by_name['uast'].message_type = github_dot_com_dot_bblfsh_dot_sdk_dot_uast_dot_generated__pb2._NODE
+DESCRIPTOR.message_types_by_name['ParseRequest'] = _PARSEREQUEST
+DESCRIPTOR.message_types_by_name['ParseResponse'] = _PARSERESPONSE
+DESCRIPTOR.enum_types_by_name['Encoding'] = _ENCODING
 DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
 
-ParseUASTRequest = _reflection.GeneratedProtocolMessageType('ParseUASTRequest', (_message.Message,), dict(
-  DESCRIPTOR = _PARSEUASTREQUEST,
+ParseRequest = _reflection.GeneratedProtocolMessageType('ParseRequest', (_message.Message,), dict(
+  DESCRIPTOR = _PARSEREQUEST,
   __module__ = 'generated_pb2'
-  # @@protoc_insertion_point(class_scope:github.com.bblfsh.sdk.protocol.ParseUASTRequest)
+  # @@protoc_insertion_point(class_scope:github.com.bblfsh.sdk.protocol.ParseRequest)
   ))
-_sym_db.RegisterMessage(ParseUASTRequest)
+_sym_db.RegisterMessage(ParseRequest)
 
-ParseUASTResponse = _reflection.GeneratedProtocolMessageType('ParseUASTResponse', (_message.Message,), dict(
-  DESCRIPTOR = _PARSEUASTRESPONSE,
+ParseResponse = _reflection.GeneratedProtocolMessageType('ParseResponse', (_message.Message,), dict(
+  DESCRIPTOR = _PARSERESPONSE,
   __module__ = 'generated_pb2'
-  # @@protoc_insertion_point(class_scope:github.com.bblfsh.sdk.protocol.ParseUASTResponse)
+  # @@protoc_insertion_point(class_scope:github.com.bblfsh.sdk.protocol.ParseResponse)
   ))
-_sym_db.RegisterMessage(ParseUASTResponse)
+_sym_db.RegisterMessage(ParseResponse)
 
 
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('Z\010protocol\240\343\036\001\340\342\036\000'))
+_ENCODING.has_options = True
+_ENCODING._options = _descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000'))
+_ENCODING.values_by_name["UTF8"].has_options = True
+_ENCODING.values_by_name["UTF8"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004UTF8'))
+_ENCODING.values_by_name["BASE64"].has_options = True
+_ENCODING.values_by_name["BASE64"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006Base64'))
 _STATUS.has_options = True
 _STATUS._options = _descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000'))
 _STATUS.values_by_name["OK"].has_options = True
@@ -180,12 +220,12 @@ _STATUS.values_by_name["ERROR"].has_options = True
 _STATUS.values_by_name["ERROR"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Error'))
 _STATUS.values_by_name["FATAL"].has_options = True
 _STATUS.values_by_name["FATAL"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Fatal'))
-_PARSEUASTREQUEST.has_options = True
-_PARSEUASTREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
-_PARSEUASTRESPONSE.fields_by_name['uast'].has_options = True
-_PARSEUASTRESPONSE.fields_by_name['uast']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\004UAST'))
-_PARSEUASTRESPONSE.has_options = True
-_PARSEUASTRESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_PARSEREQUEST.has_options = True
+_PARSEREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_PARSERESPONSE.fields_by_name['uast'].has_options = True
+_PARSERESPONSE.fields_by_name['uast']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\004UAST'))
+_PARSERESPONSE.has_options = True
+_PARSERESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
 try:
   # THESE ELEMENTS WILL BE DEPRECATED.
   # Please use the generated *_pb2_grpc.py files instead.
@@ -204,17 +244,17 @@ try:
       Args:
         channel: A grpc.Channel.
       """
-      self.ParseUAST = channel.unary_unary(
-          '/github.com.bblfsh.sdk.protocol.ProtocolService/ParseUAST',
-          request_serializer=ParseUASTRequest.SerializeToString,
-          response_deserializer=ParseUASTResponse.FromString,
+      self.Parse = channel.unary_unary(
+          '/github.com.bblfsh.sdk.protocol.ProtocolService/Parse',
+          request_serializer=ParseRequest.SerializeToString,
+          response_deserializer=ParseResponse.FromString,
           )
 
 
   class ProtocolServiceServicer(object):
 
-    def ParseUAST(self, request, context):
-      """ParseUAST uses DefaultParser to process the given UAST parsing request.
+    def Parse(self, request, context):
+      """Parse uses DefaultParser to process the given parsing request to get the UAST.
       """
       context.set_code(grpc.StatusCode.UNIMPLEMENTED)
       context.set_details('Method not implemented!')
@@ -223,10 +263,10 @@ try:
 
   def add_ProtocolServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'ParseUAST': grpc.unary_unary_rpc_method_handler(
-            servicer.ParseUAST,
-            request_deserializer=ParseUASTRequest.FromString,
-            response_serializer=ParseUASTResponse.SerializeToString,
+        'Parse': grpc.unary_unary_rpc_method_handler(
+            servicer.Parse,
+            request_deserializer=ParseRequest.FromString,
+            response_serializer=ParseResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -240,8 +280,8 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    def ParseUAST(self, request, context):
-      """ParseUAST uses DefaultParser to process the given UAST parsing request.
+    def Parse(self, request, context):
+      """Parse uses DefaultParser to process the given parsing request to get the UAST.
       """
       context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
 
@@ -252,11 +292,11 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    def ParseUAST(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      """ParseUAST uses DefaultParser to process the given UAST parsing request.
+    def Parse(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Parse uses DefaultParser to process the given parsing request to get the UAST.
       """
       raise NotImplementedError()
-    ParseUAST.future = None
+    Parse.future = None
 
 
   def beta_create_ProtocolService_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
@@ -266,13 +306,13 @@ try:
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_deserializers = {
-      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'ParseUAST'): ParseUASTRequest.FromString,
+      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'Parse'): ParseRequest.FromString,
     }
     response_serializers = {
-      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'ParseUAST'): ParseUASTResponse.SerializeToString,
+      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'Parse'): ParseResponse.SerializeToString,
     }
     method_implementations = {
-      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'ParseUAST'): face_utilities.unary_unary_inline(servicer.ParseUAST),
+      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'Parse'): face_utilities.unary_unary_inline(servicer.Parse),
     }
     server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
     return beta_implementations.server(method_implementations, options=server_options)
@@ -285,13 +325,13 @@ try:
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_serializers = {
-      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'ParseUAST'): ParseUASTRequest.SerializeToString,
+      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'Parse'): ParseRequest.SerializeToString,
     }
     response_deserializers = {
-      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'ParseUAST'): ParseUASTResponse.FromString,
+      ('github.com.bblfsh.sdk.protocol.ProtocolService', 'Parse'): ParseResponse.FromString,
     }
     cardinalities = {
-      'ParseUAST': cardinality.Cardinality.UNARY_UNARY,
+      'Parse': cardinality.Cardinality.UNARY_UNARY,
     }
     stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
     return beta_implementations.dynamic_stub(channel, 'github.com.bblfsh.sdk.protocol.ProtocolService', cardinalities, options=stub_options)

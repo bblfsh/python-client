@@ -27,7 +27,7 @@ def main():
     if not args.disable_bblfsh_autorun:
         ensure_bblfsh_is_running()
     client = BblfshClient(args.endpoint)
-    print(client.parse_uast(args.file, args.language))
+    print(client.parse(args.file, args.language))
 
 
 if __name__ == "__main__":

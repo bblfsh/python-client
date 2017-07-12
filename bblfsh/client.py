@@ -7,7 +7,7 @@ import grpc
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 "github/com/bblfsh/sdk/protocol"))
 sys.path.insert(0, os.path.dirname(__file__))
-from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseUASTRequest
+from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseRequest
 from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2_grpc import ProtocolServiceStub
 
 
@@ -27,7 +27,7 @@ class BblfshClient(object):
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
 
-    def parse_uast(self, filename, language=None, contents=None, timeout=None,
+    def parse(self, filename, language=None, contents=None, timeout=None,
                    unicode_errors="ignore"):
         """
         Queries the Babelfish server and receives the UAST for the specified
@@ -52,10 +52,10 @@ class BblfshClient(object):
         if contents is None:
             with open(filename, errors=unicode_errors) as fin:
                 contents = fin.read()
-        request = ParseUASTRequest(filename=os.path.basename(filename),
+        request = ParseRequest(filename=os.path.basename(filename),
                                    content=contents,
                                    language=self._scramble_language(language))
-        response = self._stub.ParseUAST(request, timeout=timeout)
+        response = self._stub.Parse(request, timeout=timeout)
         return response
 
     @staticmethod
