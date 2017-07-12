@@ -13,6 +13,11 @@ def ensure_bblfsh_is_running():
         if container.status != "running":
             raise docker.errors.NotFound(message="not running")
         return True
+    except AttributeError:
+        log.error("You hit https://github.com/docker/docker-py/issues/1353\n"
+                  "Uninstall docker-py and docker and install *only* docker.\n"
+                  "Failed to ensure that the Babelfish server is running.")
+        return False
     except docker.errors.NotFound:
         container = client.containers.run(
             "bblfsh/server", name="bblfsh", detach=True, privileged=True,
