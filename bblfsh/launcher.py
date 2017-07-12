@@ -7,7 +7,12 @@ import docker
 
 def ensure_bblfsh_is_running():
     log = logging.getLogger("bblfsh")
-    client = docker.from_env(version="auto")
+    try:
+        client = docker.from_env(version="auto")
+    except docker.errors.DockerException as e:
+        log.warning("Failed to connect to the Docker daemon and ensure "
+                    "that the Babelfish server is running. %s", e)
+        return False
     try:
         container = client.containers.get("bblfsh")
         if container.status != "running":
