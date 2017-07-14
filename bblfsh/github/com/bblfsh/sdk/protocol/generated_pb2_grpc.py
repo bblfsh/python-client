@@ -12,17 +12,17 @@ class ProtocolServiceStub(object):
     Args:
       channel: A grpc.Channel.
     """
-    self.ParseUAST = channel.unary_unary(
-        '/github.com.bblfsh.sdk.protocol.ProtocolService/ParseUAST',
-        request_serializer=generated__pb2.ParseUASTRequest.SerializeToString,
-        response_deserializer=generated__pb2.ParseUASTResponse.FromString,
+    self.Parse = channel.unary_unary(
+        '/github.com.bblfsh.sdk.protocol.ProtocolService/Parse',
+        request_serializer=generated__pb2.ParseRequest.SerializeToString,
+        response_deserializer=generated__pb2.ParseResponse.FromString,
         )
 
 
 class ProtocolServiceServicer(object):
 
-  def ParseUAST(self, request, context):
-    """ParseUAST uses DefaultParser to process the given UAST parsing request.
+  def Parse(self, request, context):
+    """Parse uses DefaultParser to process the given parsing request to get the UAST.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -31,10 +31,10 @@ class ProtocolServiceServicer(object):
 
 def add_ProtocolServiceServicer_to_server(servicer, server):
   rpc_method_handlers = {
-      'ParseUAST': grpc.unary_unary_rpc_method_handler(
-          servicer.ParseUAST,
-          request_deserializer=generated__pb2.ParseUASTRequest.FromString,
-          response_serializer=generated__pb2.ParseUASTResponse.SerializeToString,
+      'Parse': grpc.unary_unary_rpc_method_handler(
+          servicer.Parse,
+          request_deserializer=generated__pb2.ParseRequest.FromString,
+          response_serializer=generated__pb2.ParseResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(

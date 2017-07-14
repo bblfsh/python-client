@@ -21,10 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='github.com/bblfsh/sdk/uast/generated.proto',
   package='github.com.bblfsh.sdk.uast',
   syntax='proto3',
-  serialized_pb=_b('\n*github.com/bblfsh/sdk/uast/generated.proto\x12\x1agithub.com.bblfsh.sdk.uast\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\"\x92\x03\n\x04Node\x12\x15\n\rinternal_type\x18\x01 \x01(\t\x12\x44\n\nproperties\x18\x02 \x03(\x0b\x32\x30.github.com.bblfsh.sdk.uast.Node.PropertiesEntry\x12\x32\n\x08\x63hildren\x18\x03 \x03(\x0b\x32 .github.com.bblfsh.sdk.uast.Node\x12\r\n\x05token\x18\x04 \x01(\t\x12<\n\x0estart_position\x18\x05 \x01(\x0b\x32$.github.com.bblfsh.sdk.uast.Position\x12:\n\x0c\x65nd_position\x18\x06 \x01(\x0b\x32$.github.com.bblfsh.sdk.uast.Position\x12/\n\x05roles\x18\x07 \x03(\x0e\x32 .github.com.bblfsh.sdk.uast.Role\x1a\x31\n\x0fPropertiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01:\x0c\x88\xa0\x1f\x00\x98\xa0\x1f\x00\xf0\xa1\x1f\x00\"?\n\x08Position\x12\x0e\n\x06offset\x18\x01 \x01(\r\x12\x0c\n\x04line\x18\x02 \x01(\r\x12\x0b\n\x03\x63ol\x18\x03 \x01(\r:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*\xb4+\n\x04Role\x12+\n\x11SIMPLE_IDENTIFIER\x10\x00\x1a\x14\x8a\x9d \x10SimpleIdentifier\x12\x31\n\x14QUALIFIED_IDENTIFIER\x10\x01\x1a\x17\x8a\x9d \x13QualifiedIdentifier\x12+\n\x11\x42INARY_EXPRESSION\x10\x02\x1a\x14\x8a\x9d \x10\x42inaryExpression\x12\x34\n\x16\x42INARY_EXPRESSION_LEFT\x10\x03\x1a\x18\x8a\x9d \x14\x42inaryExpressionLeft\x12\x36\n\x17\x42INARY_EXPRESSION_RIGHT\x10\x04\x1a\x19\x8a\x9d \x15\x42inaryExpressionRight\x12\x30\n\x14\x42INARY_EXPRESSION_OP\x10\x05\x1a\x16\x8a\x9d \x12\x42inaryExpressionOp\x12\x14\n\x05INFIX\x10\x06\x1a\t\x8a\x9d \x05Infix\x12\x18\n\x07POSTFIX\x10\x07\x1a\x0b\x8a\x9d \x07Postfix\x12\x31\n\x15OP_BITWISE_LEFT_SHIFT\x10\x08\x1a\x16\x8a\x9d \x12OpBitwiseLeftShift\x12\x33\n\x16OP_BITWISE_RIGHT_SHIFT\x10\t\x1a\x17\x8a\x9d \x13OpBitwiseRightShift\x12\x44\n\x1fOP_BITWISE_UNSIGNED_RIGHT_SHIFT\x10\n\x1a\x1f\x8a\x9d \x1bOpBitwiseUnsignedRightShift\x12\"\n\rOP_BITWISE_OR\x10\x0b\x1a\x0f\x8a\x9d \x0bOpBitwiseOr\x12$\n\x0eOP_BITWISE_XOR\x10\x0c\x1a\x10\x8a\x9d \x0cOpBitwiseXor\x12$\n\x0eOP_BITWISE_AND\x10\r\x1a\x10\x8a\x9d \x0cOpBitwiseAnd\x12\x1e\n\nEXPRESSION\x10\x0e\x1a\x0e\x8a\x9d \nExpression\x12\x1c\n\tSTATEMENT\x10\x0f\x1a\r\x8a\x9d \tStatement\x12\x19\n\x08OP_EQUAL\x10\x10\x1a\x0b\x8a\x9d \x07OpEqual\x12 \n\x0cOP_NOT_EQUAL\x10\x11\x1a\x0e\x8a\x9d \nOpNotEqual\x12 \n\x0cOP_LESS_THAN\x10\x12\x1a\x0e\x8a\x9d \nOpLessThan\x12+\n\x12OP_LESS_THAN_EQUAL\x10\x13\x1a\x13\x8a\x9d \x0fOpLessThanEqual\x12&\n\x0fOP_GREATER_THAN\x10\x14\x1a\x11\x8a\x9d \rOpGreaterThan\x12\x31\n\x15OP_GREATER_THAN_EQUAL\x10\x15\x1a\x16\x8a\x9d \x12OpGreaterThanEqual\x12\x17\n\x07OP_SAME\x10\x16\x1a\n\x8a\x9d \x06OpSame\x12\x1e\n\x0bOP_NOT_SAME\x10\x17\x1a\r\x8a\x9d \tOpNotSame\x12\x1f\n\x0bOP_CONTAINS\x10\x18\x1a\x0e\x8a\x9d \nOpContains\x12&\n\x0fOP_NOT_CONTAINS\x10\x19\x1a\x11\x8a\x9d \rOpNotContains\x12(\n\x10OP_PRE_INCREMENT\x10\x1a\x1a\x12\x8a\x9d \x0eOpPreIncrement\x12*\n\x11OP_POST_INCREMENT\x10\x1b\x1a\x13\x8a\x9d \x0fOpPostIncrement\x12(\n\x10OP_PRE_DECREMENT\x10\x1c\x1a\x12\x8a\x9d \x0eOpPreDecrement\x12*\n\x11OP_POST_DECREMENT\x10\x1d\x1a\x13\x8a\x9d \x0fOpPostDecrement\x12\x1f\n\x0bOP_NEGATIVE\x10\x1e\x1a\x0e\x8a\x9d \nOpNegative\x12\x1f\n\x0bOP_POSITIVE\x10\x1f\x1a\x0e\x8a\x9d \nOpPositive\x12\x32\n\x15OP_BITWISE_COMPLEMENT\x10 \x1a\x17\x8a\x9d \x13OpBitwiseComplement\x12%\n\x0eOP_DEREFERENCE\x10!\x1a\x11\x8a\x9d \rOpDereference\x12&\n\x0fOP_TAKE_ADDRESS\x10\"\x1a\x11\x8a\x9d \rOpTakeAddress\x12\x12\n\x04\x46ILE\x10#\x1a\x08\x8a\x9d \x04\x46ile\x12$\n\x0eOP_BOOLEAN_AND\x10$\x1a\x10\x8a\x9d \x0cOpBooleanAnd\x12\"\n\rOP_BOOLEAN_OR\x10%\x1a\x0f\x8a\x9d \x0bOpBooleanOr\x12$\n\x0eOP_BOOLEAN_NOT\x10&\x1a\x10\x8a\x9d \x0cOpBooleanNot\x12$\n\x0eOP_BOOLEAN_XOR\x10\'\x1a\x10\x8a\x9d \x0cOpBooleanXor\x12\x15\n\x06OP_ADD\x10(\x1a\t\x8a\x9d \x05OpAdd\x12!\n\x0cOP_SUBSTRACT\x10)\x1a\x0f\x8a\x9d \x0bOpSubstract\x12\x1f\n\x0bOP_MULTIPLY\x10*\x1a\x0e\x8a\x9d \nOpMultiply\x12\x1b\n\tOP_DIVIDE\x10+\x1a\x0c\x8a\x9d \x08OpDivide\x12\x15\n\x06OP_MOD\x10,\x1a\t\x8a\x9d \x05OpMod\x12/\n\x13PACKAGE_DECLARATION\x10-\x1a\x16\x8a\x9d \x12PackageDeclaration\x12-\n\x12IMPORT_DECLARATION\x10.\x1a\x15\x8a\x9d \x11ImportDeclaration\x12\x1f\n\x0bIMPORT_PATH\x10/\x1a\x0e\x8a\x9d \nImportPath\x12!\n\x0cIMPORT_ALIAS\x10\x30\x1a\x0f\x8a\x9d \x0bImportAlias\x12\x31\n\x14\x46UNCTION_DECLARATION\x10\x31\x1a\x17\x8a\x9d \x13\x46unctionDeclaration\x12:\n\x19\x46UNCTION_DECLARATION_BODY\x10\x32\x1a\x1b\x8a\x9d \x17\x46unctionDeclarationBody\x12:\n\x19\x46UNCTION_DECLARATION_NAME\x10\x33\x1a\x1b\x8a\x9d \x17\x46unctionDeclarationName\x12\x42\n\x1d\x46UNCTION_DECLARATION_RECEIVER\x10\x34\x1a\x1f\x8a\x9d \x1b\x46unctionDeclarationReceiver\x12\x42\n\x1d\x46UNCTION_DECLARATION_ARGUMENT\x10\x35\x1a\x1f\x8a\x9d \x1b\x46unctionDeclarationArgument\x12K\n\"FUNCTION_DECLARATION_ARGUMENT_NAME\x10\x36\x1a#\x8a\x9d \x1f\x46unctionDeclarationArgumentName\x12\\\n+FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE\x10\x37\x1a+\x8a\x9d \'FunctionDeclarationArgumentDefaultValue\x12J\n\"FUNCTION_DECLARATION_VAR_ARGS_LIST\x10\x38\x1a\"\x8a\x9d \x1e\x46unctionDeclarationVarArgsList\x12)\n\x10TYPE_DECLARATION\x10\x39\x1a\x13\x8a\x9d \x0fTypeDeclaration\x12\x32\n\x15TYPE_DECLARATION_BODY\x10:\x1a\x17\x8a\x9d \x13TypeDeclarationBody\x12\x34\n\x16TYPE_DECLARATION_BASES\x10;\x1a\x18\x8a\x9d \x14TypeDeclarationBases\x12>\n\x1bTYPE_DECLARATION_IMPLEMENTS\x10<\x1a\x1d\x8a\x9d \x19TypeDeclarationImplements\x12\x32\n\x15VISIBLE_FROM_INSTANCE\x10=\x1a\x17\x8a\x9d \x13VisibleFromInstance\x12*\n\x11VISIBLE_FROM_TYPE\x10>\x1a\x13\x8a\x9d \x0fVisibleFromType\x12\x30\n\x14VISIBLE_FROM_SUBTYPE\x10?\x1a\x16\x8a\x9d \x12VisibleFromSubtype\x12\x30\n\x14VISIBLE_FROM_PACKAGE\x10@\x1a\x16\x8a\x9d \x12VisibleFromPackage\x12\x36\n\x17VISIBLE_FROM_SUBPACKAGE\x10\x41\x1a\x19\x8a\x9d \x15VisibleFromSubpackage\x12.\n\x13VISIBLE_FROM_MODULE\x10\x42\x1a\x15\x8a\x9d \x11VisibleFromModule\x12.\n\x13VISIBLE_FROM_FRIEND\x10\x43\x1a\x15\x8a\x9d \x11VisibleFromFriend\x12,\n\x12VISIBLE_FROM_WORLD\x10\x44\x1a\x14\x8a\x9d \x10VisibleFromWorld\x12\x0e\n\x02IF\x10\x45\x1a\x06\x8a\x9d \x02If\x12!\n\x0cIF_CONDITION\x10\x46\x1a\x0f\x8a\x9d \x0bIfCondition\x12\x17\n\x07IF_BODY\x10G\x1a\n\x8a\x9d \x06IfBody\x12\x17\n\x07IF_ELSE\x10H\x1a\n\x8a\x9d \x06IfElse\x12\x16\n\x06SWITCH\x10I\x1a\n\x8a\x9d \x06Switch\x12\x1f\n\x0bSWITCH_CASE\x10J\x1a\x0e\x8a\x9d \nSwitchCase\x12\x32\n\x15SWITCH_CASE_CONDITION\x10K\x1a\x17\x8a\x9d \x13SwitchCaseCondition\x12(\n\x10SWITCH_CASE_BODY\x10L\x1a\x12\x8a\x9d \x0eSwitchCaseBody\x12%\n\x0eSWITCH_DEFAULT\x10M\x1a\x11\x8a\x9d \rSwitchDefault\x12\x10\n\x03\x46OR\x10N\x1a\x07\x8a\x9d \x03\x46or\x12\x19\n\x08\x46OR_INIT\x10O\x1a\x0b\x8a\x9d \x07\x46orInit\x12%\n\x0e\x46OR_EXPRESSION\x10P\x1a\x11\x8a\x9d \rForExpression\x12\x1d\n\nFOR_UPDATE\x10Q\x1a\r\x8a\x9d \tForUpdate\x12\x19\n\x08\x46OR_BODY\x10R\x1a\x0b\x8a\x9d \x07\x46orBody\x12\x19\n\x08\x46OR_EACH\x10S\x1a\x0b\x8a\x9d \x07\x46orEach\x12\x14\n\x05WHILE\x10T\x1a\t\x8a\x9d \x05While\x12\'\n\x0fWHILE_CONDITION\x10U\x1a\x12\x8a\x9d \x0eWhileCondition\x12\x1d\n\nWHILE_BODY\x10V\x1a\r\x8a\x9d \tWhileBody\x12\x19\n\x08\x44O_WHILE\x10W\x1a\x0b\x8a\x9d \x07\x44oWhile\x12,\n\x12\x44O_WHILE_CONDITION\x10X\x1a\x14\x8a\x9d \x10\x44oWhileCondition\x12\"\n\rDO_WHILE_BODY\x10Y\x1a\x0f\x8a\x9d \x0b\x44oWhileBody\x12\x14\n\x05\x42REAK\x10Z\x1a\t\x8a\x9d \x05\x42reak\x12\x1a\n\x08\x43ONTINUE\x10[\x1a\x0c\x8a\x9d \x08\x43ontinue\x12\x12\n\x04GOTO\x10\\\x1a\x08\x8a\x9d \x04Goto\x12\x14\n\x05\x42LOCK\x10]\x1a\t\x8a\x9d \x05\x42lock\x12\x1f\n\x0b\x42LOCK_SCOPE\x10^\x1a\x0e\x8a\x9d \nBlockScope\x12\x16\n\x06RETURN\x10_\x1a\n\x8a\x9d \x06Return\x12\x10\n\x03TRY\x10`\x1a\x07\x8a\x9d \x03Try\x12\x19\n\x08TRY_BODY\x10\x61\x1a\x0b\x8a\x9d \x07TryBody\x12\x1b\n\tTRY_CATCH\x10\x62\x1a\x0c\x8a\x9d \x08TryCatch\x12\x1f\n\x0bTRY_FINALLY\x10\x63\x1a\x0e\x8a\x9d \nTryFinally\x12\x14\n\x05THROW\x10\x64\x1a\t\x8a\x9d \x05Throw\x12\x16\n\x06\x41SSERT\x10\x65\x1a\n\x8a\x9d \x06\x41ssert\x12\x12\n\x04\x43\x41LL\x10\x66\x1a\x08\x8a\x9d \x04\x43\x61ll\x12#\n\rCALL_RECEIVER\x10g\x1a\x10\x8a\x9d \x0c\x43\x61llReceiver\x12\x1f\n\x0b\x43\x41LL_CALLEE\x10h\x1a\x0e\x8a\x9d \nCallCallee\x12\x38\n\x18\x43\x41LL_POSITIONAL_ARGUMENT\x10i\x1a\x1a\x8a\x9d \x16\x43\x61llPositionalArgument\x12.\n\x13\x43\x41LL_NAMED_ARGUMENT\x10j\x1a\x15\x8a\x9d \x11\x43\x61llNamedArgument\x12\x37\n\x18\x43\x41LL_NAMED_ARGUMENT_NAME\x10k\x1a\x19\x8a\x9d \x15\x43\x61llNamedArgumentName\x12\x39\n\x19\x43\x41LL_NAMED_ARGUMENT_VALUE\x10l\x1a\x1a\x8a\x9d \x16\x43\x61llNamedArgumentValue\x12\x12\n\x04NOOP\x10m\x1a\x08\x8a\x9d \x04Noop\x12\'\n\x0f\x42OOLEAN_LITERAL\x10n\x1a\x12\x8a\x9d \x0e\x42ooleanLiteral\x12!\n\x0c\x42YTE_LITERAL\x10o\x1a\x0f\x8a\x9d \x0b\x42yteLiteral\x12.\n\x13\x42YTE_STRING_LITERAL\x10p\x1a\x15\x8a\x9d \x11\x42yteStringLiteral\x12+\n\x11\x43HARACTER_LITERAL\x10q\x1a\x14\x8a\x9d \x10\x43haracterLiteral\x12!\n\x0cLIST_LITERAL\x10r\x1a\x0f\x8a\x9d \x0bListLiteral\x12\x1f\n\x0bMAP_LITERAL\x10s\x1a\x0e\x8a\x9d \nMapLiteral\x12!\n\x0cNULL_LITERAL\x10t\x1a\x0f\x8a\x9d \x0bNullLiteral\x12%\n\x0eNUMBER_LITERAL\x10u\x1a\x11\x8a\x9d \rNumberLiteral\x12%\n\x0eREGEXP_LITERAL\x10v\x1a\x11\x8a\x9d \rRegexpLiteral\x12\x1f\n\x0bSET_LITERAL\x10w\x1a\x0e\x8a\x9d \nSetLiteral\x12%\n\x0eSTRING_LITERAL\x10x\x1a\x11\x8a\x9d \rStringLiteral\x12#\n\rTUPLE_LITERAL\x10y\x1a\x10\x8a\x9d \x0cTupleLiteral\x12!\n\x0cTYPE_LITERAL\x10z\x1a\x0f\x8a\x9d \x0bTypeLiteral\x12#\n\rOTHER_LITERAL\x10{\x1a\x10\x8a\x9d \x0cOtherLiteral\x12\x1b\n\tMAP_ENTRY\x10|\x1a\x0c\x8a\x9d \x08MapEntry\x12\x17\n\x07MAP_KEY\x10}\x1a\n\x8a\x9d \x06MapKey\x12\x1b\n\tMAP_VALUE\x10~\x1a\x0c\x8a\x9d \x08MapValue\x12\x12\n\x04TYPE\x10\x7f\x1a\x08\x8a\x9d \x04Type\x12&\n\x0ePRIMITIVE_TYPE\x10\x80\x01\x1a\x11\x8a\x9d \rPrimitiveType\x12\x1f\n\nASSIGNMENT\x10\x81\x01\x1a\x0e\x8a\x9d \nAssignment\x12\x30\n\x13\x41SSIGNMENT_VARIABLE\x10\x82\x01\x1a\x16\x8a\x9d \x12\x41ssignmentVariable\x12*\n\x10\x41SSIGNMENT_VALUE\x10\x83\x01\x1a\x13\x8a\x9d \x0f\x41ssignmentValue\x12\x32\n\x14\x41UGMENTED_ASSIGNMENT\x10\x84\x01\x1a\x17\x8a\x9d \x13\x41ugmentedAssignment\x12\x43\n\x1d\x41UGMENTED_ASSIGNMENT_OPERATOR\x10\x85\x01\x1a\x1f\x8a\x9d \x1b\x41ugmentedAssignmentOperator\x12\x43\n\x1d\x41UGMENTED_ASSIGNMENT_VARIABLE\x10\x86\x01\x1a\x1f\x8a\x9d \x1b\x41ugmentedAssignmentVariable\x12=\n\x1a\x41UGMENTED_ASSIGNMENT_VALUE\x10\x87\x01\x1a\x1c\x8a\x9d \x18\x41ugmentedAssignmentValue\x12\x13\n\x04THIS\x10\x88\x01\x1a\x08\x8a\x9d \x04This\x12\x19\n\x07\x43OMMENT\x10\x89\x01\x1a\x0b\x8a\x9d \x07\x43omment\x12%\n\rDOCUMENTATION\x10\x8a\x01\x1a\x11\x8a\x9d \rDocumentation\x12\x1f\n\nWHITESPACE\x10\x8b\x01\x1a\x0e\x8a\x9d \nWhitespace\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x42\x0eZ\x04uast\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
+  serialized_pb=_b('\n*github.com/bblfsh/sdk/uast/generated.proto\x12\x1agithub.com.bblfsh.sdk.uast\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\"\x92\x03\n\x04Node\x12\x15\n\rinternal_type\x18\x01 \x01(\t\x12\x44\n\nproperties\x18\x02 \x03(\x0b\x32\x30.github.com.bblfsh.sdk.uast.Node.PropertiesEntry\x12\x32\n\x08\x63hildren\x18\x03 \x03(\x0b\x32 .github.com.bblfsh.sdk.uast.Node\x12\r\n\x05token\x18\x04 \x01(\t\x12<\n\x0estart_position\x18\x05 \x01(\x0b\x32$.github.com.bblfsh.sdk.uast.Position\x12:\n\x0c\x65nd_position\x18\x06 \x01(\x0b\x32$.github.com.bblfsh.sdk.uast.Position\x12/\n\x05roles\x18\x07 \x03(\x0e\x32 .github.com.bblfsh.sdk.uast.Role\x1a\x31\n\x0fPropertiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01:\x0c\x88\xa0\x1f\x00\x98\xa0\x1f\x00\xf0\xa1\x1f\x00\"?\n\x08Position\x12\x0e\n\x06offset\x18\x01 \x01(\r\x12\x0c\n\x04line\x18\x02 \x01(\r\x12\x0b\n\x03\x63ol\x18\x03 \x01(\r:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*\xcf+\n\x04Role\x12\x18\n\x07INVALID\x10\x00\x1a\x0b\x8a\x9d \x07Invalid\x12+\n\x11SIMPLE_IDENTIFIER\x10\x01\x1a\x14\x8a\x9d \x10SimpleIdentifier\x12\x31\n\x14QUALIFIED_IDENTIFIER\x10\x02\x1a\x17\x8a\x9d \x13QualifiedIdentifier\x12+\n\x11\x42INARY_EXPRESSION\x10\x03\x1a\x14\x8a\x9d \x10\x42inaryExpression\x12\x34\n\x16\x42INARY_EXPRESSION_LEFT\x10\x04\x1a\x18\x8a\x9d \x14\x42inaryExpressionLeft\x12\x36\n\x17\x42INARY_EXPRESSION_RIGHT\x10\x05\x1a\x19\x8a\x9d \x15\x42inaryExpressionRight\x12\x30\n\x14\x42INARY_EXPRESSION_OP\x10\x06\x1a\x16\x8a\x9d \x12\x42inaryExpressionOp\x12\x14\n\x05INFIX\x10\x07\x1a\t\x8a\x9d \x05Infix\x12\x18\n\x07POSTFIX\x10\x08\x1a\x0b\x8a\x9d \x07Postfix\x12\x31\n\x15OP_BITWISE_LEFT_SHIFT\x10\t\x1a\x16\x8a\x9d \x12OpBitwiseLeftShift\x12\x33\n\x16OP_BITWISE_RIGHT_SHIFT\x10\n\x1a\x17\x8a\x9d \x13OpBitwiseRightShift\x12\x44\n\x1fOP_BITWISE_UNSIGNED_RIGHT_SHIFT\x10\x0b\x1a\x1f\x8a\x9d \x1bOpBitwiseUnsignedRightShift\x12\"\n\rOP_BITWISE_OR\x10\x0c\x1a\x0f\x8a\x9d \x0bOpBitwiseOr\x12$\n\x0eOP_BITWISE_XOR\x10\r\x1a\x10\x8a\x9d \x0cOpBitwiseXor\x12$\n\x0eOP_BITWISE_AND\x10\x0e\x1a\x10\x8a\x9d \x0cOpBitwiseAnd\x12\x1e\n\nEXPRESSION\x10\x0f\x1a\x0e\x8a\x9d \nExpression\x12\x1c\n\tSTATEMENT\x10\x10\x1a\r\x8a\x9d \tStatement\x12\x19\n\x08OP_EQUAL\x10\x11\x1a\x0b\x8a\x9d \x07OpEqual\x12 \n\x0cOP_NOT_EQUAL\x10\x12\x1a\x0e\x8a\x9d \nOpNotEqual\x12 \n\x0cOP_LESS_THAN\x10\x13\x1a\x0e\x8a\x9d \nOpLessThan\x12+\n\x12OP_LESS_THAN_EQUAL\x10\x14\x1a\x13\x8a\x9d \x0fOpLessThanEqual\x12&\n\x0fOP_GREATER_THAN\x10\x15\x1a\x11\x8a\x9d \rOpGreaterThan\x12\x31\n\x15OP_GREATER_THAN_EQUAL\x10\x16\x1a\x16\x8a\x9d \x12OpGreaterThanEqual\x12\x17\n\x07OP_SAME\x10\x17\x1a\n\x8a\x9d \x06OpSame\x12\x1e\n\x0bOP_NOT_SAME\x10\x18\x1a\r\x8a\x9d \tOpNotSame\x12\x1f\n\x0bOP_CONTAINS\x10\x19\x1a\x0e\x8a\x9d \nOpContains\x12&\n\x0fOP_NOT_CONTAINS\x10\x1a\x1a\x11\x8a\x9d \rOpNotContains\x12(\n\x10OP_PRE_INCREMENT\x10\x1b\x1a\x12\x8a\x9d \x0eOpPreIncrement\x12*\n\x11OP_POST_INCREMENT\x10\x1c\x1a\x13\x8a\x9d \x0fOpPostIncrement\x12(\n\x10OP_PRE_DECREMENT\x10\x1d\x1a\x12\x8a\x9d \x0eOpPreDecrement\x12*\n\x11OP_POST_DECREMENT\x10\x1e\x1a\x13\x8a\x9d \x0fOpPostDecrement\x12\x1f\n\x0bOP_NEGATIVE\x10\x1f\x1a\x0e\x8a\x9d \nOpNegative\x12\x1f\n\x0bOP_POSITIVE\x10 \x1a\x0e\x8a\x9d \nOpPositive\x12\x32\n\x15OP_BITWISE_COMPLEMENT\x10!\x1a\x17\x8a\x9d \x13OpBitwiseComplement\x12%\n\x0eOP_DEREFERENCE\x10\"\x1a\x11\x8a\x9d \rOpDereference\x12&\n\x0fOP_TAKE_ADDRESS\x10#\x1a\x11\x8a\x9d \rOpTakeAddress\x12\x12\n\x04\x46ILE\x10$\x1a\x08\x8a\x9d \x04\x46ile\x12$\n\x0eOP_BOOLEAN_AND\x10%\x1a\x10\x8a\x9d \x0cOpBooleanAnd\x12\"\n\rOP_BOOLEAN_OR\x10&\x1a\x0f\x8a\x9d \x0bOpBooleanOr\x12$\n\x0eOP_BOOLEAN_NOT\x10\'\x1a\x10\x8a\x9d \x0cOpBooleanNot\x12$\n\x0eOP_BOOLEAN_XOR\x10(\x1a\x10\x8a\x9d \x0cOpBooleanXor\x12\x15\n\x06OP_ADD\x10)\x1a\t\x8a\x9d \x05OpAdd\x12!\n\x0cOP_SUBSTRACT\x10*\x1a\x0f\x8a\x9d \x0bOpSubstract\x12\x1f\n\x0bOP_MULTIPLY\x10+\x1a\x0e\x8a\x9d \nOpMultiply\x12\x1b\n\tOP_DIVIDE\x10,\x1a\x0c\x8a\x9d \x08OpDivide\x12\x15\n\x06OP_MOD\x10-\x1a\t\x8a\x9d \x05OpMod\x12/\n\x13PACKAGE_DECLARATION\x10.\x1a\x16\x8a\x9d \x12PackageDeclaration\x12-\n\x12IMPORT_DECLARATION\x10/\x1a\x15\x8a\x9d \x11ImportDeclaration\x12\x1f\n\x0bIMPORT_PATH\x10\x30\x1a\x0e\x8a\x9d \nImportPath\x12!\n\x0cIMPORT_ALIAS\x10\x31\x1a\x0f\x8a\x9d \x0bImportAlias\x12\x31\n\x14\x46UNCTION_DECLARATION\x10\x32\x1a\x17\x8a\x9d \x13\x46unctionDeclaration\x12:\n\x19\x46UNCTION_DECLARATION_BODY\x10\x33\x1a\x1b\x8a\x9d \x17\x46unctionDeclarationBody\x12:\n\x19\x46UNCTION_DECLARATION_NAME\x10\x34\x1a\x1b\x8a\x9d \x17\x46unctionDeclarationName\x12\x42\n\x1d\x46UNCTION_DECLARATION_RECEIVER\x10\x35\x1a\x1f\x8a\x9d \x1b\x46unctionDeclarationReceiver\x12\x42\n\x1d\x46UNCTION_DECLARATION_ARGUMENT\x10\x36\x1a\x1f\x8a\x9d \x1b\x46unctionDeclarationArgument\x12K\n\"FUNCTION_DECLARATION_ARGUMENT_NAME\x10\x37\x1a#\x8a\x9d \x1f\x46unctionDeclarationArgumentName\x12\\\n+FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE\x10\x38\x1a+\x8a\x9d \'FunctionDeclarationArgumentDefaultValue\x12J\n\"FUNCTION_DECLARATION_VAR_ARGS_LIST\x10\x39\x1a\"\x8a\x9d \x1e\x46unctionDeclarationVarArgsList\x12)\n\x10TYPE_DECLARATION\x10:\x1a\x13\x8a\x9d \x0fTypeDeclaration\x12\x32\n\x15TYPE_DECLARATION_BODY\x10;\x1a\x17\x8a\x9d \x13TypeDeclarationBody\x12\x34\n\x16TYPE_DECLARATION_BASES\x10<\x1a\x18\x8a\x9d \x14TypeDeclarationBases\x12>\n\x1bTYPE_DECLARATION_IMPLEMENTS\x10=\x1a\x1d\x8a\x9d \x19TypeDeclarationImplements\x12\x32\n\x15VISIBLE_FROM_INSTANCE\x10>\x1a\x17\x8a\x9d \x13VisibleFromInstance\x12*\n\x11VISIBLE_FROM_TYPE\x10?\x1a\x13\x8a\x9d \x0fVisibleFromType\x12\x30\n\x14VISIBLE_FROM_SUBTYPE\x10@\x1a\x16\x8a\x9d \x12VisibleFromSubtype\x12\x30\n\x14VISIBLE_FROM_PACKAGE\x10\x41\x1a\x16\x8a\x9d \x12VisibleFromPackage\x12\x36\n\x17VISIBLE_FROM_SUBPACKAGE\x10\x42\x1a\x19\x8a\x9d \x15VisibleFromSubpackage\x12.\n\x13VISIBLE_FROM_MODULE\x10\x43\x1a\x15\x8a\x9d \x11VisibleFromModule\x12.\n\x13VISIBLE_FROM_FRIEND\x10\x44\x1a\x15\x8a\x9d \x11VisibleFromFriend\x12,\n\x12VISIBLE_FROM_WORLD\x10\x45\x1a\x14\x8a\x9d \x10VisibleFromWorld\x12\x0e\n\x02IF\x10\x46\x1a\x06\x8a\x9d \x02If\x12!\n\x0cIF_CONDITION\x10G\x1a\x0f\x8a\x9d \x0bIfCondition\x12\x17\n\x07IF_BODY\x10H\x1a\n\x8a\x9d \x06IfBody\x12\x17\n\x07IF_ELSE\x10I\x1a\n\x8a\x9d \x06IfElse\x12\x16\n\x06SWITCH\x10J\x1a\n\x8a\x9d \x06Switch\x12\x1f\n\x0bSWITCH_CASE\x10K\x1a\x0e\x8a\x9d \nSwitchCase\x12\x32\n\x15SWITCH_CASE_CONDITION\x10L\x1a\x17\x8a\x9d \x13SwitchCaseCondition\x12(\n\x10SWITCH_CASE_BODY\x10M\x1a\x12\x8a\x9d \x0eSwitchCaseBody\x12%\n\x0eSWITCH_DEFAULT\x10N\x1a\x11\x8a\x9d \rSwitchDefault\x12\x10\n\x03\x46OR\x10O\x1a\x07\x8a\x9d \x03\x46or\x12\x19\n\x08\x46OR_INIT\x10P\x1a\x0b\x8a\x9d \x07\x46orInit\x12%\n\x0e\x46OR_EXPRESSION\x10Q\x1a\x11\x8a\x9d \rForExpression\x12\x1d\n\nFOR_UPDATE\x10R\x1a\r\x8a\x9d \tForUpdate\x12\x19\n\x08\x46OR_BODY\x10S\x1a\x0b\x8a\x9d \x07\x46orBody\x12\x19\n\x08\x46OR_EACH\x10T\x1a\x0b\x8a\x9d \x07\x46orEach\x12\x14\n\x05WHILE\x10U\x1a\t\x8a\x9d \x05While\x12\'\n\x0fWHILE_CONDITION\x10V\x1a\x12\x8a\x9d \x0eWhileCondition\x12\x1d\n\nWHILE_BODY\x10W\x1a\r\x8a\x9d \tWhileBody\x12\x19\n\x08\x44O_WHILE\x10X\x1a\x0b\x8a\x9d \x07\x44oWhile\x12,\n\x12\x44O_WHILE_CONDITION\x10Y\x1a\x14\x8a\x9d \x10\x44oWhileCondition\x12\"\n\rDO_WHILE_BODY\x10Z\x1a\x0f\x8a\x9d \x0b\x44oWhileBody\x12\x14\n\x05\x42REAK\x10[\x1a\t\x8a\x9d \x05\x42reak\x12\x1a\n\x08\x43ONTINUE\x10\\\x1a\x0c\x8a\x9d \x08\x43ontinue\x12\x12\n\x04GOTO\x10]\x1a\x08\x8a\x9d \x04Goto\x12\x14\n\x05\x42LOCK\x10^\x1a\t\x8a\x9d \x05\x42lock\x12\x1f\n\x0b\x42LOCK_SCOPE\x10_\x1a\x0e\x8a\x9d \nBlockScope\x12\x16\n\x06RETURN\x10`\x1a\n\x8a\x9d \x06Return\x12\x10\n\x03TRY\x10\x61\x1a\x07\x8a\x9d \x03Try\x12\x19\n\x08TRY_BODY\x10\x62\x1a\x0b\x8a\x9d \x07TryBody\x12\x1b\n\tTRY_CATCH\x10\x63\x1a\x0c\x8a\x9d \x08TryCatch\x12\x1f\n\x0bTRY_FINALLY\x10\x64\x1a\x0e\x8a\x9d \nTryFinally\x12\x14\n\x05THROW\x10\x65\x1a\t\x8a\x9d \x05Throw\x12\x16\n\x06\x41SSERT\x10\x66\x1a\n\x8a\x9d \x06\x41ssert\x12\x12\n\x04\x43\x41LL\x10g\x1a\x08\x8a\x9d \x04\x43\x61ll\x12#\n\rCALL_RECEIVER\x10h\x1a\x10\x8a\x9d \x0c\x43\x61llReceiver\x12\x1f\n\x0b\x43\x41LL_CALLEE\x10i\x1a\x0e\x8a\x9d \nCallCallee\x12\x38\n\x18\x43\x41LL_POSITIONAL_ARGUMENT\x10j\x1a\x1a\x8a\x9d \x16\x43\x61llPositionalArgument\x12.\n\x13\x43\x41LL_NAMED_ARGUMENT\x10k\x1a\x15\x8a\x9d \x11\x43\x61llNamedArgument\x12\x37\n\x18\x43\x41LL_NAMED_ARGUMENT_NAME\x10l\x1a\x19\x8a\x9d \x15\x43\x61llNamedArgumentName\x12\x39\n\x19\x43\x41LL_NAMED_ARGUMENT_VALUE\x10m\x1a\x1a\x8a\x9d \x16\x43\x61llNamedArgumentValue\x12\x12\n\x04NOOP\x10n\x1a\x08\x8a\x9d \x04Noop\x12\'\n\x0f\x42OOLEAN_LITERAL\x10o\x1a\x12\x8a\x9d \x0e\x42ooleanLiteral\x12!\n\x0c\x42YTE_LITERAL\x10p\x1a\x0f\x8a\x9d \x0b\x42yteLiteral\x12.\n\x13\x42YTE_STRING_LITERAL\x10q\x1a\x15\x8a\x9d \x11\x42yteStringLiteral\x12+\n\x11\x43HARACTER_LITERAL\x10r\x1a\x14\x8a\x9d \x10\x43haracterLiteral\x12!\n\x0cLIST_LITERAL\x10s\x1a\x0f\x8a\x9d \x0bListLiteral\x12\x1f\n\x0bMAP_LITERAL\x10t\x1a\x0e\x8a\x9d \nMapLiteral\x12!\n\x0cNULL_LITERAL\x10u\x1a\x0f\x8a\x9d \x0bNullLiteral\x12%\n\x0eNUMBER_LITERAL\x10v\x1a\x11\x8a\x9d \rNumberLiteral\x12%\n\x0eREGEXP_LITERAL\x10w\x1a\x11\x8a\x9d \rRegexpLiteral\x12\x1f\n\x0bSET_LITERAL\x10x\x1a\x0e\x8a\x9d \nSetLiteral\x12%\n\x0eSTRING_LITERAL\x10y\x1a\x11\x8a\x9d \rStringLiteral\x12#\n\rTUPLE_LITERAL\x10z\x1a\x10\x8a\x9d \x0cTupleLiteral\x12!\n\x0cTYPE_LITERAL\x10{\x1a\x0f\x8a\x9d \x0bTypeLiteral\x12#\n\rOTHER_LITERAL\x10|\x1a\x10\x8a\x9d \x0cOtherLiteral\x12\x1b\n\tMAP_ENTRY\x10}\x1a\x0c\x8a\x9d \x08MapEntry\x12\x17\n\x07MAP_KEY\x10~\x1a\n\x8a\x9d \x06MapKey\x12\x1b\n\tMAP_VALUE\x10\x7f\x1a\x0c\x8a\x9d \x08MapValue\x12\x13\n\x04TYPE\x10\x80\x01\x1a\x08\x8a\x9d \x04Type\x12&\n\x0ePRIMITIVE_TYPE\x10\x81\x01\x1a\x11\x8a\x9d \rPrimitiveType\x12\x1f\n\nASSIGNMENT\x10\x82\x01\x1a\x0e\x8a\x9d \nAssignment\x12\x30\n\x13\x41SSIGNMENT_VARIABLE\x10\x83\x01\x1a\x16\x8a\x9d \x12\x41ssignmentVariable\x12*\n\x10\x41SSIGNMENT_VALUE\x10\x84\x01\x1a\x13\x8a\x9d \x0f\x41ssignmentValue\x12\x32\n\x14\x41UGMENTED_ASSIGNMENT\x10\x85\x01\x1a\x17\x8a\x9d \x13\x41ugmentedAssignment\x12\x43\n\x1d\x41UGMENTED_ASSIGNMENT_OPERATOR\x10\x86\x01\x1a\x1f\x8a\x9d \x1b\x41ugmentedAssignmentOperator\x12\x43\n\x1d\x41UGMENTED_ASSIGNMENT_VARIABLE\x10\x87\x01\x1a\x1f\x8a\x9d \x1b\x41ugmentedAssignmentVariable\x12=\n\x1a\x41UGMENTED_ASSIGNMENT_VALUE\x10\x88\x01\x1a\x1c\x8a\x9d \x18\x41ugmentedAssignmentValue\x12\x13\n\x04THIS\x10\x89\x01\x1a\x08\x8a\x9d \x04This\x12\x19\n\x07\x43OMMENT\x10\x8a\x01\x1a\x0b\x8a\x9d \x07\x43omment\x12%\n\rDOCUMENTATION\x10\x8b\x01\x1a\x11\x8a\x9d \rDocumentation\x12\x1f\n\nWHITESPACE\x10\x8c\x01\x1a\x0e\x8a\x9d \nWhitespace\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x42\x0eZ\x04uast\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
   ,
   dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,])
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _ROLE = _descriptor.EnumDescriptor(
   name='Role',
@@ -33,714 +32,719 @@ _ROLE = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='SIMPLE_IDENTIFIER', index=0, number=0,
+      name='INVALID', index=0, number=0,
+      options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007Invalid')),
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SIMPLE_IDENTIFIER', index=1, number=1,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020SimpleIdentifier')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='QUALIFIED_IDENTIFIER', index=1, number=1,
+      name='QUALIFIED_IDENTIFIER', index=2, number=2,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023QualifiedIdentifier')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BINARY_EXPRESSION', index=2, number=2,
+      name='BINARY_EXPRESSION', index=3, number=3,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020BinaryExpression')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BINARY_EXPRESSION_LEFT', index=3, number=3,
+      name='BINARY_EXPRESSION_LEFT', index=4, number=4,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \024BinaryExpressionLeft')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BINARY_EXPRESSION_RIGHT', index=4, number=4,
+      name='BINARY_EXPRESSION_RIGHT', index=5, number=5,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \025BinaryExpressionRight')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BINARY_EXPRESSION_OP', index=5, number=5,
+      name='BINARY_EXPRESSION_OP', index=6, number=6,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022BinaryExpressionOp')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='INFIX', index=6, number=6,
+      name='INFIX', index=7, number=7,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Infix')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='POSTFIX', index=7, number=7,
+      name='POSTFIX', index=8, number=8,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007Postfix')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_LEFT_SHIFT', index=8, number=8,
+      name='OP_BITWISE_LEFT_SHIFT', index=9, number=9,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022OpBitwiseLeftShift')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_RIGHT_SHIFT', index=9, number=9,
+      name='OP_BITWISE_RIGHT_SHIFT', index=10, number=10,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023OpBitwiseRightShift')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_UNSIGNED_RIGHT_SHIFT', index=10, number=10,
+      name='OP_BITWISE_UNSIGNED_RIGHT_SHIFT', index=11, number=11,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \033OpBitwiseUnsignedRightShift')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_OR', index=11, number=11,
+      name='OP_BITWISE_OR', index=12, number=12,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013OpBitwiseOr')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_XOR', index=12, number=12,
+      name='OP_BITWISE_XOR', index=13, number=13,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OpBitwiseXor')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_AND', index=13, number=13,
+      name='OP_BITWISE_AND', index=14, number=14,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OpBitwiseAnd')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EXPRESSION', index=14, number=14,
+      name='EXPRESSION', index=15, number=15,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nExpression')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='STATEMENT', index=15, number=15,
+      name='STATEMENT', index=16, number=16,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \tStatement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_EQUAL', index=16, number=16,
+      name='OP_EQUAL', index=17, number=17,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007OpEqual')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_NOT_EQUAL', index=17, number=17,
+      name='OP_NOT_EQUAL', index=18, number=18,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpNotEqual')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_LESS_THAN', index=18, number=18,
+      name='OP_LESS_THAN', index=19, number=19,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpLessThan')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_LESS_THAN_EQUAL', index=19, number=19,
+      name='OP_LESS_THAN_EQUAL', index=20, number=20,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017OpLessThanEqual')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_GREATER_THAN', index=20, number=20,
+      name='OP_GREATER_THAN', index=21, number=21,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rOpGreaterThan')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_GREATER_THAN_EQUAL', index=21, number=21,
+      name='OP_GREATER_THAN_EQUAL', index=22, number=22,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022OpGreaterThanEqual')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_SAME', index=22, number=22,
+      name='OP_SAME', index=23, number=23,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006OpSame')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_NOT_SAME', index=23, number=23,
+      name='OP_NOT_SAME', index=24, number=24,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \tOpNotSame')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_CONTAINS', index=24, number=24,
+      name='OP_CONTAINS', index=25, number=25,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpContains')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_NOT_CONTAINS', index=25, number=25,
+      name='OP_NOT_CONTAINS', index=26, number=26,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rOpNotContains')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_PRE_INCREMENT', index=26, number=26,
+      name='OP_PRE_INCREMENT', index=27, number=27,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \016OpPreIncrement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_POST_INCREMENT', index=27, number=27,
+      name='OP_POST_INCREMENT', index=28, number=28,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017OpPostIncrement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_PRE_DECREMENT', index=28, number=28,
+      name='OP_PRE_DECREMENT', index=29, number=29,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \016OpPreDecrement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_POST_DECREMENT', index=29, number=29,
+      name='OP_POST_DECREMENT', index=30, number=30,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017OpPostDecrement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_NEGATIVE', index=30, number=30,
+      name='OP_NEGATIVE', index=31, number=31,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpNegative')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_POSITIVE', index=31, number=31,
+      name='OP_POSITIVE', index=32, number=32,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpPositive')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BITWISE_COMPLEMENT', index=32, number=32,
+      name='OP_BITWISE_COMPLEMENT', index=33, number=33,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023OpBitwiseComplement')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_DEREFERENCE', index=33, number=33,
+      name='OP_DEREFERENCE', index=34, number=34,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rOpDereference')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_TAKE_ADDRESS', index=34, number=34,
+      name='OP_TAKE_ADDRESS', index=35, number=35,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rOpTakeAddress')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FILE', index=35, number=35,
+      name='FILE', index=36, number=36,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004File')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BOOLEAN_AND', index=36, number=36,
+      name='OP_BOOLEAN_AND', index=37, number=37,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OpBooleanAnd')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BOOLEAN_OR', index=37, number=37,
+      name='OP_BOOLEAN_OR', index=38, number=38,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013OpBooleanOr')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BOOLEAN_NOT', index=38, number=38,
+      name='OP_BOOLEAN_NOT', index=39, number=39,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OpBooleanNot')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_BOOLEAN_XOR', index=39, number=39,
+      name='OP_BOOLEAN_XOR', index=40, number=40,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OpBooleanXor')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_ADD', index=40, number=40,
+      name='OP_ADD', index=41, number=41,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005OpAdd')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_SUBSTRACT', index=41, number=41,
+      name='OP_SUBSTRACT', index=42, number=42,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013OpSubstract')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_MULTIPLY', index=42, number=42,
+      name='OP_MULTIPLY', index=43, number=43,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nOpMultiply')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_DIVIDE', index=43, number=43,
+      name='OP_DIVIDE', index=44, number=44,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \010OpDivide')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OP_MOD', index=44, number=44,
+      name='OP_MOD', index=45, number=45,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005OpMod')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='PACKAGE_DECLARATION', index=45, number=45,
+      name='PACKAGE_DECLARATION', index=46, number=46,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022PackageDeclaration')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IMPORT_DECLARATION', index=46, number=46,
+      name='IMPORT_DECLARATION', index=47, number=47,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \021ImportDeclaration')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IMPORT_PATH', index=47, number=47,
+      name='IMPORT_PATH', index=48, number=48,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nImportPath')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IMPORT_ALIAS', index=48, number=48,
+      name='IMPORT_ALIAS', index=49, number=49,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013ImportAlias')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION', index=49, number=49,
+      name='FUNCTION_DECLARATION', index=50, number=50,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023FunctionDeclaration')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_BODY', index=50, number=50,
+      name='FUNCTION_DECLARATION_BODY', index=51, number=51,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \027FunctionDeclarationBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_NAME', index=51, number=51,
+      name='FUNCTION_DECLARATION_NAME', index=52, number=52,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \027FunctionDeclarationName')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_RECEIVER', index=52, number=52,
+      name='FUNCTION_DECLARATION_RECEIVER', index=53, number=53,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \033FunctionDeclarationReceiver')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_ARGUMENT', index=53, number=53,
+      name='FUNCTION_DECLARATION_ARGUMENT', index=54, number=54,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \033FunctionDeclarationArgument')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_ARGUMENT_NAME', index=54, number=54,
+      name='FUNCTION_DECLARATION_ARGUMENT_NAME', index=55, number=55,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \037FunctionDeclarationArgumentName')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE', index=55, number=55,
+      name='FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE', index=56, number=56,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \'FunctionDeclarationArgumentDefaultValue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FUNCTION_DECLARATION_VAR_ARGS_LIST', index=56, number=56,
+      name='FUNCTION_DECLARATION_VAR_ARGS_LIST', index=57, number=57,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \036FunctionDeclarationVarArgsList')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE_DECLARATION', index=57, number=57,
+      name='TYPE_DECLARATION', index=58, number=58,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017TypeDeclaration')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE_DECLARATION_BODY', index=58, number=58,
+      name='TYPE_DECLARATION_BODY', index=59, number=59,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023TypeDeclarationBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE_DECLARATION_BASES', index=59, number=59,
+      name='TYPE_DECLARATION_BASES', index=60, number=60,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \024TypeDeclarationBases')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE_DECLARATION_IMPLEMENTS', index=60, number=60,
+      name='TYPE_DECLARATION_IMPLEMENTS', index=61, number=61,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \031TypeDeclarationImplements')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_INSTANCE', index=61, number=61,
+      name='VISIBLE_FROM_INSTANCE', index=62, number=62,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023VisibleFromInstance')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_TYPE', index=62, number=62,
+      name='VISIBLE_FROM_TYPE', index=63, number=63,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017VisibleFromType')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_SUBTYPE', index=63, number=63,
+      name='VISIBLE_FROM_SUBTYPE', index=64, number=64,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022VisibleFromSubtype')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_PACKAGE', index=64, number=64,
+      name='VISIBLE_FROM_PACKAGE', index=65, number=65,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022VisibleFromPackage')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_SUBPACKAGE', index=65, number=65,
+      name='VISIBLE_FROM_SUBPACKAGE', index=66, number=66,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \025VisibleFromSubpackage')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_MODULE', index=66, number=66,
+      name='VISIBLE_FROM_MODULE', index=67, number=67,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \021VisibleFromModule')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_FRIEND', index=67, number=67,
+      name='VISIBLE_FROM_FRIEND', index=68, number=68,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \021VisibleFromFriend')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VISIBLE_FROM_WORLD', index=68, number=68,
+      name='VISIBLE_FROM_WORLD', index=69, number=69,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020VisibleFromWorld')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IF', index=69, number=69,
+      name='IF', index=70, number=70,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \002If')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IF_CONDITION', index=70, number=70,
+      name='IF_CONDITION', index=71, number=71,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013IfCondition')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IF_BODY', index=71, number=71,
+      name='IF_BODY', index=72, number=72,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006IfBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='IF_ELSE', index=72, number=72,
+      name='IF_ELSE', index=73, number=73,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006IfElse')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SWITCH', index=73, number=73,
+      name='SWITCH', index=74, number=74,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006Switch')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SWITCH_CASE', index=74, number=74,
+      name='SWITCH_CASE', index=75, number=75,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nSwitchCase')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SWITCH_CASE_CONDITION', index=75, number=75,
+      name='SWITCH_CASE_CONDITION', index=76, number=76,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023SwitchCaseCondition')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SWITCH_CASE_BODY', index=76, number=76,
+      name='SWITCH_CASE_BODY', index=77, number=77,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \016SwitchCaseBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SWITCH_DEFAULT', index=77, number=77,
+      name='SWITCH_DEFAULT', index=78, number=78,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rSwitchDefault')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR', index=78, number=78,
+      name='FOR', index=79, number=79,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \003For')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR_INIT', index=79, number=79,
+      name='FOR_INIT', index=80, number=80,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007ForInit')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR_EXPRESSION', index=80, number=80,
+      name='FOR_EXPRESSION', index=81, number=81,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rForExpression')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR_UPDATE', index=81, number=81,
+      name='FOR_UPDATE', index=82, number=82,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \tForUpdate')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR_BODY', index=82, number=82,
+      name='FOR_BODY', index=83, number=83,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007ForBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='FOR_EACH', index=83, number=83,
+      name='FOR_EACH', index=84, number=84,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007ForEach')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WHILE', index=84, number=84,
+      name='WHILE', index=85, number=85,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005While')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WHILE_CONDITION', index=85, number=85,
+      name='WHILE_CONDITION', index=86, number=86,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \016WhileCondition')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WHILE_BODY', index=86, number=86,
+      name='WHILE_BODY', index=87, number=87,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \tWhileBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DO_WHILE', index=87, number=87,
+      name='DO_WHILE', index=88, number=88,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007DoWhile')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DO_WHILE_CONDITION', index=88, number=88,
+      name='DO_WHILE_CONDITION', index=89, number=89,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020DoWhileCondition')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DO_WHILE_BODY', index=89, number=89,
+      name='DO_WHILE_BODY', index=90, number=90,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013DoWhileBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BREAK', index=90, number=90,
+      name='BREAK', index=91, number=91,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Break')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CONTINUE', index=91, number=91,
+      name='CONTINUE', index=92, number=92,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \010Continue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='GOTO', index=92, number=92,
+      name='GOTO', index=93, number=93,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004Goto')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BLOCK', index=93, number=93,
+      name='BLOCK', index=94, number=94,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Block')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BLOCK_SCOPE', index=94, number=94,
+      name='BLOCK_SCOPE', index=95, number=95,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nBlockScope')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='RETURN', index=95, number=95,
+      name='RETURN', index=96, number=96,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006Return')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TRY', index=96, number=96,
+      name='TRY', index=97, number=97,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \003Try')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TRY_BODY', index=97, number=97,
+      name='TRY_BODY', index=98, number=98,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007TryBody')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TRY_CATCH', index=98, number=98,
+      name='TRY_CATCH', index=99, number=99,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \010TryCatch')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TRY_FINALLY', index=99, number=99,
+      name='TRY_FINALLY', index=100, number=100,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nTryFinally')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='THROW', index=100, number=100,
+      name='THROW', index=101, number=101,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Throw')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ASSERT', index=101, number=101,
+      name='ASSERT', index=102, number=102,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006Assert')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL', index=102, number=102,
+      name='CALL', index=103, number=103,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004Call')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_RECEIVER', index=103, number=103,
+      name='CALL_RECEIVER', index=104, number=104,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014CallReceiver')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_CALLEE', index=104, number=104,
+      name='CALL_CALLEE', index=105, number=105,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nCallCallee')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_POSITIONAL_ARGUMENT', index=105, number=105,
+      name='CALL_POSITIONAL_ARGUMENT', index=106, number=106,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \026CallPositionalArgument')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_NAMED_ARGUMENT', index=106, number=106,
+      name='CALL_NAMED_ARGUMENT', index=107, number=107,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \021CallNamedArgument')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_NAMED_ARGUMENT_NAME', index=107, number=107,
+      name='CALL_NAMED_ARGUMENT_NAME', index=108, number=108,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \025CallNamedArgumentName')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CALL_NAMED_ARGUMENT_VALUE', index=108, number=108,
+      name='CALL_NAMED_ARGUMENT_VALUE', index=109, number=109,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \026CallNamedArgumentValue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='NOOP', index=109, number=109,
+      name='NOOP', index=110, number=110,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004Noop')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BOOLEAN_LITERAL', index=110, number=110,
+      name='BOOLEAN_LITERAL', index=111, number=111,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \016BooleanLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BYTE_LITERAL', index=111, number=111,
+      name='BYTE_LITERAL', index=112, number=112,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013ByteLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='BYTE_STRING_LITERAL', index=112, number=112,
+      name='BYTE_STRING_LITERAL', index=113, number=113,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \021ByteStringLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='CHARACTER_LITERAL', index=113, number=113,
+      name='CHARACTER_LITERAL', index=114, number=114,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020CharacterLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='LIST_LITERAL', index=114, number=114,
+      name='LIST_LITERAL', index=115, number=115,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013ListLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='MAP_LITERAL', index=115, number=115,
+      name='MAP_LITERAL', index=116, number=116,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nMapLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='NULL_LITERAL', index=116, number=116,
+      name='NULL_LITERAL', index=117, number=117,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013NullLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='NUMBER_LITERAL', index=117, number=117,
+      name='NUMBER_LITERAL', index=118, number=118,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rNumberLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='REGEXP_LITERAL', index=118, number=118,
+      name='REGEXP_LITERAL', index=119, number=119,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rRegexpLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='SET_LITERAL', index=119, number=119,
+      name='SET_LITERAL', index=120, number=120,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nSetLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='STRING_LITERAL', index=120, number=120,
+      name='STRING_LITERAL', index=121, number=121,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rStringLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TUPLE_LITERAL', index=121, number=121,
+      name='TUPLE_LITERAL', index=122, number=122,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014TupleLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE_LITERAL', index=122, number=122,
+      name='TYPE_LITERAL', index=123, number=123,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \013TypeLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='OTHER_LITERAL', index=123, number=123,
+      name='OTHER_LITERAL', index=124, number=124,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \014OtherLiteral')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='MAP_ENTRY', index=124, number=124,
+      name='MAP_ENTRY', index=125, number=125,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \010MapEntry')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='MAP_KEY', index=125, number=125,
+      name='MAP_KEY', index=126, number=126,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \006MapKey')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='MAP_VALUE', index=126, number=126,
+      name='MAP_VALUE', index=127, number=127,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \010MapValue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='TYPE', index=127, number=127,
+      name='TYPE', index=128, number=128,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004Type')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='PRIMITIVE_TYPE', index=128, number=128,
+      name='PRIMITIVE_TYPE', index=129, number=129,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rPrimitiveType')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ASSIGNMENT', index=129, number=129,
+      name='ASSIGNMENT', index=130, number=130,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nAssignment')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ASSIGNMENT_VARIABLE', index=130, number=130,
+      name='ASSIGNMENT_VARIABLE', index=131, number=131,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \022AssignmentVariable')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='ASSIGNMENT_VALUE', index=131, number=131,
+      name='ASSIGNMENT_VALUE', index=132, number=132,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \017AssignmentValue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='AUGMENTED_ASSIGNMENT', index=132, number=132,
+      name='AUGMENTED_ASSIGNMENT', index=133, number=133,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \023AugmentedAssignment')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='AUGMENTED_ASSIGNMENT_OPERATOR', index=133, number=133,
+      name='AUGMENTED_ASSIGNMENT_OPERATOR', index=134, number=134,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \033AugmentedAssignmentOperator')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='AUGMENTED_ASSIGNMENT_VARIABLE', index=134, number=134,
+      name='AUGMENTED_ASSIGNMENT_VARIABLE', index=135, number=135,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \033AugmentedAssignmentVariable')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='AUGMENTED_ASSIGNMENT_VALUE', index=135, number=135,
+      name='AUGMENTED_ASSIGNMENT_VALUE', index=136, number=136,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \030AugmentedAssignmentValue')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='THIS', index=136, number=136,
+      name='THIS', index=137, number=137,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \004This')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='COMMENT', index=137, number=137,
+      name='COMMENT', index=138, number=138,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007Comment')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='DOCUMENTATION', index=138, number=138,
+      name='DOCUMENTATION', index=139, number=139,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \rDocumentation')),
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='WHITESPACE', index=139, number=139,
+      name='WHITESPACE', index=140, number=140,
       options=_descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \nWhitespace')),
       type=None),
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
   serialized_start=592,
-  serialized_end=6148,
+  serialized_end=6175,
 )
 _sym_db.RegisterEnumDescriptor(_ROLE)
 
 Role = enum_type_wrapper.EnumTypeWrapper(_ROLE)
-SIMPLE_IDENTIFIER = 0
-QUALIFIED_IDENTIFIER = 1
-BINARY_EXPRESSION = 2
-BINARY_EXPRESSION_LEFT = 3
-BINARY_EXPRESSION_RIGHT = 4
-BINARY_EXPRESSION_OP = 5
-INFIX = 6
-POSTFIX = 7
-OP_BITWISE_LEFT_SHIFT = 8
-OP_BITWISE_RIGHT_SHIFT = 9
-OP_BITWISE_UNSIGNED_RIGHT_SHIFT = 10
-OP_BITWISE_OR = 11
-OP_BITWISE_XOR = 12
-OP_BITWISE_AND = 13
-EXPRESSION = 14
-STATEMENT = 15
-OP_EQUAL = 16
-OP_NOT_EQUAL = 17
-OP_LESS_THAN = 18
-OP_LESS_THAN_EQUAL = 19
-OP_GREATER_THAN = 20
-OP_GREATER_THAN_EQUAL = 21
-OP_SAME = 22
-OP_NOT_SAME = 23
-OP_CONTAINS = 24
-OP_NOT_CONTAINS = 25
-OP_PRE_INCREMENT = 26
-OP_POST_INCREMENT = 27
-OP_PRE_DECREMENT = 28
-OP_POST_DECREMENT = 29
-OP_NEGATIVE = 30
-OP_POSITIVE = 31
-OP_BITWISE_COMPLEMENT = 32
-OP_DEREFERENCE = 33
-OP_TAKE_ADDRESS = 34
-FILE = 35
-OP_BOOLEAN_AND = 36
-OP_BOOLEAN_OR = 37
-OP_BOOLEAN_NOT = 38
-OP_BOOLEAN_XOR = 39
-OP_ADD = 40
-OP_SUBSTRACT = 41
-OP_MULTIPLY = 42
-OP_DIVIDE = 43
-OP_MOD = 44
-PACKAGE_DECLARATION = 45
-IMPORT_DECLARATION = 46
-IMPORT_PATH = 47
-IMPORT_ALIAS = 48
-FUNCTION_DECLARATION = 49
-FUNCTION_DECLARATION_BODY = 50
-FUNCTION_DECLARATION_NAME = 51
-FUNCTION_DECLARATION_RECEIVER = 52
-FUNCTION_DECLARATION_ARGUMENT = 53
-FUNCTION_DECLARATION_ARGUMENT_NAME = 54
-FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE = 55
-FUNCTION_DECLARATION_VAR_ARGS_LIST = 56
-TYPE_DECLARATION = 57
-TYPE_DECLARATION_BODY = 58
-TYPE_DECLARATION_BASES = 59
-TYPE_DECLARATION_IMPLEMENTS = 60
-VISIBLE_FROM_INSTANCE = 61
-VISIBLE_FROM_TYPE = 62
-VISIBLE_FROM_SUBTYPE = 63
-VISIBLE_FROM_PACKAGE = 64
-VISIBLE_FROM_SUBPACKAGE = 65
-VISIBLE_FROM_MODULE = 66
-VISIBLE_FROM_FRIEND = 67
-VISIBLE_FROM_WORLD = 68
-IF = 69
-IF_CONDITION = 70
-IF_BODY = 71
-IF_ELSE = 72
-SWITCH = 73
-SWITCH_CASE = 74
-SWITCH_CASE_CONDITION = 75
-SWITCH_CASE_BODY = 76
-SWITCH_DEFAULT = 77
-FOR = 78
-FOR_INIT = 79
-FOR_EXPRESSION = 80
-FOR_UPDATE = 81
-FOR_BODY = 82
-FOR_EACH = 83
-WHILE = 84
-WHILE_CONDITION = 85
-WHILE_BODY = 86
-DO_WHILE = 87
-DO_WHILE_CONDITION = 88
-DO_WHILE_BODY = 89
-BREAK = 90
-CONTINUE = 91
-GOTO = 92
-BLOCK = 93
-BLOCK_SCOPE = 94
-RETURN = 95
-TRY = 96
-TRY_BODY = 97
-TRY_CATCH = 98
-TRY_FINALLY = 99
-THROW = 100
-ASSERT = 101
-CALL = 102
-CALL_RECEIVER = 103
-CALL_CALLEE = 104
-CALL_POSITIONAL_ARGUMENT = 105
-CALL_NAMED_ARGUMENT = 106
-CALL_NAMED_ARGUMENT_NAME = 107
-CALL_NAMED_ARGUMENT_VALUE = 108
-NOOP = 109
-BOOLEAN_LITERAL = 110
-BYTE_LITERAL = 111
-BYTE_STRING_LITERAL = 112
-CHARACTER_LITERAL = 113
-LIST_LITERAL = 114
-MAP_LITERAL = 115
-NULL_LITERAL = 116
-NUMBER_LITERAL = 117
-REGEXP_LITERAL = 118
-SET_LITERAL = 119
-STRING_LITERAL = 120
-TUPLE_LITERAL = 121
-TYPE_LITERAL = 122
-OTHER_LITERAL = 123
-MAP_ENTRY = 124
-MAP_KEY = 125
-MAP_VALUE = 126
-TYPE = 127
-PRIMITIVE_TYPE = 128
-ASSIGNMENT = 129
-ASSIGNMENT_VARIABLE = 130
-ASSIGNMENT_VALUE = 131
-AUGMENTED_ASSIGNMENT = 132
-AUGMENTED_ASSIGNMENT_OPERATOR = 133
-AUGMENTED_ASSIGNMENT_VARIABLE = 134
-AUGMENTED_ASSIGNMENT_VALUE = 135
-THIS = 136
-COMMENT = 137
-DOCUMENTATION = 138
-WHITESPACE = 139
+INVALID = 0
+SIMPLE_IDENTIFIER = 1
+QUALIFIED_IDENTIFIER = 2
+BINARY_EXPRESSION = 3
+BINARY_EXPRESSION_LEFT = 4
+BINARY_EXPRESSION_RIGHT = 5
+BINARY_EXPRESSION_OP = 6
+INFIX = 7
+POSTFIX = 8
+OP_BITWISE_LEFT_SHIFT = 9
+OP_BITWISE_RIGHT_SHIFT = 10
+OP_BITWISE_UNSIGNED_RIGHT_SHIFT = 11
+OP_BITWISE_OR = 12
+OP_BITWISE_XOR = 13
+OP_BITWISE_AND = 14
+EXPRESSION = 15
+STATEMENT = 16
+OP_EQUAL = 17
+OP_NOT_EQUAL = 18
+OP_LESS_THAN = 19
+OP_LESS_THAN_EQUAL = 20
+OP_GREATER_THAN = 21
+OP_GREATER_THAN_EQUAL = 22
+OP_SAME = 23
+OP_NOT_SAME = 24
+OP_CONTAINS = 25
+OP_NOT_CONTAINS = 26
+OP_PRE_INCREMENT = 27
+OP_POST_INCREMENT = 28
+OP_PRE_DECREMENT = 29
+OP_POST_DECREMENT = 30
+OP_NEGATIVE = 31
+OP_POSITIVE = 32
+OP_BITWISE_COMPLEMENT = 33
+OP_DEREFERENCE = 34
+OP_TAKE_ADDRESS = 35
+FILE = 36
+OP_BOOLEAN_AND = 37
+OP_BOOLEAN_OR = 38
+OP_BOOLEAN_NOT = 39
+OP_BOOLEAN_XOR = 40
+OP_ADD = 41
+OP_SUBSTRACT = 42
+OP_MULTIPLY = 43
+OP_DIVIDE = 44
+OP_MOD = 45
+PACKAGE_DECLARATION = 46
+IMPORT_DECLARATION = 47
+IMPORT_PATH = 48
+IMPORT_ALIAS = 49
+FUNCTION_DECLARATION = 50
+FUNCTION_DECLARATION_BODY = 51
+FUNCTION_DECLARATION_NAME = 52
+FUNCTION_DECLARATION_RECEIVER = 53
+FUNCTION_DECLARATION_ARGUMENT = 54
+FUNCTION_DECLARATION_ARGUMENT_NAME = 55
+FUNCTION_DECLARATION_ARGUMENT_DEFAULT_VALUE = 56
+FUNCTION_DECLARATION_VAR_ARGS_LIST = 57
+TYPE_DECLARATION = 58
+TYPE_DECLARATION_BODY = 59
+TYPE_DECLARATION_BASES = 60
+TYPE_DECLARATION_IMPLEMENTS = 61
+VISIBLE_FROM_INSTANCE = 62
+VISIBLE_FROM_TYPE = 63
+VISIBLE_FROM_SUBTYPE = 64
+VISIBLE_FROM_PACKAGE = 65
+VISIBLE_FROM_SUBPACKAGE = 66
+VISIBLE_FROM_MODULE = 67
+VISIBLE_FROM_FRIEND = 68
+VISIBLE_FROM_WORLD = 69
+IF = 70
+IF_CONDITION = 71
+IF_BODY = 72
+IF_ELSE = 73
+SWITCH = 74
+SWITCH_CASE = 75
+SWITCH_CASE_CONDITION = 76
+SWITCH_CASE_BODY = 77
+SWITCH_DEFAULT = 78
+FOR = 79
+FOR_INIT = 80
+FOR_EXPRESSION = 81
+FOR_UPDATE = 82
+FOR_BODY = 83
+FOR_EACH = 84
+WHILE = 85
+WHILE_CONDITION = 86
+WHILE_BODY = 87
+DO_WHILE = 88
+DO_WHILE_CONDITION = 89
+DO_WHILE_BODY = 90
+BREAK = 91
+CONTINUE = 92
+GOTO = 93
+BLOCK = 94
+BLOCK_SCOPE = 95
+RETURN = 96
+TRY = 97
+TRY_BODY = 98
+TRY_CATCH = 99
+TRY_FINALLY = 100
+THROW = 101
+ASSERT = 102
+CALL = 103
+CALL_RECEIVER = 104
+CALL_CALLEE = 105
+CALL_POSITIONAL_ARGUMENT = 106
+CALL_NAMED_ARGUMENT = 107
+CALL_NAMED_ARGUMENT_NAME = 108
+CALL_NAMED_ARGUMENT_VALUE = 109
+NOOP = 110
+BOOLEAN_LITERAL = 111
+BYTE_LITERAL = 112
+BYTE_STRING_LITERAL = 113
+CHARACTER_LITERAL = 114
+LIST_LITERAL = 115
+MAP_LITERAL = 116
+NULL_LITERAL = 117
+NUMBER_LITERAL = 118
+REGEXP_LITERAL = 119
+SET_LITERAL = 120
+STRING_LITERAL = 121
+TUPLE_LITERAL = 122
+TYPE_LITERAL = 123
+OTHER_LITERAL = 124
+MAP_ENTRY = 125
+MAP_KEY = 126
+MAP_VALUE = 127
+TYPE = 128
+PRIMITIVE_TYPE = 129
+ASSIGNMENT = 130
+ASSIGNMENT_VARIABLE = 131
+ASSIGNMENT_VALUE = 132
+AUGMENTED_ASSIGNMENT = 133
+AUGMENTED_ASSIGNMENT_OPERATOR = 134
+AUGMENTED_ASSIGNMENT_VARIABLE = 135
+AUGMENTED_ASSIGNMENT_VALUE = 136
+THIS = 137
+COMMENT = 138
+DOCUMENTATION = 139
+WHITESPACE = 140
 
 
 
@@ -907,6 +911,7 @@ _NODE.fields_by_name['roles'].enum_type = _ROLE
 DESCRIPTOR.message_types_by_name['Node'] = _NODE
 DESCRIPTOR.message_types_by_name['Position'] = _POSITION
 DESCRIPTOR.enum_types_by_name['Role'] = _ROLE
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Node = _reflection.GeneratedProtocolMessageType('Node', (_message.Message,), dict(
 
@@ -935,6 +940,8 @@ DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('Z\004uast\240\343\036\001\340\342\036\000'))
 _ROLE.has_options = True
 _ROLE._options = _descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000'))
+_ROLE.values_by_name["INVALID"].has_options = True
+_ROLE.values_by_name["INVALID"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \007Invalid'))
 _ROLE.values_by_name["SIMPLE_IDENTIFIER"].has_options = True
 _ROLE.values_by_name["SIMPLE_IDENTIFIER"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \020SimpleIdentifier'))
 _ROLE.values_by_name["QUALIFIED_IDENTIFIER"].has_options = True
