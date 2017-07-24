@@ -8,6 +8,41 @@ from github.com.bblfsh.sdk.uast.generated_pb2 import Node
 from bblfsh.launcher import ensure_bblfsh_is_running
 
 
+from bblfsh import Node as NodeNative
+
+class XpathTests(unittest.TestCase):
+    def testXpath(self):
+        NodeNative.initialize()
+
+        root = NodeNative("compilation_unit")
+        node1 = NodeNative("class")
+        node2 = NodeNative("identifier")
+        node2.token = "first"
+        node2.add_role(1)
+        node2.add_role(2)
+        node2.add_role(3)
+        node3 = NodeNative("block")
+        node4 = NodeNative("method")
+        node5 = NodeNative("identifier")
+        node5.token = "second"
+        node6 = NodeNative("block")
+        node8 = NodeNative("loop")
+
+        root.add_child(node1)
+        node1.add_child(node2)
+        node1.add_child(node3)
+        node3.add_child(node4)
+        node4.add_child(node5)
+        node4.add_child(node6)
+        node6.add_child(node8)
+
+        results = root.find("/compilation_unit//identifier")
+        self.assertEqual(results[0].token, 'first')
+        self.assertEqual(results[1].token, 'second')
+
+        # NodeNative.cleanup()
+
+
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
 

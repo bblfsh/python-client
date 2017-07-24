@@ -1,5 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 
+
+uast_module = Extension(
+    'bblfsh._pyuast',
+    libraries=['uast', 'xml2'],
+    include_dirs=['/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
+    library_dirs=['/usr/local/lib'],
+    sources=["bblfsh/uast_wrap.cxx"])
 
 setup(
     name="bblfsh",
@@ -15,6 +22,7 @@ setup(
     keywords=["babelfish", "uast"],
     install_requires=["grpcio", "docker"],
     package_data={"": ["LICENSE", "README.md"]},
+    ext_modules=[uast_module],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",

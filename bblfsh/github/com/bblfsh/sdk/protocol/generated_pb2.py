@@ -25,7 +25,6 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   serialized_pb=_b('\n\x0fgenerated.proto\x12\x1egithub.com.bblfsh.sdk.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a*github.com/bblfsh/sdk/uast/generated.proto\"\x89\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12:\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32(.github.com.bblfsh.sdk.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x9b\x01\n\rParseResponse\x12\x36\n\x06status\x18\x01 \x01(\x0e\x32&.github.com.bblfsh.sdk.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x38\n\x04uast\x18\x03 \x01(\x0b\x32 .github.com.bblfsh.sdk.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32w\n\x0fProtocolService\x12\x64\n\x05Parse\x12,.github.com.bblfsh.sdk.protocol.ParseRequest\x1a-.github.com.bblfsh.sdk.protocol.ParseResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
   ,
   dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,github_dot_com_dot_bblfsh_dot_sdk_dot_uast_dot_generated__pb2.DESCRIPTOR,])
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _ENCODING = _descriptor.EnumDescriptor(
   name='Encoding',
@@ -188,6 +187,7 @@ DESCRIPTOR.message_types_by_name['ParseRequest'] = _PARSEREQUEST
 DESCRIPTOR.message_types_by_name['ParseResponse'] = _PARSERESPONSE
 DESCRIPTOR.enum_types_by_name['Encoding'] = _ENCODING
 DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ParseRequest = _reflection.GeneratedProtocolMessageType('ParseRequest', (_message.Message,), dict(
   DESCRIPTOR = _PARSEREQUEST,
@@ -237,6 +237,8 @@ try:
 
 
   class ProtocolServiceStub(object):
+    # missing associated documentation comment in .proto file
+    pass
 
     def __init__(self, channel):
       """Constructor.
@@ -252,6 +254,8 @@ try:
 
 
   class ProtocolServiceServicer(object):
+    # missing associated documentation comment in .proto file
+    pass
 
     def Parse(self, request, context):
       """Parse uses DefaultParser to process the given parsing request to get the UAST.
@@ -280,6 +284,8 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
     def Parse(self, request, context):
       """Parse uses DefaultParser to process the given parsing request to get the UAST.
       """
@@ -292,6 +298,8 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
     def Parse(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
       """Parse uses DefaultParser to process the given parsing request to get the UAST.
       """
