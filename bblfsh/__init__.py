@@ -1,2 +1,2 @@
 from bblfsh.client import BblfshClient
-from bblfsh.pyuast import Node
+from bblfsh._pyuast import find

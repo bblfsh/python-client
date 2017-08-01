@@ -2,7 +2,7 @@ PYTHON ?= python3
 
 makefile_dir := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-all: bblfsh/pyuast.py \
+all: libuast \
 	bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py \
 	bblfsh/github/com/bblfsh/sdk/uast/generated_pb2.py \
 	bblfsh/github/com/bblfsh/sdk/protocol/generated_pb2_*.py \
@@ -28,9 +28,6 @@ install: all
 libuast:
 	git clone https://github.com/manucorporat/libuast.git libuast
 	cd libuast && cmake . && make && make install
-
-bblfsh/pyuast.py: libuast
-	cd bblfsh && swig -c++ -python -I/usr/local/include uast.i
 
 bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py: github.com/gogo/protobuf/gogoproto/gogo.proto
 	protoc --python_out bblfsh github.com/gogo/protobuf/gogoproto/gogo.proto

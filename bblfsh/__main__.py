@@ -1,6 +1,8 @@
 import argparse
 import sys
 
+from bblfsh._pyuast import find
+
 from bblfsh.client import BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running
 
@@ -27,7 +29,7 @@ def setup():
     return args
 
 def run_query(root, query, mapn, as_array):
-    result = root.find(query)
+    result = find(root, query)
 
     if not result:
         print("Nothing found")
@@ -52,7 +54,7 @@ def main():
         ensure_bblfsh_is_running()
 
     client = BblfshClient(args.endpoint)
-    root = client.get_uast(args.file, args.language)
+    root = client.parse(args.file, args.language).uast
     query = args.query
     if query:
         run_query(root, query, args.mapn, args.array)

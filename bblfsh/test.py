@@ -12,8 +12,6 @@ from bblfsh import Node as NodeNative
 
 class XpathTests(unittest.TestCase):
     def testXpath(self):
-        NodeNative.initialize()
-
         root = NodeNative("compilation_unit")
         node1 = NodeNative("class")
         node2 = NodeNative("identifier")
@@ -40,7 +38,6 @@ class XpathTests(unittest.TestCase):
         self.assertEqual(results[0].token, 'first')
         self.assertEqual(results[1].token, 'second')
 
-        # NodeNative.cleanup()
 
 
 class BblfshTests(unittest.TestCase):

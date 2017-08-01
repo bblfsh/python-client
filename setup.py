@@ -5,8 +5,8 @@ uast_module = Extension(
     'bblfsh._pyuast',
     libraries=['uast', 'xml2'],
     include_dirs=['/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
-    library_dirs=['/usr/local/lib'],
-    sources=["bblfsh/uast_wrap.cxx"])
+    extra_link_args=['-static'],
+    sources=["bblfsh/pyuast.c"])
 
 setup(
     name="bblfsh",
