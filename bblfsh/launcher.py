@@ -13,10 +13,29 @@ def ensure_bblfsh_is_running():
         log.warning("Failed to connect to the Docker daemon and ensure "
                     "that the Babelfish server is running. %s", e)
         return False
+
+    def after_start(container):
+        log.warning(
+            "Launched the Babelfish server (name bblfsh, id %s).\nStop it "
+            "with: docker rm -f bblfsh", container.id)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            result = -1
+            while result != 0:
+                time.sleep(0.1)
+                result = sock.connect_ex(("0.0.0.0", 9432))
+        log.warning("Babelfish server is up and running.")
+
     try:
         container = client.containers.get("bblfsh")
         if container.status != "running":
-            raise docker.errors.NotFound(message="not running")
+            try:
+                container.start()
+            except Exception as e:
+                log.warning("Failed to start the existing bblfsh container: "
+                            "%s: %s", type(e).__name__, e)
+            else:
+                after_start(container)
+                return False
         return True
     except AttributeError:
         log.error("You hit https://github.com/docker/docker-py/issues/1353\n"
@@ -28,15 +47,7 @@ def ensure_bblfsh_is_running():
             "bblfsh/server", name="bblfsh", detach=True, privileged=True,
             ports={9432: 9432}
         )
-        log.warning(
-            "Launched the Babelfish server (name bblfsh, id %s).\nStop it "
-            "with: docker rm -f bblfsh", container.id)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            result = -1
-            while result != 0:
-                time.sleep(0.1)
-                result = sock.connect_ex(("0.0.0.0", 9432))
-        log.warning("Babelfish server is up and running.")
+        after_start(container)
         return False
     finally:
         client.api.close()
