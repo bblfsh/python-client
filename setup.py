@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name="bblfsh",
     description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-    version="0.0.4",
+    version="0.0.5",
     license="Apache 2.0",
     author="Vadim Markovtsev",
     author_email="vadim@sourced.tech",
