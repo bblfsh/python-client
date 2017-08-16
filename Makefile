@@ -2,6 +2,9 @@ PYTHON ?= python3
 
 makefile_dir := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
+LIBUAST_VERSION = 'v1.0.0'
+
+
 all: libuast \
 	bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py \
 	bblfsh/github/com/bblfsh/sdk/uast/generated_pb2.py \
@@ -22,12 +25,9 @@ clean:
 	rm bblfsh/pyuast.py
 	rm bblfsh/uast_wrap.cxx
 
-install: all
-	pip3 install . --upgrade
-
 libuast:
-	git clone https://github.com/manucorporat/libuast.git libuast
-	cd libuast && cmake . && make && make install
+	curl https://github.com/bblfsh/libuast/releases/download/$(LIBUAST_VERSION)/libuast_$(LIBUAST_VERSION).tar.gz| tar xz -C libuast
+	cp -a libuast/src bblfsh/libuast
 
 bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py: github.com/gogo/protobuf/gogoproto/gogo.proto
 	protoc --python_out bblfsh github.com/gogo/protobuf/gogoproto/gogo.proto

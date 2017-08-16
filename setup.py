@@ -1,12 +1,23 @@
+import sys
 from setuptools import setup, find_packages, Extension
+
+LIBRARIES = ['xml2']
+SOURCES = ['bblfsh/pyuast.c']
+
+# The --global-uast flag allows to install the python driver using the installed uast library
+if "--global-uast" in sys.argv:
+    LIBRARIES.append('uast')
+else:
+    SOURCES.append('bblfsh/libuast/uast.c')
+    SOURCES.append('bblfsh/libuast/roles.c')
 
 
 uast_module = Extension(
     'bblfsh._pyuast',
-    libraries=['uast', 'xml2'],
-    include_dirs=['/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
-    extra_link_args=['-static'],
-    sources=["bblfsh/pyuast.c"])
+    libraries=LIBRARIES,
+    library_dirs=['/usr/lib', '/usr/local/lib'],
+    include_dirs=['libuast/src','/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
+    sources=SOURCES)
 
 setup(
     name="bblfsh",
