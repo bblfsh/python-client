@@ -1,4 +1,5 @@
 import sys
+import subprocess
 from setuptools import setup, find_packages, Extension
 
 LIBRARIES = ['xml2']
@@ -11,18 +12,21 @@ else:
     SOURCES.append('bblfsh/libuast/uast.c')
     SOURCES.append('bblfsh/libuast/roles.c')
 
+# download c deoendencies
+subprocess.check_output(['make', 'deps'])
 
 uast_module = Extension(
     'bblfsh._pyuast',
     libraries=LIBRARIES,
     library_dirs=['/usr/lib', '/usr/local/lib'],
-    include_dirs=['libuast/src','/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
+    extra_compile_args=['-std=c99'],
+    include_dirs=['bblfsh/libuast/','/usr/local/include', '/usr/local/include/libxml2', '/usr/include', '/usr/include/libxml2'],
     sources=SOURCES)
 
 setup(
     name="bblfsh",
     description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-    version="0.0.4",
+    version="0.0.5",
     license="Apache 2.0",
     author="Vadim Markovtsev",
     author_email="vadim@sourced.tech",

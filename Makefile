@@ -2,10 +2,11 @@ PYTHON ?= python3
 
 makefile_dir := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-LIBUAST_VERSION = 'v1.0.0'
+LIBUAST_VERSION = v0.1.1
 
+.PHONY : all clean deps
 
-all: libuast \
+all: deps \
 	bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py \
 	bblfsh/github/com/bblfsh/sdk/uast/generated_pb2.py \
 	bblfsh/github/com/bblfsh/sdk/protocol/generated_pb2_*.py \
@@ -20,14 +21,16 @@ all: libuast \
 	bblfsh/github/com/bblfsh/sdk/protocol/__init__.py
 
 clean:
-	rm -rf libuast
+	rm -rf bblfsh/libuast
 	rm -rf bblfsh/github
-	rm bblfsh/pyuast.py
-	rm bblfsh/uast_wrap.cxx
 
-libuast:
-	curl https://github.com/bblfsh/libuast/releases/download/$(LIBUAST_VERSION)/libuast_$(LIBUAST_VERSION).tar.gz| tar xz -C libuast
+deps: bblfsh/libuast
+
+bblfsh/libuast:
+	curl -SL https://github.com/bblfsh/libuast/releases/download/$(LIBUAST_VERSION)/libuast-$(LIBUAST_VERSION).tar.gz | tar xz
+	mv libuast-$(LIBUAST_VERSION) libuast
 	cp -a libuast/src bblfsh/libuast
+	rm -rf libuast
 
 bblfsh/github/com/gogo/protobuf/gogoproto/gogo_pb2.py: github.com/gogo/protobuf/gogoproto/gogo.proto
 	protoc --python_out bblfsh github.com/gogo/protobuf/gogoproto/gogo.proto

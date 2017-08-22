@@ -10,10 +10,12 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install --upgrade pip
-  - pip install grpcio
-  - CC=gcc-5 CXX=g++-5 pip install -e .
+  - pip3 install --upgrade pip
+  - pip3 install grpcio
+  - make bblfsh/libuast
+  - pip3 install . --upgrade
 script:
+  - python3 setup.py build_ext -i
   - python3 -m unittest discover .
 notifications:
   email: false

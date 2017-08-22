@@ -2,43 +2,10 @@ import unittest
 
 import docker
 
-from bblfsh import BblfshClient
+from bblfsh import BblfshClient, find
 from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseResponse
 from github.com.bblfsh.sdk.uast.generated_pb2 import Node
 from bblfsh.launcher import ensure_bblfsh_is_running
-
-
-from bblfsh import Node as NodeNative
-
-class XpathTests(unittest.TestCase):
-    def testXpath(self):
-        root = NodeNative("compilation_unit")
-        node1 = NodeNative("class")
-        node2 = NodeNative("identifier")
-        node2.token = "first"
-        node2.add_role(1)
-        node2.add_role(2)
-        node2.add_role(3)
-        node3 = NodeNative("block")
-        node4 = NodeNative("method")
-        node5 = NodeNative("identifier")
-        node5.token = "second"
-        node6 = NodeNative("block")
-        node8 = NodeNative("loop")
-
-        root.add_child(node1)
-        node1.add_child(node2)
-        node1.add_child(node3)
-        node3.add_child(node4)
-        node4.add_child(node5)
-        node4.add_child(node6)
-        node6.add_child(node8)
-
-        results = root.find("/compilation_unit//identifier")
-        self.assertEqual(results[0].token, 'first')
-        self.assertEqual(results[1].token, 'second')
-
-
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
@@ -70,6 +37,7 @@ class BblfshTests(unittest.TestCase):
             contents = fin.read()
         uast = self.client.parse("file.py", contents=contents)
         self._validate_uast(uast)
+        self._validate_find(uast)
 
     def _validate_uast(self, uast):
         self.assertIsNotNone(uast)
@@ -79,6 +47,11 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(len(uast.errors), 0)
         self.assertIsInstance(uast.uast, Node)
 
+    def _validate_find(self, uast):
+        results = find(uast.uast, "//Import[@roleImportDeclaration]//alias")
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].token, "unittest")
+        self.assertEqual(results[1].token, "docker")
 
 if __name__ == "__main__":
     unittest.main()

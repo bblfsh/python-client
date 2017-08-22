@@ -1,9 +1,8 @@
-#include <libuast/uast.h>
+#include "uast.h"
 #include <stdint.h>
 #include <Python.h>
 
-static const char *
-read_str(const void *data, const char *prop)
+static const char *read_str(const void *data, const char *prop)
 {
   PyObject *node = (PyObject *)data;
   PyObject *attribute = PyObject_GetAttrString(node, prop);
@@ -20,8 +19,7 @@ static int read_len(const void *data, const char *prop)
   return PySequence_Size(children_obj);
 }
 
-static const char *
-get_internal_type(const void *node)
+static const char *get_internal_type(const void *node)
 {
   return read_str(node, "internal_type");
 }
@@ -49,9 +47,12 @@ static int get_roles_size(const void *node)
   return read_len(node, "roles");
 }
 
-static uint16_t get_role(const void *node, int index)
+static uint16_t get_role(const void *data, int index)
 {
-  return 2;
+  PyObject *node = (PyObject *)data;
+  PyObject *roles_obj = PyObject_GetAttrString(node, "roles");
+  PyObject *seq = PySequence_Fast(roles_obj, "expected a sequence");
+  return (uint16_t)PyLong_AsUnsignedLong(PyList_GET_ITEM(seq, index));
 }
 
 static node_api *api;
