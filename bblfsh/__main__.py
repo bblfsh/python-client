@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from bblfsh._pyuast import find
+from bblfsh.pyuast import find
 
 from bblfsh.client import BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running

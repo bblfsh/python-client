@@ -1,14 +1,14 @@
-#include "uast.h"
 #include <stdint.h>
+
 #include <Python.h>
+
+#include "uast.h"
 
 static const char *read_str(const void *data, const char *prop)
 {
   PyObject *node = (PyObject *)data;
   PyObject *attribute = PyObject_GetAttrString(node, prop);
-  const char *a = PyUnicode_AsUTF8(attribute);
-
-  return a;
+  return PyUnicode_AsUTF8(attribute);
 }
 
 static int read_len(const void *data, const char *prop)
@@ -92,7 +92,7 @@ static PyMethodDef extension_methods[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "_pyuast",
+    "pyuast",
     NULL,
     -1,
     extension_methods,
@@ -101,7 +101,7 @@ static struct PyModuleDef moduledef = {
     NULL,
     NULL};
 
-PyMODINIT_FUNC PyInit__pyuast(void)
+PyMODINIT_FUNC PyInit_pyuast(void)
 {
   api = new_node_api((node_iface){
       .internal_type = get_internal_type,
@@ -113,7 +113,3 @@ PyMODINIT_FUNC PyInit__pyuast(void)
   });
   return PyModule_Create(&moduledef);
 }
-
-#ifdef __cplusplus
-}
-#endif
