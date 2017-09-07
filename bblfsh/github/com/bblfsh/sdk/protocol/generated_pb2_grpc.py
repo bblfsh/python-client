@@ -5,6 +5,8 @@ import generated_pb2 as generated__pb2
 
 
 class ProtocolServiceStub(object):
+  # missing associated documentation comment in .proto file
+  pass
 
   def __init__(self, channel):
     """Constructor.
@@ -20,6 +22,8 @@ class ProtocolServiceStub(object):
 
 
 class ProtocolServiceServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
 
   def Parse(self, request, context):
     """Parse uses DefaultParser to process the given parsing request to get the UAST.

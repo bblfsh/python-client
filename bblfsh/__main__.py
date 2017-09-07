@@ -1,6 +1,8 @@
 import argparse
 import sys
 
+from bblfsh.pyuast import filter
+
 from bblfsh.client import BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running
 
@@ -18,17 +20,46 @@ def setup():
     parser.add_argument("--disable-bblfsh-autorun", action="store_true",
                         help="Do not automatically launch Babelfish server "
                              "if it is not running.")
+
+    parser.add_argument("-q", "--query", default="", help="xpath query")
+    parser.add_argument("-m", "--mapn", default="", help="transform function of the results (n)")
+    parser.add_argument("-a", "--array", help='print results as an array', action='store_true')
+
     args = parser.parse_args()
     return args
 
+def run_query(root, query, mapn, as_array):
+    result = filter(root, query)
+
+    if not result:
+        print("Nothing found")
+
+    else:
+        if mapn:
+            result = [eval(mapn) for n in result]
+
+        if as_array:
+            print("results[{}] = {}".format(len(result), result))
+        else:
+            print("Running xpath query: {}".format(query))
+            print("FOUND {} roots".format(len(result)))
+
+            for i, node in enumerate(result):
+                print("== {} ==================================".format(i+1))
+                print(node)
 
 def main():
     args = setup()
     if not args.disable_bblfsh_autorun:
         ensure_bblfsh_is_running()
-    client = BblfshClient(args.endpoint)
-    print(client.parse(args.file, args.language))
 
+    client = BblfshClient(args.endpoint)
+    root = client.parse(args.file, args.language).uast
+    query = args.query
+    if query:
+        run_query(root, query, args.mapn, args.array)
+    else:
+        print(root)
 
 if __name__ == "__main__":
     sys.exit(main())

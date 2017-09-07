@@ -8,7 +8,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 "github/com/bblfsh/sdk/protocol"))
 sys.path.insert(0, os.path.dirname(__file__))
 
-
 class BblfshClient(object):
     """
     Babelfish gRPC client. Currently it is only capable of fetching UASTs.
@@ -28,13 +27,13 @@ class BblfshClient(object):
         self._stub = ProtocolServiceStub(self._channel)
 
     def parse(self, filename, language=None, contents=None, timeout=None,
-            unicode_errors="ignore"):
+              unicode_errors="ignore"):
         """
-        Queries the Babelfish server and receives the UAST for the specified
+        Queries the Babelfish server and receives the UAST response for the specified
         file.
 
         :param filename: The path to the file. Can be arbitrary if contents \
-                          is not None.
+                         is not None.
         :param language: The programming language of the file. Refer to \
                          https://doc.bblf.sh/languages.html for the list of \
                          currently supported languages. None means autodetect.
@@ -57,8 +56,8 @@ class BblfshClient(object):
         request = ParseRequest(filename=os.path.basename(filename),
                                content=contents,
                                language=self._scramble_language(language))
-        response = self._stub.Parse(request, timeout=timeout)
-        return response
+        return self._stub.Parse(request, timeout=timeout)
+
 
     @staticmethod
     def _scramble_language(lang):

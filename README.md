@@ -19,7 +19,17 @@ python3 -m bblfsh -f file.py
 
 ### Installation
 
+#### From the source code
+
+```bash
+git clone https://github.com/bblfsh/client-python.git
+cd client-python
+make install
 ```
+
+#### Using pip3
+
+```bash
 pip3 install bblfsh
 ```
 
