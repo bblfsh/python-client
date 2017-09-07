@@ -1,2 +1,2 @@
 from bblfsh.client import BblfshClient
-from bblfsh.pyuast import find
+from bblfsh.pyuast import filter

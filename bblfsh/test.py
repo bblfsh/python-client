@@ -2,7 +2,7 @@ import unittest
 
 import docker
 
-from bblfsh import BblfshClient, find
+from bblfsh import BblfshClient, filter
 from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseResponse
 from github.com.bblfsh.sdk.uast.generated_pb2 import Node
 from bblfsh.launcher import ensure_bblfsh_is_running
@@ -37,13 +37,13 @@ class BblfshTests(unittest.TestCase):
             contents = fin.read()
         uast = self.client.parse("file.py", contents=contents)
         self._validate_uast(uast)
-        self._validate_find(uast)
+        self._validate_filter(uast)
 
-    def testBrokenFind(self):
+    def testBrokenFilter(self):
         from sys import version_info
         if version_info[0:2] != (3, 4):
             # Skip test 3.4: cant capture SystemException from binary modules
-            self.assertRaises(SystemError, find, 0, "foo")
+            self.assertRaises(SystemError, filter, 0, "foo")
 
     def _validate_uast(self, uast):
         self.assertIsNotNone(uast)
@@ -53,8 +53,8 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(len(uast.errors), 0)
         self.assertIsInstance(uast.uast, Node)
 
-    def _validate_find(self, uast):
-        results = find(uast.uast, "//Import[@roleImportDeclaration]//alias")
+    def _validate_filter(self, uast):
+        results = filter(uast.uast, "//Import[@roleImportDeclaration]//alias")
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0].token, "unittest")
         self.assertEqual(results[1].token, "docker")
