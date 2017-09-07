@@ -39,6 +39,12 @@ class BblfshTests(unittest.TestCase):
         self._validate_uast(uast)
         self._validate_find(uast)
 
+    def testBrokenFind(self):
+        from sys import version_info
+        if version_info[0:2] != (3, 4):
+            # Skip test 3.4: cant capture SystemException from binary modules
+            self.assertRaises(SystemError, find, 0, "foo")
+
     def _validate_uast(self, uast):
         self.assertIsNotNone(uast)
         # self.assertIsInstance() does not work - must be some metaclass magic
@@ -52,6 +58,7 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0].token, "unittest")
         self.assertEqual(results[1].token, "docker")
+
 
 if __name__ == "__main__":
     unittest.main()

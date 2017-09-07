@@ -1,96 +1,126 @@
+#include "uast.h"
+
 #include <stdint.h>
 
 #include <Python.h>
 
-#include "uast.h"
-
-static const char *read_str(const void *data, const char *prop)
+static const char *ReadStr(const void *data, const char *prop)
 {
   PyObject *node = (PyObject *)data;
   PyObject *attribute = PyObject_GetAttrString(node, prop);
+  if (!attribute) {
+    return NULL;
+  }
   return PyUnicode_AsUTF8(attribute);
 }
 
-static int read_len(const void *data, const char *prop)
+static int ReadLen(const void *data, const char *prop)
 {
   PyObject *node = (PyObject *)data;
   PyObject *children_obj = PyObject_GetAttrString(node, prop);
-  PyObject *seq = PySequence_Fast(children_obj, "expected a sequence");
+  if (!children_obj)
+    return 0;
   return PySequence_Size(children_obj);
 }
 
-static const char *get_internal_type(const void *node)
+static const char *GetInternalType(const void *node)
 {
-  return read_str(node, "internal_type");
+  return ReadStr(node, "internal_type");
 }
 
-static const char *get_token(const void *node)
+static const char *GetToken(const void *node)
 {
-  return read_str(node, "token");
+  return ReadStr(node, "token");
 }
 
-static int get_children_size(const void *node)
+static int GetChildrenSize(const void *node)
 {
-  return read_len(node, "children");
+  return ReadLen(node, "children");
 }
 
-static void *get_child(const void *data, int index)
+static void *GetChild(const void *data, int index)
 {
   PyObject *node = (PyObject *)data;
   PyObject *children_obj = PyObject_GetAttrString(node, "children");
+  if (!children_obj)
+    return NULL;
+
   PyObject *seq = PySequence_Fast(children_obj, "expected a sequence");
   return PyList_GET_ITEM(seq, index);
 }
 
-static int get_roles_size(const void *node)
+static int GetRolesSize(const void *node)
 {
-  return read_len(node, "roles");
+  return ReadLen(node, "roles");
 }
 
-static uint16_t get_role(const void *data, int index)
+static uint16_t GetRoleAt(const void *data, int index)
 {
   PyObject *node = (PyObject *)data;
   PyObject *roles_obj = PyObject_GetAttrString(node, "roles");
+  if (!roles_obj)
+    return 0;
   PyObject *seq = PySequence_Fast(roles_obj, "expected a sequence");
   return (uint16_t)PyLong_AsUnsignedLong(PyList_GET_ITEM(seq, index));
 }
 
-static node_api *api;
+static int GetPropertiesSize(const void *data)
+{
+  PyObject *node = (PyObject *)data;
+  PyObject *properties_obj = PyObject_GetAttrString(node, "properties");
+  if (!properties_obj)
+    return 0;
+
+  return (int)PyLong_AsLong(properties_obj);
+}
+
+static const char *GetPropertyAt(const void *data, int index)
+{
+  PyObject *node = (PyObject *)data;
+  PyObject *properties_obj = PyObject_GetAttrString(node, "properties");
+  if (!properties_obj)
+    return NULL;
+
+  PyObject *seq = PySequence_Fast(properties_obj, "expected a sequence");
+  return PyUnicode_AsUTF8(PyList_GET_ITEM(seq, index));
+}
+
+static Uast *ctx;
 
 /////////////////////////////////////
 /////////// PYTHON API //////////////
 /////////////////////////////////////
 
-static PyObject *py_find(PyObject *self, PyObject *args)
+static PyObject *PyFind(PyObject *self, PyObject *args)
 {
   PyObject *obj = NULL;
   const char *query = NULL;
   if (!PyArg_ParseTuple(args, "Os", &obj, &query))
-  {
     return NULL;
-  }
 
-  find_ctx *ctx = new_find_ctx();
-  if (node_api_find(api, ctx, obj, query) == 0)
-  {
-    int len = find_ctx_get_len(ctx);
+  Nodes *nodes = UastFilter(ctx, obj, query);
+  if (nodes) {
+    int len = NodesSize(nodes);
     PyObject *list = PyList_New(len);
-    for (int i = 0; i < len; i++)
-    {
-      PyList_SET_ITEM(list, i, (PyObject *)find_ctx_get(ctx, i));
+
+    for (int i = 0; i < len; i++) {
+      PyList_SET_ITEM(list, i, (PyObject *) NodeAt(nodes, i));
     }
-    free_find_ctx(ctx);
+
+    NodesFree(nodes);
     return list;
   }
-  free_find_ctx(ctx);
+
+  NodesFree(nodes);
   Py_RETURN_NONE;
 }
 
 static PyMethodDef extension_methods[] = {
-    {"find", py_find, METH_VARARGS, "Find a node in the UAST"},
-    {NULL, NULL, 0, NULL}};
+    {"find", PyFind, METH_VARARGS, "Find a node in the UAST"},
+    {NULL, NULL, 0, NULL}
+};
 
-static struct PyModuleDef moduledef = {
+static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     "pyuast",
     NULL,
@@ -99,17 +129,22 @@ static struct PyModuleDef moduledef = {
     NULL,
     NULL,
     NULL,
-    NULL};
+    NULL
+};
 
 PyMODINIT_FUNC PyInit_pyuast(void)
 {
-  api = new_node_api((node_iface){
-      .internal_type = get_internal_type,
-      .token = get_token,
-      .children_size = get_children_size,
-      .children = get_child,
-      .roles_size = get_roles_size,
-      .roles = get_role,
-  });
-  return PyModule_Create(&moduledef);
+  NodeIface iface = {
+    .InternalType = GetInternalType,
+    .Token = GetToken,
+    .ChildrenSize = GetChildrenSize,
+    .ChildAt = GetChild,
+    .RolesSize = GetRolesSize,
+    .RoleAt = GetRoleAt,
+    .PropertiesSize = GetPropertiesSize,
+    .PropertyAt = GetPropertyAt,
+  };
+
+  ctx = UastNew(iface);
+  return PyModule_Create(&module_def);
 }
