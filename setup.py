@@ -13,6 +13,7 @@ else:
     sources.append('bblfsh/libuast/roles.c')
 
 # download c deoendencies
+subprocess.check_output(['rm', '-rf', 'bblfsh/libuast'])
 subprocess.check_output(['make', 'deps'])
 
 uast_module = Extension(
@@ -26,7 +27,7 @@ uast_module = Extension(
 setup(
     name="bblfsh",
     description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-    version="0.1.2",
+    version="0.2.0",
     license="Apache 2.0",
     author="source{d}",
     author_email="language-analysis@sourced.tech",
