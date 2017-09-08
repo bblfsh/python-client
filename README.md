@@ -19,6 +19,15 @@ python3 -m bblfsh -f file.py
 
 ### Installation
 
+#### Dependencies
+
+You need to install `libxml2` and its header files. The command for 
+Debian and derived distributions would be:
+
+```bash
+sudo apt install libxml2-dev
+```
+
 #### From the source code
 
 ```bash

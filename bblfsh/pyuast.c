@@ -1,4 +1,4 @@
-#include "libuast/uast.h"
+#include "uast.h"
 
 #include <stdint.h>
 

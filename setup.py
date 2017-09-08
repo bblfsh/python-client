@@ -12,7 +12,7 @@ else:
     sources.append('bblfsh/libuast/uast.c')
     sources.append('bblfsh/libuast/roles.c')
 
-# download c deoendencies
+# download c dependencies
 subprocess.check_output(['rm', '-rf', 'bblfsh/libuast'])
 subprocess.check_output(['make', 'deps'])
 
