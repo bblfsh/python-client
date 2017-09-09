@@ -5,8 +5,6 @@ import generated_pb2 as generated__pb2
 
 
 class ProtocolServiceStub(object):
-  # missing associated documentation comment in .proto file
-  pass
 
   def __init__(self, channel):
     """Constructor.
@@ -15,15 +13,13 @@ class ProtocolServiceStub(object):
       channel: A grpc.Channel.
     """
     self.Parse = channel.unary_unary(
-        '/github.com.bblfsh.sdk.protocol.ProtocolService/Parse',
+        '/gopkg.in.bblfsh.sdk.v0.protocol.ProtocolService/Parse',
         request_serializer=generated__pb2.ParseRequest.SerializeToString,
         response_deserializer=generated__pb2.ParseResponse.FromString,
         )
 
 
 class ProtocolServiceServicer(object):
-  # missing associated documentation comment in .proto file
-  pass
 
   def Parse(self, request, context):
     """Parse uses DefaultParser to process the given parsing request to get the UAST.
@@ -42,5 +38,5 @@ def add_ProtocolServiceServicer_to_server(servicer, server):
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'github.com.bblfsh.sdk.protocol.ProtocolService', rpc_method_handlers)
+      'gopkg.in.bblfsh.sdk.v0.protocol.ProtocolService', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

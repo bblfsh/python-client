@@ -16,7 +16,7 @@ else:
 subprocess.check_output(['rm', '-rf', 'bblfsh/libuast'])
 subprocess.check_output(['make', 'deps'])
 
-uast_module = Extension(
+libuast_module = Extension(
     'bblfsh.pyuast',
     libraries=libraries,
     library_dirs=['/usr/lib', '/usr/local/lib'],
@@ -27,7 +27,7 @@ uast_module = Extension(
 setup(
     name="bblfsh",
     description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-    version="0.2.0",
+    version="0.2.1",
     license="Apache 2.0",
     author="source{d}",
     author_email="language-analysis@sourced.tech",
@@ -38,7 +38,7 @@ setup(
     keywords=["babelfish", "uast"],
     install_requires=["grpcio", "docker"],
     package_data={"": ["LICENSE", "README.md"]},
-    ext_modules=[uast_module],
+    ext_modules=[libuast_module],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",

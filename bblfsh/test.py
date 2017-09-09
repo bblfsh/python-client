@@ -1,11 +1,19 @@
 import unittest
+import importlib
 
 import docker
 
 from bblfsh import BblfshClient, filter
-from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseResponse
-from github.com.bblfsh.sdk.uast.generated_pb2 import Node
 from bblfsh.launcher import ensure_bblfsh_is_running
+from bblfsh.sdkversion import VERSION
+
+# "in" is a reserved keyword in Python thus can't be used as package name, so
+# we import by string
+ParseResponse = importlib.import_module(
+    "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION).ParseResponse
+Node = importlib.import_module(
+    "bblfsh.gopkg.in.bblfsh.sdk.%s.uast.generated_pb2" % VERSION).Node
+
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
@@ -55,9 +63,9 @@ class BblfshTests(unittest.TestCase):
 
     def _validate_filter(self, uast):
         results = filter(uast.uast, "//Import[@roleImportDeclaration]//alias")
-        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results), 3)
         self.assertEqual(results[0].token, "unittest")
-        self.assertEqual(results[1].token, "docker")
+        self.assertEqual(results[1].token, "importlib")
 
 
 if __name__ == "__main__":
