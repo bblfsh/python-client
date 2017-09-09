@@ -44,7 +44,7 @@ def ensure_bblfsh_is_running():
         return False
     except docker.errors.NotFound:
         container = client.containers.run(
-            "bblfsh/server", name="bblfsh", detach=True, privileged=True,
+                "bblfsh/server", name="bblfsh", detach=True, privileged=True,
             ports={9432: 9432}
         )
         after_start(container)

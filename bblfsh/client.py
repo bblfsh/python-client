@@ -1,12 +1,16 @@
 import os
 import sys
+import importlib
 
 import grpc
 
+from bblfsh.sdkversion import VERSION
+
 # The following two insertions fix the broken pb import paths
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                "github/com/bblfsh/sdk/protocol"))
+                                "gopkg/in/bblfsh/sdk/%s/protocol" % VERSION))
 sys.path.insert(0, os.path.dirname(__file__))
+
 
 class BblfshClient(object):
     """
@@ -21,7 +25,9 @@ class BblfshClient(object):
                          for example "0.0.0.0:9432"
         :type endpoint: str
         """
-        from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2_grpc import ProtocolServiceStub
+        ProtocolServiceStub = importlib.import_module(
+                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
+                ).ProtocolServiceStub
 
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
@@ -48,7 +54,9 @@ class BblfshClient(object):
         :type timeout: float
         :return: UAST object.
         """
-        from bblfsh.github.com.bblfsh.sdk.protocol.generated_pb2 import ParseRequest
+        ParseRequest = importlib.import_module(
+                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
+                ).ParseRequest
 
         if contents is None:
             with open(filename, errors=unicode_errors) as fin:
@@ -57,7 +65,6 @@ class BblfshClient(object):
                                content=contents,
                                language=self._scramble_language(language))
         return self._stub.Parse(request, timeout=timeout)
-
 
     @staticmethod
     def _scramble_language(lang):

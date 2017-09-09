@@ -1,0 +1,6 @@
+include *.md
+include *.txt
+include DCO
+include LICENSE
+include MAINTAINERS
+include Makefile
