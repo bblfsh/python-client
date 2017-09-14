@@ -1,10 +1,47 @@
-## Babelfish Python client [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python)
+## client-python [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python) [![PyPI](https://img.shields.io/pypi/v/bblfsh.svg)](https://pypi.python.org/pypi/bblfsh)
 
-This a pure Python implementation of querying [Babelfish](https://doc.bblf.sh/) server.
+[Babelfish](https://doc.bblf.sh) Python client library provides functionality to both
+connect to the Babelfish server to parse code
+(obtaining an [UAST](https://doc.bblf.sh/uast/specification.html) as a result)
+and to analyse UASTs with the functionality provided by [libuast](https://github.com/bblfsh/libuast).
 
-### Usage
+## Installation
 
-API
+The recommended way to install *client-python* is using our pip [package](https://pypi.python.org/pypi/bblfsh):
+
+```sh
+pip install bblfsh
+```
+
+### From sources
+
+```bash
+git clone https://github.com/bblfsh/client-python.git
+cd client-python
+make install
+```
+
+### Dependencies
+
+You need to install `libxml2` and its header files. The command for 
+Debian and derived distributions would be:
+
+```bash
+sudo apt install libxml2-dev
+```
+
+## Usage
+
+A small example of how to parse a Python file and extract the import declarations from the [UAST](https://doc.bblf.sh/uast/specification.html).
+
+If you don't have a bblfsh server running you can execute it using the following command:
+
+```sh
+docker run --privileged --rm -it -p 9432:9432 --name bblfsh bblfsh/server
+```
+
+Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html) guide to learn more about how to use and deploy a bblfsh server.
+
 ```python
 from bblfsh import BblfshClient, filter
 
@@ -14,48 +51,6 @@ print(client.parse("/path/to/file.py"))
 print(client.filter("//Import[@roleImportDeclaration]//alias")
 ```
 
-*TODO*: Link to `libuast` XPath documentation when available.
+## License
 
-Command line
-```bash
-python3 -m bblfsh -f file.py
-```
-
-This will usually download and run a server Docker image automatically, but it'll
-also use an existing image if it's previously running. You could run a bblfsh
-server image with:
-
-```bash
-docker run --privileged -d -p 9432:9432 --name bblfsh bblfsh/server
-```
-
-### Installation
-
-#### Dependencies
-
-You need to install `libxml2` and its header files. The command for 
-Debian and derived distributions would be:
-
-```bash
-sudo apt install libxml2-dev
-```
-
-#### From the source code
-
-```bash
-git clone https://github.com/bblfsh/client-python.git
-cd client-python
-make install
-```
-
-#### Using pip3
-
-```bash
-pip3 install bblfsh
-```
-
-It is possible to regenerate the gRPC/protobuf bindings by executing `make`.
-
-### License
-
-Apache 2.0.
+Apache License 2.0, see [LICENSE](LICENSE)
