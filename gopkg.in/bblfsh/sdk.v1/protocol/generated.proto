@@ -10,10 +10,10 @@
 // the License.
 
 syntax = "proto3";
-package gopkg.in.bblfsh.sdk.v0.protocol;
+package gopkg.in.bblfsh.sdk.v1.protocol;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "gopkg.in/bblfsh/sdk.v0/uast/generated.proto";
+import "gopkg.in/bblfsh/sdk.v1/uast/generated.proto";
 
 option (gogoproto.protosizer_all) = true;
 option (gogoproto.sizer_all) = false;
@@ -26,16 +26,29 @@ message ParseRequest {
 	string filename = 1;
 	string language = 2;
 	string content = 3;
-	gopkg.in.bblfsh.sdk.v0.protocol.Encoding encoding = 4;
+	gopkg.in.bblfsh.sdk.v1.protocol.Encoding encoding = 4;
 }
 
 // ParseResponse is the reply to ParseRequest.
 message ParseResponse {
 	option (gogoproto.goproto_getters) = false;
 	option (gogoproto.typedecl) = false;
-	gopkg.in.bblfsh.sdk.v0.protocol.Status status = 1;
+	gopkg.in.bblfsh.sdk.v1.protocol.Status status = 1;
 	repeated string errors = 2;
-	gopkg.in.bblfsh.sdk.v0.uast.Node uast = 3 [(gogoproto.customname) = "UAST"];
+	gopkg.in.bblfsh.sdk.v1.uast.Node uast = 3 [(gogoproto.customname) = "UAST"];
+}
+
+// VersionRequest is a request to get server version
+message VersionRequest {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+}
+
+// VersionResponse is the reply to VersionRequest
+message VersionResponse {
+	option (gogoproto.goproto_getters) = false;
+	option (gogoproto.typedecl) = false;
+	string version = 1;
 }
 
 // Encoding is the encoding used for the content string. Currently only
@@ -66,6 +79,8 @@ enum Status {
 
 service ProtocolService {
 	// Parse uses DefaultParser to process the given parsing request to get the UAST.
-	rpc Parse (gopkg.in.bblfsh.sdk.v0.protocol.ParseRequest) returns (gopkg.in.bblfsh.sdk.v0.protocol.ParseResponse);
+	rpc Parse (gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest) returns (gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse);
+	// Version uses DefaultVersioner to process the given version request to get the version.
+	rpc Version (gopkg.in.bblfsh.sdk.v1.protocol.VersionRequest) returns (gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse);
 }
 

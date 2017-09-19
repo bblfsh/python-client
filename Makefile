@@ -2,8 +2,8 @@ PYTHON ?= python3
 
 makefile_dir := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-LIBUAST_VERSION = v0.2.1
-SDK_VERSION = v0
+LIBUAST_VERSION = v1.0.0
+SDK_VERSION = v1
 
 .PHONY : all clean deps
 

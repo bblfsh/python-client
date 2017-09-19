@@ -62,7 +62,7 @@ class BblfshTests(unittest.TestCase):
         self.assertIsInstance(uast.uast, Node)
 
     def _validate_filter(self, uast):
-        results = filter(uast.uast, "//Import[@roleImportDeclaration]//alias")
+        results = filter(uast.uast, "//Import[@roleImport and @roleDeclaration]//alias")
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0].token, "unittest")
         self.assertEqual(results[1].token, "importlib")

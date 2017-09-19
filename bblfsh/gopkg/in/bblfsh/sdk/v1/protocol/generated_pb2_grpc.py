@@ -13,9 +13,14 @@ class ProtocolServiceStub(object):
       channel: A grpc.Channel.
     """
     self.Parse = channel.unary_unary(
-        '/gopkg.in.bblfsh.sdk.v0.protocol.ProtocolService/Parse',
+        '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/Parse',
         request_serializer=generated__pb2.ParseRequest.SerializeToString,
         response_deserializer=generated__pb2.ParseResponse.FromString,
+        )
+    self.Version = channel.unary_unary(
+        '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/Version',
+        request_serializer=generated__pb2.VersionRequest.SerializeToString,
+        response_deserializer=generated__pb2.VersionResponse.FromString,
         )
 
 
@@ -23,6 +28,13 @@ class ProtocolServiceServicer(object):
 
   def Parse(self, request, context):
     """Parse uses DefaultParser to process the given parsing request to get the UAST.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def Version(self, request, context):
+    """Version uses DefaultVersioner to process the given version request to get the version.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -36,7 +48,12 @@ def add_ProtocolServiceServicer_to_server(servicer, server):
           request_deserializer=generated__pb2.ParseRequest.FromString,
           response_serializer=generated__pb2.ParseResponse.SerializeToString,
       ),
+      'Version': grpc.unary_unary_rpc_method_handler(
+          servicer.Version,
+          request_deserializer=generated__pb2.VersionRequest.FromString,
+          response_serializer=generated__pb2.VersionResponse.SerializeToString,
+      ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'gopkg.in.bblfsh.sdk.v0.protocol.ProtocolService', rpc_method_handlers)
+      'gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))
