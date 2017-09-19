@@ -48,7 +48,7 @@ from bblfsh import BblfshClient, filter
 client = BblfshClient("0.0.0.0:9432")
 print(client.parse("/path/to/file.py"))
 # "filter' allows you to use XPath queries to filter on result nodes:
-print(client.filter("//Import[@roleImportDeclaration]//alias")
+print(client.filter("//Import[@roleImport and @roleDeclaration]//alias")
 ```
 
 ## License
