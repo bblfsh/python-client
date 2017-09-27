@@ -54,7 +54,10 @@ def main():
         ensure_bblfsh_is_running()
 
     client = BblfshClient(args.endpoint)
-    root = client.parse(args.file, args.language).uast
+    response = client.parse(args.file, args.language)
+    root = response.uast
+    if len(response.errors):
+        sys.stderr.write("\n".join(response.errors) + "\n")
     query = args.query
     if query:
         run_query(root, query, args.mapn, args.array)
