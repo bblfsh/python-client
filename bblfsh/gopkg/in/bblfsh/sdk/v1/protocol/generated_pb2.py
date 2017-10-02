@@ -15,17 +15,19 @@ _sym_db = _symbol_database.Default()
 
 
 from github.com.gogo.protobuf.gogoproto import gogo_pb2 as github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2
+from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 import importlib
 gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2 = importlib.import_module('gopkg.in.bblfsh.sdk.v1.uast.generated_pb2')
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='generated.proto',
   package='gopkg.in.bblfsh.sdk.v1.protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1fgopkg.in.bblfsh.sdk.v1.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a+gopkg.in/bblfsh/sdk.v1/uast/generated.proto\"\x8a\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x9d\x01\n\rParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x39\n\x04uast\x18\x03 \x01(\x0b\x32!.gopkg.in.bblfsh.sdk.v1.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x1a\n\x0eVersionRequest:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\",\n\x0fVersionResponse\x12\x0f\n\x07version\x18\x01 \x01(\t:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32\xe7\x01\n\x0fProtocolService\x12\x66\n\x05Parse\x12-.gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest\x1a..gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse\x12l\n\x07Version\x12/.gopkg.in.bblfsh.sdk.v1.protocol.VersionRequest\x1a\x30.gopkg.in.bblfsh.sdk.v1.protocol.VersionResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1fgopkg.in.bblfsh.sdk.v1.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a\x1egoogle/protobuf/duration.proto\x1a+gopkg.in/bblfsh/sdk.v1/uast/generated.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x01\n\x12NativeParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xb4\x01\n\x13NativeParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x14\n\x03\x61st\x18\x04 \x01(\tB\x07\xe2\xde\x1f\x03\x41ST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x8a\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xd7\x01\n\rParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x39\n\x04uast\x18\x04 \x01(\x0b\x32!.gopkg.in.bblfsh.sdk.v1.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x0c\x88\xa0\x1f\x00\x98\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x1a\n\x0eVersionRequest:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xe0\x01\n\x0fVersionResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x33\n\x05\x62uild\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xc8\xde\x1f\x00\x90\xdf\x1f\x01:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32\xe1\x02\n\x0fProtocolService\x12x\n\x0bNativeParse\x12\x33.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest\x1a\x34.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse\x12\x66\n\x05Parse\x12-.gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest\x1a..gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse\x12l\n\x07Version\x12/.gopkg.in.bblfsh.sdk.v1.protocol.VersionRequest\x1a\x30.gopkg.in.bblfsh.sdk.v1.protocol.VersionResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
   ,
-  dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2.DESCRIPTOR,])
+  dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _ENCODING = _descriptor.EnumDescriptor(
@@ -45,8 +47,8 @@ _ENCODING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
-  serialized_start=519,
-  serialized_end=587,
+  serialized_start=1153,
+  serialized_end=1221,
 )
 _sym_db.RegisterEnumDescriptor(_ENCODING)
 
@@ -72,8 +74,8 @@ _STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
-  serialized_start=589,
-  serialized_end=671,
+  serialized_start=1223,
+  serialized_end=1305,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS)
 
@@ -84,6 +86,110 @@ OK = 0
 ERROR = 1
 FATAL = 2
 
+
+
+_NATIVEPARSEREQUEST = _descriptor.Descriptor(
+  name='NativeParseRequest',
+  full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='filename', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest.filename', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='language', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest.language', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='content', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest.content', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='encoding', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest.encoding', index=3,
+      number=4, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000')),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=210,
+  serialized_end=354,
+)
+
+
+_NATIVEPARSERESPONSE = _descriptor.Descriptor(
+  name='NativeParseResponse',
+  full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='errors', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse.errors', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='elapsed', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse.elapsed', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))),
+    _descriptor.FieldDescriptor(
+      name='ast', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse.ast', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\003AST'))),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000')),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=357,
+  serialized_end=537,
+)
 
 
 _PARSEREQUEST = _descriptor.Descriptor(
@@ -133,8 +239,8 @@ _PARSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=145,
-  serialized_end=283,
+  serialized_start=540,
+  serialized_end=678,
 )
 
 
@@ -160,8 +266,15 @@ _PARSERESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='uast', full_name='gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse.uast', index=2,
+      name='elapsed', full_name='gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse.elapsed', index=2,
       number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))),
+    _descriptor.FieldDescriptor(
+      name='uast', full_name='gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse.uast', index=3,
+      number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -172,14 +285,14 @@ _PARSERESPONSE = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
-  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000')),
+  options=_descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\230\240\037\000\360\241\037\000')),
   is_extendable=False,
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=286,
-  serialized_end=443,
+  serialized_start=681,
+  serialized_end=896,
 )
 
 
@@ -202,8 +315,8 @@ _VERSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=445,
-  serialized_end=471,
+  serialized_start=898,
+  serialized_end=924,
 )
 
 
@@ -215,12 +328,40 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='version', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.version', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='status', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='errors', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.errors', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='elapsed', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.elapsed', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))),
+    _descriptor.FieldDescriptor(
+      name='version', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.version', index=3,
+      number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='build', full_name='gopkg.in.bblfsh.sdk.v1.protocol.VersionResponse.build', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\220\337\037\001'))),
   ],
   extensions=[
   ],
@@ -233,19 +374,42 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=473,
-  serialized_end=517,
+  serialized_start=927,
+  serialized_end=1151,
 )
 
+_NATIVEPARSEREQUEST.fields_by_name['encoding'].enum_type = _ENCODING
+_NATIVEPARSERESPONSE.fields_by_name['status'].enum_type = _STATUS
+_NATIVEPARSERESPONSE.fields_by_name['elapsed'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _PARSEREQUEST.fields_by_name['encoding'].enum_type = _ENCODING
 _PARSERESPONSE.fields_by_name['status'].enum_type = _STATUS
+_PARSERESPONSE.fields_by_name['elapsed'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _PARSERESPONSE.fields_by_name['uast'].message_type = gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2._NODE
+_VERSIONRESPONSE.fields_by_name['status'].enum_type = _STATUS
+_VERSIONRESPONSE.fields_by_name['elapsed'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
+_VERSIONRESPONSE.fields_by_name['build'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+DESCRIPTOR.message_types_by_name['NativeParseRequest'] = _NATIVEPARSEREQUEST
+DESCRIPTOR.message_types_by_name['NativeParseResponse'] = _NATIVEPARSERESPONSE
 DESCRIPTOR.message_types_by_name['ParseRequest'] = _PARSEREQUEST
 DESCRIPTOR.message_types_by_name['ParseResponse'] = _PARSERESPONSE
 DESCRIPTOR.message_types_by_name['VersionRequest'] = _VERSIONREQUEST
 DESCRIPTOR.message_types_by_name['VersionResponse'] = _VERSIONRESPONSE
 DESCRIPTOR.enum_types_by_name['Encoding'] = _ENCODING
 DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
+
+NativeParseRequest = _reflection.GeneratedProtocolMessageType('NativeParseRequest', (_message.Message,), dict(
+  DESCRIPTOR = _NATIVEPARSEREQUEST,
+  __module__ = 'generated_pb2'
+  # @@protoc_insertion_point(class_scope:gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest)
+  ))
+_sym_db.RegisterMessage(NativeParseRequest)
+
+NativeParseResponse = _reflection.GeneratedProtocolMessageType('NativeParseResponse', (_message.Message,), dict(
+  DESCRIPTOR = _NATIVEPARSERESPONSE,
+  __module__ = 'generated_pb2'
+  # @@protoc_insertion_point(class_scope:gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse)
+  ))
+_sym_db.RegisterMessage(NativeParseResponse)
 
 ParseRequest = _reflection.GeneratedProtocolMessageType('ParseRequest', (_message.Message,), dict(
   DESCRIPTOR = _PARSEREQUEST,
@@ -292,14 +456,28 @@ _STATUS.values_by_name["ERROR"].has_options = True
 _STATUS.values_by_name["ERROR"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Error'))
 _STATUS.values_by_name["FATAL"].has_options = True
 _STATUS.values_by_name["FATAL"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Fatal'))
+_NATIVEPARSEREQUEST.has_options = True
+_NATIVEPARSEREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_NATIVEPARSERESPONSE.fields_by_name['elapsed'].has_options = True
+_NATIVEPARSERESPONSE.fields_by_name['elapsed']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))
+_NATIVEPARSERESPONSE.fields_by_name['ast'].has_options = True
+_NATIVEPARSERESPONSE.fields_by_name['ast']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\003AST'))
+_NATIVEPARSERESPONSE.has_options = True
+_NATIVEPARSERESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
 _PARSEREQUEST.has_options = True
 _PARSEREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_PARSERESPONSE.fields_by_name['elapsed'].has_options = True
+_PARSERESPONSE.fields_by_name['elapsed']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))
 _PARSERESPONSE.fields_by_name['uast'].has_options = True
 _PARSERESPONSE.fields_by_name['uast']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\004UAST'))
 _PARSERESPONSE.has_options = True
-_PARSERESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_PARSERESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\230\240\037\000\360\241\037\000'))
 _VERSIONREQUEST.has_options = True
 _VERSIONREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_VERSIONRESPONSE.fields_by_name['elapsed'].has_options = True
+_VERSIONRESPONSE.fields_by_name['elapsed']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))
+_VERSIONRESPONSE.fields_by_name['build'].has_options = True
+_VERSIONRESPONSE.fields_by_name['build']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\220\337\037\001'))
 _VERSIONRESPONSE.has_options = True
 _VERSIONRESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
 try:
@@ -320,6 +498,11 @@ try:
       Args:
         channel: A grpc.Channel.
       """
+      self.NativeParse = channel.unary_unary(
+          '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/NativeParse',
+          request_serializer=NativeParseRequest.SerializeToString,
+          response_deserializer=NativeParseResponse.FromString,
+          )
       self.Parse = channel.unary_unary(
           '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/Parse',
           request_serializer=ParseRequest.SerializeToString,
@@ -334,8 +517,16 @@ try:
 
   class ProtocolServiceServicer(object):
 
+    def NativeParse(self, request, context):
+      """NativeParse uses DefaultService to process the given parsing request to get
+      the AST.
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
     def Parse(self, request, context):
-      """Parse uses DefaultParser to process the given parsing request to get the UAST.
+      """Parse uses DefaultService to process the given parsing request to get the UAST.
       """
       context.set_code(grpc.StatusCode.UNIMPLEMENTED)
       context.set_details('Method not implemented!')
@@ -351,6 +542,11 @@ try:
 
   def add_ProtocolServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+        'NativeParse': grpc.unary_unary_rpc_method_handler(
+            servicer.NativeParse,
+            request_deserializer=NativeParseRequest.FromString,
+            response_serializer=NativeParseResponse.SerializeToString,
+        ),
         'Parse': grpc.unary_unary_rpc_method_handler(
             servicer.Parse,
             request_deserializer=ParseRequest.FromString,
@@ -373,8 +569,13 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    def NativeParse(self, request, context):
+      """NativeParse uses DefaultService to process the given parsing request to get
+      the AST.
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
     def Parse(self, request, context):
-      """Parse uses DefaultParser to process the given parsing request to get the UAST.
+      """Parse uses DefaultService to process the given parsing request to get the UAST.
       """
       context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
     def Version(self, request, context):
@@ -389,8 +590,14 @@ try:
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    def NativeParse(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """NativeParse uses DefaultService to process the given parsing request to get
+      the AST.
+      """
+      raise NotImplementedError()
+    NativeParse.future = None
     def Parse(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      """Parse uses DefaultParser to process the given parsing request to get the UAST.
+      """Parse uses DefaultService to process the given parsing request to get the UAST.
       """
       raise NotImplementedError()
     Parse.future = None
@@ -408,14 +615,17 @@ try:
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_deserializers = {
+      ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'NativeParse'): NativeParseRequest.FromString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Parse'): ParseRequest.FromString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Version'): VersionRequest.FromString,
     }
     response_serializers = {
+      ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'NativeParse'): NativeParseResponse.SerializeToString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Parse'): ParseResponse.SerializeToString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Version'): VersionResponse.SerializeToString,
     }
     method_implementations = {
+      ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'NativeParse'): face_utilities.unary_unary_inline(servicer.NativeParse),
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Parse'): face_utilities.unary_unary_inline(servicer.Parse),
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Version'): face_utilities.unary_unary_inline(servicer.Version),
     }
@@ -430,14 +640,17 @@ try:
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
     request_serializers = {
+      ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'NativeParse'): NativeParseRequest.SerializeToString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Parse'): ParseRequest.SerializeToString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Version'): VersionRequest.SerializeToString,
     }
     response_deserializers = {
+      ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'NativeParse'): NativeParseResponse.FromString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Parse'): ParseResponse.FromString,
       ('gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService', 'Version'): VersionResponse.FromString,
     }
     cardinalities = {
+      'NativeParse': cardinality.Cardinality.UNARY_UNARY,
       'Parse': cardinality.Cardinality.UNARY_UNARY,
       'Version': cardinality.Cardinality.UNARY_UNARY,
     }

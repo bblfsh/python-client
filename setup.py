@@ -27,7 +27,7 @@ libuast_module = Extension(
 setup(
     name="bblfsh",
     description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-    version="1.1.0",
+    version="2.0.0",
     license="Apache 2.0",
     author="source{d}",
     author_email="language-analysis@sourced.tech",
