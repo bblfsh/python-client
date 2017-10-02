@@ -41,7 +41,7 @@ class BblfshTests(unittest.TestCase):
         self._validate_uast(uast)
 
     def testUASTFileContents(self):
-        with open(__file__) as fin:
+        with open(__file__, "rb") as fin:
             contents = fin.read()
         uast = self.client.parse("file.py", contents=contents)
         self._validate_uast(uast)
