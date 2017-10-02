@@ -25,7 +25,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='generated.proto',
   package='gopkg.in.bblfsh.sdk.v1.protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1fgopkg.in.bblfsh.sdk.v1.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a\x1egoogle/protobuf/duration.proto\x1a+gopkg.in/bblfsh/sdk.v1/uast/generated.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x01\n\x12NativeParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xb4\x01\n\x13NativeParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x14\n\x03\x61st\x18\x04 \x01(\tB\x07\xe2\xde\x1f\x03\x41ST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x8a\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xd7\x01\n\rParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x39\n\x04uast\x18\x04 \x01(\x0b\x32!.gopkg.in.bblfsh.sdk.v1.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x0c\x88\xa0\x1f\x00\x98\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x1a\n\x0eVersionRequest:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xe0\x01\n\x0fVersionResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x33\n\x05\x62uild\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xc8\xde\x1f\x00\x90\xdf\x1f\x01:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32\xe1\x02\n\x0fProtocolService\x12x\n\x0bNativeParse\x12\x33.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest\x1a\x34.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse\x12\x66\n\x05Parse\x12-.gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest\x1a..gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse\x12l\n\x07Version\x12/.gopkg.in.bblfsh.sdk.v1.protocol.VersionRequest\x1a\x30.gopkg.in.bblfsh.sdk.v1.protocol.VersionResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fgenerated.proto\x12\x1fgopkg.in.bblfsh.sdk.v1.protocol\x1a-github.com/gogo/protobuf/gogoproto/gogo.proto\x1a\x1egoogle/protobuf/duration.proto\x1a+gopkg.in/bblfsh/sdk.v1/uast/generated.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\x01\n\x12NativeParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding\x12\x34\n\x07timeout\x18\x05 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xb4\x01\n\x13NativeParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x14\n\x03\x61st\x18\x04 \x01(\tB\x07\xe2\xde\x1f\x03\x41ST:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xc0\x01\n\x0cParseRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x10\n\x08language\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12;\n\x08\x65ncoding\x18\x04 \x01(\x0e\x32).gopkg.in.bblfsh.sdk.v1.protocol.Encoding\x12\x34\n\x07timeout\x18\x05 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xd7\x01\n\rParseResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x39\n\x04uast\x18\x04 \x01(\x0b\x32!.gopkg.in.bblfsh.sdk.v1.uast.NodeB\x08\xe2\xde\x1f\x04UAST:\x0c\x88\xa0\x1f\x00\x98\xa0\x1f\x00\xf0\xa1\x1f\x00\"\x1a\n\x0eVersionRequest:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00\"\xe0\x01\n\x0fVersionResponse\x12\x37\n\x06status\x18\x01 \x01(\x0e\x32\'.gopkg.in.bblfsh.sdk.v1.protocol.Status\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x34\n\x07\x65lapsed\x18\x03 \x01(\x0b\x32\x19.google.protobuf.DurationB\x08\xc8\xde\x1f\x00\x98\xdf\x1f\x01\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x33\n\x05\x62uild\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x08\xc8\xde\x1f\x00\x90\xdf\x1f\x01:\x08\x88\xa0\x1f\x00\xf0\xa1\x1f\x00*D\n\x08\x45ncoding\x12\x12\n\x04UTF8\x10\x00\x1a\x08\x8a\x9d \x04UTF8\x12\x16\n\x06\x42\x41SE64\x10\x01\x1a\n\x8a\x9d \x06\x42\x61se64\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00*R\n\x06Status\x12\x0e\n\x02OK\x10\x00\x1a\x06\x8a\x9d \x02Ok\x12\x14\n\x05\x45RROR\x10\x01\x1a\t\x8a\x9d \x05\x45rror\x12\x14\n\x05\x46\x41TAL\x10\x02\x1a\t\x8a\x9d \x05\x46\x61tal\x1a\x0c\xc0\xa4\x1e\x00\x88\xa3\x1e\x00\xa8\xa4\x1e\x00\x32\xe1\x02\n\x0fProtocolService\x12x\n\x0bNativeParse\x12\x33.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest\x1a\x34.gopkg.in.bblfsh.sdk.v1.protocol.NativeParseResponse\x12\x66\n\x05Parse\x12-.gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest\x1a..gopkg.in.bblfsh.sdk.v1.protocol.ParseResponse\x12l\n\x07Version\x12/.gopkg.in.bblfsh.sdk.v1.protocol.VersionRequest\x1a\x30.gopkg.in.bblfsh.sdk.v1.protocol.VersionResponseB\x12Z\x08protocol\xa0\xe3\x1e\x01\xe0\xe2\x1e\x00\x62\x06proto3')
   ,
   dependencies=[github_dot_com_dot_gogo_dot_protobuf_dot_gogoproto_dot_gogo__pb2.DESCRIPTOR,google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -47,8 +47,8 @@ _ENCODING = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
-  serialized_start=1153,
-  serialized_end=1221,
+  serialized_start=1261,
+  serialized_end=1329,
 )
 _sym_db.RegisterEnumDescriptor(_ENCODING)
 
@@ -74,8 +74,8 @@ _STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=_descriptor._ParseOptions(descriptor_pb2.EnumOptions(), _b('\300\244\036\000\210\243\036\000\250\244\036\000')),
-  serialized_start=1223,
-  serialized_end=1305,
+  serialized_start=1331,
+  serialized_end=1413,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS)
 
@@ -123,6 +123,13 @@ _NATIVEPARSEREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='timeout', full_name='gopkg.in.bblfsh.sdk.v1.protocol.NativeParseRequest.timeout', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))),
   ],
   extensions=[
   ],
@@ -136,7 +143,7 @@ _NATIVEPARSEREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=210,
-  serialized_end=354,
+  serialized_end=408,
 )
 
 
@@ -187,8 +194,8 @@ _NATIVEPARSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=357,
-  serialized_end=537,
+  serialized_start=411,
+  serialized_end=591,
 )
 
 
@@ -227,6 +234,13 @@ _PARSEREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='timeout', full_name='gopkg.in.bblfsh.sdk.v1.protocol.ParseRequest.timeout', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))),
   ],
   extensions=[
   ],
@@ -239,8 +253,8 @@ _PARSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=540,
-  serialized_end=678,
+  serialized_start=594,
+  serialized_end=786,
 )
 
 
@@ -291,8 +305,8 @@ _PARSERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=681,
-  serialized_end=896,
+  serialized_start=789,
+  serialized_end=1004,
 )
 
 
@@ -315,8 +329,8 @@ _VERSIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=898,
-  serialized_end=924,
+  serialized_start=1006,
+  serialized_end=1032,
 )
 
 
@@ -374,14 +388,16 @@ _VERSIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=927,
-  serialized_end=1151,
+  serialized_start=1035,
+  serialized_end=1259,
 )
 
 _NATIVEPARSEREQUEST.fields_by_name['encoding'].enum_type = _ENCODING
+_NATIVEPARSEREQUEST.fields_by_name['timeout'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _NATIVEPARSERESPONSE.fields_by_name['status'].enum_type = _STATUS
 _NATIVEPARSERESPONSE.fields_by_name['elapsed'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _PARSEREQUEST.fields_by_name['encoding'].enum_type = _ENCODING
+_PARSEREQUEST.fields_by_name['timeout'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _PARSERESPONSE.fields_by_name['status'].enum_type = _STATUS
 _PARSERESPONSE.fields_by_name['elapsed'].message_type = google_dot_protobuf_dot_duration__pb2._DURATION
 _PARSERESPONSE.fields_by_name['uast'].message_type = gopkg_dot_in_dot_bblfsh_dot_sdk_dot_v1_dot_uast_dot_generated__pb2._NODE
@@ -456,6 +472,8 @@ _STATUS.values_by_name["ERROR"].has_options = True
 _STATUS.values_by_name["ERROR"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Error'))
 _STATUS.values_by_name["FATAL"].has_options = True
 _STATUS.values_by_name["FATAL"]._options = _descriptor._ParseOptions(descriptor_pb2.EnumValueOptions(), _b('\212\235 \005Fatal'))
+_NATIVEPARSEREQUEST.fields_by_name['timeout'].has_options = True
+_NATIVEPARSEREQUEST.fields_by_name['timeout']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))
 _NATIVEPARSEREQUEST.has_options = True
 _NATIVEPARSEREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
 _NATIVEPARSERESPONSE.fields_by_name['elapsed'].has_options = True
@@ -464,6 +482,8 @@ _NATIVEPARSERESPONSE.fields_by_name['ast'].has_options = True
 _NATIVEPARSERESPONSE.fields_by_name['ast']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\342\336\037\003AST'))
 _NATIVEPARSERESPONSE.has_options = True
 _NATIVEPARSERESPONSE._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
+_PARSEREQUEST.fields_by_name['timeout'].has_options = True
+_PARSEREQUEST.fields_by_name['timeout']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\310\336\037\000\230\337\037\001'))
 _PARSEREQUEST.has_options = True
 _PARSEREQUEST._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('\210\240\037\000\360\241\037\000'))
 _PARSERESPONSE.fields_by_name['elapsed'].has_options = True
