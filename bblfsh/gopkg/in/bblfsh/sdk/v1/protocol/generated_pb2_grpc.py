@@ -12,6 +12,11 @@ class ProtocolServiceStub(object):
     Args:
       channel: A grpc.Channel.
     """
+    self.NativeParse = channel.unary_unary(
+        '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/NativeParse',
+        request_serializer=generated__pb2.NativeParseRequest.SerializeToString,
+        response_deserializer=generated__pb2.NativeParseResponse.FromString,
+        )
     self.Parse = channel.unary_unary(
         '/gopkg.in.bblfsh.sdk.v1.protocol.ProtocolService/Parse',
         request_serializer=generated__pb2.ParseRequest.SerializeToString,
@@ -26,8 +31,16 @@ class ProtocolServiceStub(object):
 
 class ProtocolServiceServicer(object):
 
+  def NativeParse(self, request, context):
+    """NativeParse uses DefaultService to process the given parsing request to get
+    the AST.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
   def Parse(self, request, context):
-    """Parse uses DefaultParser to process the given parsing request to get the UAST.
+    """Parse uses DefaultService to process the given parsing request to get the UAST.
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -43,6 +56,11 @@ class ProtocolServiceServicer(object):
 
 def add_ProtocolServiceServicer_to_server(servicer, server):
   rpc_method_handlers = {
+      'NativeParse': grpc.unary_unary_rpc_method_handler(
+          servicer.NativeParse,
+          request_deserializer=generated__pb2.NativeParseRequest.FromString,
+          response_serializer=generated__pb2.NativeParseResponse.SerializeToString,
+      ),
       'Parse': grpc.unary_unary_rpc_method_handler(
           servicer.Parse,
           request_deserializer=generated__pb2.ParseRequest.FromString,
