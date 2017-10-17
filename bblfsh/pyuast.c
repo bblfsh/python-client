@@ -1,5 +1,6 @@
 #include "uast.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include <Python.h>
@@ -70,15 +71,172 @@ static int PropertiesSize(const void *data) {
   return (int)PyLong_AsLong(properties_obj);
 }
 
-static const char *PropertyAT(const void *data, int index)
-{
+static const char *PropertyKeyAt(const void *data, int index) {
   PyObject *node = (PyObject *)data;
-  PyObject *properties_obj = PyObject_GetAttrString(node, "properties");
-  if (!properties_obj)
+  PyObject *properties = PyObject_GetAttrString(node, "properties");
+  if (!properties) {
     return NULL;
+  }
+  if (!PyMapping_Check(properties)) {
+    return NULL;
+  }
+  PyObject *keys = PyMapping_Keys(properties);
+  if (!keys) {
+    return NULL;
+  }
 
-  PyObject *seq = PySequence_Fast(properties_obj, "expected a sequence");
+  PyObject *seq = PySequence_Fast(keys, "expected a sequence");
   return PyUnicode_AsUTF8(PyList_GET_ITEM(seq, index));
+}
+
+static const char *PropertyValueAt(const void *data, int index) {
+  PyObject *node = (PyObject *)data;
+  PyObject *properties = PyObject_GetAttrString(node, "properties");
+  if (!properties) {
+    return NULL;
+  }
+  if (!PyMapping_Check(properties)) {
+    return NULL;
+  }
+  PyObject *values = PyMapping_Values(properties);
+  if (!values) {
+    return NULL;
+  }
+
+  PyObject *seq = PySequence_Fast(values, "expected a sequence");
+  return PyUnicode_AsUTF8(PyList_GET_ITEM(seq, index));
+}
+
+static bool HasStartOffset(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "start_position") != Py_None;
+}
+
+static uint32_t StartOffset(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "start_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *offset = PyObject_GetAttrString(position, "offset");
+  if (!offset) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(offset);
+}
+
+static bool HasStartLine(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "start_position") != Py_None;
+}
+
+static uint32_t StartLine(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "start_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *line = PyObject_GetAttrString(position, "line");
+  if (!line) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(line);
+}
+
+static bool HasStartCol(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "start_position") != Py_None;
+}
+
+static uint32_t StartCol(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "start_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *col = PyObject_GetAttrString(position, "col");
+  if (!col) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(col);
+}
+
+static bool HasEndOffset(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "end_position") != Py_None;
+}
+
+static uint32_t EndOffset(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "end_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *offset = PyObject_GetAttrString(position, "offset");
+  if (!offset) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(offset);
+}
+
+static bool HasEndLine(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "end_position") != Py_None;
+}
+
+static uint32_t EndLine(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "end_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *line = PyObject_GetAttrString(position, "line");
+  if (!line) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(line);
+}
+
+static bool HasEndCol(const void *data) {
+  PyObject *node = (PyObject *)data;
+  if (!node) {
+    return false;
+  }
+  return PyObject_GetAttrString(node, "end_position") != Py_None;
+}
+
+static uint32_t EndCol(const void *data) {
+  PyObject *node = (PyObject *)data;
+  PyObject *position = PyObject_GetAttrString(node, "end_position");
+  if (!position || position == Py_None) {
+    return 0;
+  }
+
+  PyObject *col = PyObject_GetAttrString(position, "col");
+  if (!col) {
+    return 0;
+  }
+  return PyLong_AsUnsignedLong(col);
 }
 
 static Uast *ctx;
@@ -138,7 +296,20 @@ PyMODINIT_FUNC PyInit_pyuast(void)
     .RolesSize = RolesSize,
     .RoleAt = RoleAt,
     .PropertiesSize = PropertiesSize,
-    .PropertyAt = PropertyAT,
+    .PropertyKeyAt = PropertyKeyAt,
+    .PropertyValueAt = PropertyValueAt,
+    .HasStartOffset = HasStartOffset,
+    .StartOffset = StartOffset,
+    .HasStartLine = HasStartLine,
+    .StartLine = StartLine,
+    .HasStartCol = HasStartCol,
+    .StartCol = StartCol,
+    .HasEndOffset = HasEndOffset,
+    .EndOffset = EndOffset,
+    .HasEndLine = HasEndLine,
+    .EndLine = EndLine,
+    .HasEndCol = HasEndCol,
+    .EndCol = EndCol,
   };
 
   ctx = UastNew(iface);
