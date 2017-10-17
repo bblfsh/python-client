@@ -63,12 +63,12 @@ static uint16_t RoleAt(const void *data, int index) {
 
 static int PropertiesSize(const void *data) {
   PyObject *node = (PyObject *)data;
-  PyObject *properties_obj = PyObject_GetAttrString(node, "properties");
-  if (!properties_obj) {
+  PyObject *properties = PyObject_GetAttrString(node, "properties");
+  if (!properties || properties == Py_None) {
     return 0;
   }
 
-  return (int)PyLong_AsLong(properties_obj);
+  return PyMapping_Size(properties);
 }
 
 static const char *PropertyKeyAt(const void *data, int index) {
