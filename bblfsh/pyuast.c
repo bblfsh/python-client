@@ -5,238 +5,139 @@
 
 #include <Python.h>
 
-static const char *ReadStr(const void *data, const char *prop) {
-  PyObject *node = (PyObject *)data;
-  PyObject *attribute = PyObject_GetAttrString(node, prop);
-  if (!attribute) {
-    return NULL;
-  }
-  return PyUnicode_AsUTF8(attribute);
+static PyObject *Attribute(const void *node, const char *prop) {
+  PyObject *n = (PyObject *)node;
+  return PyObject_GetAttrString(n, prop);
 }
 
-static int ReadLen(const void *data, const char *prop) {
-  PyObject *node = (PyObject *)data;
-  PyObject *children_obj = PyObject_GetAttrString(node, prop);
-  if (!children_obj) {
-    return 0;
-  }
-  return PySequence_Size(children_obj);
+static PyObject *AttributeValue(const void *node, const char *prop) {
+  PyObject *a = Attribute(node, prop);
+  return a && a != Py_None ? a : NULL;
 }
 
-static const char *InternalType(const void *node) {
-  return ReadStr(node, "internal_type");
+static const char *String(const void *node, const char *prop) {
+  PyObject *o = Attribute(node, prop);
+  return o ? PyUnicode_AsUTF8(o) : NULL;
 }
 
-static const char *Token(const void *node) {
-  return ReadStr(node, "token");
+static int Size(const void *node, const char *prop) {
+  PyObject *o = Attribute(node, prop);
+  return o ? PySequence_Size(o) : 0;
 }
 
-static int ChildrenSize(const void *node) {
-  return ReadLen(node, "children");
-}
-
-static void *ChildAt(const void *data, int index) {
-  PyObject *node = (PyObject *)data;
-  PyObject *children_obj = PyObject_GetAttrString(node, "children");
-  if (!children_obj) {
-    return NULL;
-  }
-
-  PyObject *seq = PySequence_Fast(children_obj, "expected a sequence");
+static PyObject *ItemAt(PyObject *object, int index) {
+  PyObject *seq = PySequence_Fast(object, "expected a sequence");
   return PyList_GET_ITEM(seq, index);
 }
 
+
+static const char *InternalType(const void *node) {
+  return String(node, "internal_type");
+}
+
+static const char *Token(const void *node) {
+  return String(node, "token");
+}
+
+static int ChildrenSize(const void *node) {
+  return Size(node, "children");
+}
+
+static void *ChildAt(const void *node, int index) {
+  PyObject *children = AttributeValue(node, "children");
+  return children ? ItemAt(children, index) : NULL;
+}
+
 static int RolesSize(const void *node) {
-  return ReadLen(node, "roles");
+  return Size(node, "roles");
 }
 
-static uint16_t RoleAt(const void *data, int index) {
-  PyObject *node = (PyObject *)data;
-  PyObject *roles_obj = PyObject_GetAttrString(node, "roles");
-  if (!roles_obj) {
-    return 0;
-  }
-
-  PyObject *seq = PySequence_Fast(roles_obj, "expected a sequence");
-  return (uint16_t)PyLong_AsUnsignedLong(PyList_GET_ITEM(seq, index));
+static uint16_t RoleAt(const void *node, int index) {
+  PyObject *roles = AttributeValue(node, "roles");
+  return roles ? (uint16_t)PyLong_AsUnsignedLong(ItemAt(roles, index)) : 0;
 }
 
-static int PropertiesSize(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *properties = PyObject_GetAttrString(node, "properties");
-  if (!properties || properties == Py_None) {
-    return 0;
-  }
-
-  return PyMapping_Size(properties);
+static int PropertiesSize(const void *node) {
+  PyObject *properties = AttributeValue(node, "properties");
+  return properties ? PyMapping_Size(properties) : 0;
 }
 
-static const char *PropertyKeyAt(const void *data, int index) {
-  PyObject *node = (PyObject *)data;
-  PyObject *properties = PyObject_GetAttrString(node, "properties");
-  if (!properties) {
+static const char *PropertyKeyAt(const void *node, int index) {
+  PyObject *properties = AttributeValue(node, "properties");
+  if (!properties || !PyMapping_Check(properties)) {
     return NULL;
   }
-  if (!PyMapping_Check(properties)) {
-    return NULL;
-  }
+
   PyObject *keys = PyMapping_Keys(properties);
-  if (!keys) {
-    return NULL;
-  }
-
-  PyObject *seq = PySequence_Fast(keys, "expected a sequence");
-  return PyUnicode_AsUTF8(PyList_GET_ITEM(seq, index));
+  return keys ? PyUnicode_AsUTF8(ItemAt(keys, index)) : NULL;
 }
 
-static const char *PropertyValueAt(const void *data, int index) {
-  PyObject *node = (PyObject *)data;
-  PyObject *properties = PyObject_GetAttrString(node, "properties");
-  if (!properties) {
+static const char *PropertyValueAt(const void *node, int index) {
+  PyObject *properties = AttributeValue(node, "properties");
+  if (!properties || !PyMapping_Check(properties)) {
     return NULL;
   }
-  if (!PyMapping_Check(properties)) {
-    return NULL;
-  }
+
   PyObject *values = PyMapping_Values(properties);
-  if (!values) {
-    return NULL;
-  }
-
-  PyObject *seq = PySequence_Fast(values, "expected a sequence");
-  return PyUnicode_AsUTF8(PyList_GET_ITEM(seq, index));
+  return values ? PyUnicode_AsUTF8(ItemAt(values, index)) : NULL;
 }
 
-static bool HasStartOffset(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "start_position") != Py_None;
-}
-
-static uint32_t StartOffset(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "start_position");
-  if (!position || position == Py_None) {
+static uint32_t PositionValue(const void* node, const char *prop, const char *field) {
+  PyObject *position = AttributeValue(node, prop);
+  if (!position) {
     return 0;
   }
 
-  PyObject *offset = PyObject_GetAttrString(position, "offset");
-  if (!offset) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(offset);
+  PyObject *offset = AttributeValue(position, field);
+  return offset ? (uint32_t)PyLong_AsUnsignedLong(offset) : 0;
 }
 
-static bool HasStartLine(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "start_position") != Py_None;
+static bool HasStartOffset(const void *node) {
+  return AttributeValue(node, "start_position");
 }
 
-static uint32_t StartLine(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "start_position");
-  if (!position || position == Py_None) {
-    return 0;
-  }
-
-  PyObject *line = PyObject_GetAttrString(position, "line");
-  if (!line) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(line);
+static uint32_t StartOffset(const void *node) {
+  return PositionValue(node, "start_position", "offset");
 }
 
-static bool HasStartCol(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "start_position") != Py_None;
+static bool HasStartLine(const void *node) {
+  return AttributeValue(node, "start_position");
 }
 
-static uint32_t StartCol(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "start_position");
-  if (!position || position == Py_None) {
-    return 0;
-  }
-
-  PyObject *col = PyObject_GetAttrString(position, "col");
-  if (!col) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(col);
+static uint32_t StartLine(const void *node) {
+  return PositionValue(node, "start_position", "line");
 }
 
-static bool HasEndOffset(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "end_position") != Py_None;
+static bool HasStartCol(const void *node) {
+  return AttributeValue(node, "start_position");
 }
 
-static uint32_t EndOffset(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "end_position");
-  if (!position || position == Py_None) {
-    return 0;
-  }
-
-  PyObject *offset = PyObject_GetAttrString(position, "offset");
-  if (!offset) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(offset);
+static uint32_t StartCol(const void *node) {
+  return PositionValue(node, "start_position", "col");
 }
 
-static bool HasEndLine(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "end_position") != Py_None;
+static bool HasEndOffset(const void *node) {
+  return AttributeValue(node, "end_position");
 }
 
-static uint32_t EndLine(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "end_position");
-  if (!position || position == Py_None) {
-    return 0;
-  }
-
-  PyObject *line = PyObject_GetAttrString(position, "line");
-  if (!line) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(line);
+static uint32_t EndOffset(const void *node) {
+  return PositionValue(node, "end_position", "offset");
 }
 
-static bool HasEndCol(const void *data) {
-  PyObject *node = (PyObject *)data;
-  if (!node) {
-    return false;
-  }
-  return PyObject_GetAttrString(node, "end_position") != Py_None;
+static bool HasEndLine(const void *node) {
+  return AttributeValue(node, "end_position");
 }
 
-static uint32_t EndCol(const void *data) {
-  PyObject *node = (PyObject *)data;
-  PyObject *position = PyObject_GetAttrString(node, "end_position");
-  if (!position || position == Py_None) {
-    return 0;
-  }
+static uint32_t EndLine(const void *node) {
+  return PositionValue(node, "end_position", "line");
+}
 
-  PyObject *col = PyObject_GetAttrString(position, "col");
-  if (!col) {
-    return 0;
-  }
-  return PyLong_AsUnsignedLong(col);
+static bool HasEndCol(const void *node) {
+  return AttributeValue(node, "end_position");
+}
+
+static uint32_t EndCol(const void *node) {
+  return PositionValue(node, "end_position", "col");
 }
 
 static Uast *ctx;
