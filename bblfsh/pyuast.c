@@ -167,7 +167,7 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
   }
 
   NodesFree(nodes);
-  Py_RETURN_NONE;
+  return PyList_New(0);
 }
 
 static PyMethodDef extension_methods[] = {
