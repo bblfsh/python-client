@@ -53,6 +53,61 @@ class BblfshTests(unittest.TestCase):
             # Skip test 3.4: cant capture SystemException from binary modules
             self.assertRaises(SystemError, filter, 0, "foo")
 
+    def testFilterInternalType(self):
+        node = Node()
+        node.internal_type = 'a'
+        self.assertEqual(len(filter(node, "//a")), 1)
+
+    def testFilterToken(self):
+        node = Node()
+        node.token = 'a'
+        self.assertEqual(len(filter(node, "//*[@token='a']")), 1)
+
+    def testFilterRoles(self):
+        node = Node()
+        node.roles.append(1)
+        self.assertEqual(len(filter(node, "//*[@roleIdentifier]")), 1)
+
+    def testFilterProperties(self):
+        node = Node()
+        node.properties['k'] = 'v'
+        self.assertEqual(len(filter(node, "//*[@k='v']")), 1)
+
+    def testFilterStartOffset(self):
+        node = Node()
+        node.start_position.offset = 100
+        self.assertEqual(len(filter(node, "//*[@startOffset=100]")), 1)
+
+    def testFilterStartLine(self):
+        node = Node()
+        node.start_position.line = 10
+        self.assertEqual(len(filter(node, "//*[@startLine=10]")), 1)
+
+    def testFilterStartCol(self):
+        node = Node()
+        node.start_position.col= 50
+        self.assertEqual(len(filter(node, "//*[@startCol=50]")), 1)
+
+    def testFilterEndOffset(self):
+        node = Node()
+        node.end_position.offset = 100
+        self.assertEqual(len(filter(node, "//*[@endOffset=100]")), 1)
+
+    def testFilterEndLine(self):
+        node = Node()
+        node.end_position.line = 10
+        self.assertEqual(len(filter(node, "//*[@endLine=10]")), 1)
+
+    def testFilterEndCol(self):
+        node = Node()
+        node.end_position.col = 50
+        self.assertEqual(len(filter(node, "//*[@endCol=50]")), 1)
+
+    def testFilterNotFound(self):
+        node = Node()
+        node.internal_type = 'b'
+        self.assertEqual(len(filter(node, "//a")), 0)
+
     def _validate_uast(self, uast):
         self.assertIsNotNone(uast)
         # self.assertIsInstance() does not work - must be some metaclass magic
