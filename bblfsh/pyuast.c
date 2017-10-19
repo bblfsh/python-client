@@ -1,9 +1,9 @@
-#include "uast.h"
+#include <Python.h>
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <Python.h>
+#include "uast.h"
 
 static PyObject *Attribute(const void *node, const char *prop) {
   PyObject *n = (PyObject *)node;
