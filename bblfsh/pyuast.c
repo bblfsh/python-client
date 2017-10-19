@@ -159,7 +159,9 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
     PyObject *list = PyList_New(len);
 
     for (int i = 0; i < len; i++) {
-      PyList_SET_ITEM(list, i, (PyObject *) NodeAt(nodes, i));
+      PyObject *node = (PyObject *)NodeAt(nodes, i);
+      Py_INCREF(node);
+      PyList_SET_ITEM(list, i, node);
     }
 
     NodesFree(nodes);
