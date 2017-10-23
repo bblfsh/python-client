@@ -56,64 +56,65 @@ class BblfshTests(unittest.TestCase):
     def testFilterInternalType(self):
         node = Node()
         node.internal_type = 'a'
-        self.assertEqual(len(filter(node, "//a")), 1)
-        self.assertEqual(len(filter(node, "//b")), 0)
+        a = filter(node, "//a")
+        self.assertEqual(len(list(filter(node, "//a"))), 1)
+        self.assertEqual(len(list(filter(node, "//b"))), 0)
 
     def testFilterToken(self):
         node = Node()
         node.token = 'a'
-        self.assertEqual(len(filter(node, "//*[@token='a']")), 1)
-        self.assertEqual(len(filter(node, "//*[@token='b']")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@token='a']"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@token='b']"))), 0)
 
     def testFilterRoles(self):
         node = Node()
         node.roles.append(1)
-        self.assertEqual(len(filter(node, "//*[@roleIdentifier]")), 1)
-        self.assertEqual(len(filter(node, "//*[@roleQualified]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@roleIdentifier]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@roleQualified]"))), 0)
 
     def testFilterProperties(self):
         node = Node()
         node.properties['k1'] = 'v2'
         node.properties['k2'] = 'v1'
-        self.assertEqual(len(filter(node, "//*[@k2='v1']")), 1)
-        self.assertEqual(len(filter(node, "//*[@k1='v2']")), 1)
-        self.assertEqual(len(filter(node, "//*[@k1='v1']")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@k2='v1']"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@k1='v2']"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@k1='v1']"))), 0)
 
     def testFilterStartOffset(self):
         node = Node()
         node.start_position.offset = 100
-        self.assertEqual(len(filter(node, "//*[@startOffset=100]")), 1)
-        self.assertEqual(len(filter(node, "//*[@startOffset=10]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@startOffset=100]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@startOffset=10]"))), 0)
 
     def testFilterStartLine(self):
         node = Node()
         node.start_position.line = 10
-        self.assertEqual(len(filter(node, "//*[@startLine=10]")), 1)
-        self.assertEqual(len(filter(node, "//*[@startLine=100]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@startLine=10]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@startLine=100]"))), 0)
 
     def testFilterStartCol(self):
         node = Node()
-        node.start_position.col= 50
-        self.assertEqual(len(filter(node, "//*[@startCol=50]")), 1)
-        self.assertEqual(len(filter(node, "//*[@startCol=5]")), 0)
+        node.start_position.col = 50
+        self.assertEqual(len(list(filter(node, "//*[@startCol=50]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@startCol=5]"))), 0)
 
     def testFilterEndOffset(self):
         node = Node()
         node.end_position.offset = 100
-        self.assertEqual(len(filter(node, "//*[@endOffset=100]")), 1)
-        self.assertEqual(len(filter(node, "//*[@endOffset=10]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@endOffset=100]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@endOffset=10]"))), 0)
 
     def testFilterEndLine(self):
         node = Node()
         node.end_position.line = 10
-        self.assertEqual(len(filter(node, "//*[@endLine=10]")), 1)
-        self.assertEqual(len(filter(node, "//*[@endLine=100]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@endLine=10]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@endLine=100]"))), 0)
 
     def testFilterEndCol(self):
         node = Node()
         node.end_position.col = 50
-        self.assertEqual(len(filter(node, "//*[@endCol=50]")), 1)
-        self.assertEqual(len(filter(node, "//*[@endCol=5]")), 0)
+        self.assertEqual(len(list(filter(node, "//*[@endCol=50]"))), 1)
+        self.assertEqual(len(list(filter(node, "//*[@endCol=5]"))), 0)
 
     def _validate_uast(self, uast):
         self.assertIsNotNone(uast)
@@ -124,8 +125,7 @@ class BblfshTests(unittest.TestCase):
         self.assertIsInstance(uast.uast, Node)
 
     def _validate_filter(self, uast):
-        results = filter(uast.uast, "//Import[@roleImport and @roleDeclaration]//alias")
-        self.assertEqual(len(results), 3)
+        results = list(filter(uast.uast, "//Import[@roleImport and @roleDeclaration]//alias"))
         self.assertEqual(results[0].token, "unittest")
         self.assertEqual(results[1].token, "importlib")
 

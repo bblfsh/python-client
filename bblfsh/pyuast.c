@@ -163,13 +163,12 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
       Py_INCREF(node);
       PyList_SET_ITEM(list, i, node);
     }
-
     NodesFree(nodes);
-    return list;
+    return PySeqIter_New(list);
   }
 
   NodesFree(nodes);
-  return PyList_New(0);
+  return PySeqIter_New(PyList_New(0));
 }
 
 static PyMethodDef extension_methods[] = {
