@@ -46,9 +46,10 @@ Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html
 from bblfsh import BblfshClient, filter
 
 client = BblfshClient("0.0.0.0:9432")
-print(client.parse("/path/to/file.py"))
+uast = client.parse("/path/to/file.py").uast
+print(uast)
 # "filter' allows you to use XPath queries to filter on result nodes:
-print(client.filter("//Import[@roleImport and @roleDeclaration]//alias")
+print(filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/user/language-clients.html)
