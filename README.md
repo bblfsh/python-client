@@ -51,6 +51,9 @@ print(client.parse("/path/to/file.py"))
 print(client.filter("//Import[@roleImport and @roleDeclaration]//alias")
 ```
 
+Please read the [Babelfish clients](https://doc.bblf.sh/user/language-clients.html)
+guide section to learn more about babelfish clients and their query language.
+
 ## License
 
 Apache License 2.0, see [LICENSE](LICENSE)
