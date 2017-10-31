@@ -1,5 +1,5 @@
 language: python
-sudo: false
+sudo: true
 services:
   - docker
 cache:
@@ -9,9 +9,16 @@ python:
   - "3.5"
   - "3.6"
 install:
+  - wget https://github.com/google/protobuf/releases/download/v3.4.1/protobuf-python-3.4.1.tar.gz
+  - tar -xzvf protobuf-python-3.4.1.tar.gz
+  - cd protobuf-3.4.1
+  - ./configure
+  - make
+  - sudo make install
+  - cd ..
   - pip3 install --upgrade pip
-  - pip3 install grpcio
-  - make bblfsh/libuast
+  - pip3 install -r requirements.txt
+  - python3 setup.py --getdeps
   - pip3 install . --upgrade
 script:
   - python3 setup.py build_ext -i
