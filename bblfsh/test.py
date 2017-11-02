@@ -32,6 +32,17 @@ class BblfshTests(unittest.TestCase):
     def setUp(self):
         self.client = BblfshClient("0.0.0.0:9432")
 
+    def testVersion(self):
+        version = self.client.version()
+        assert(hasattr(version, "version"))
+        assert(version.version)
+        assert(hasattr(version, "build"))
+        assert(version.build)
+
+    def testNativeParse(self):
+        reply = self.client.native_parse(__file__)
+        assert(reply.ast)
+
     def testUASTDefaultLanguage(self):
         uast = self.client.parse(__file__)
         self._validate_uast(uast)
