@@ -1,5 +1,5 @@
 language: python
-sudo: false
+sudo: true
 services:
   - docker
 cache:
@@ -9,9 +9,11 @@ python:
   - "3.5"
   - "3.6"
 install:
+  - wget https://github.com/bblfsh/client-python/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
+  - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
   - pip3 install --upgrade pip
-  - pip3 install grpcio
-  - make bblfsh/libuast
+  - pip3 install -r requirements.txt
+  - python3 setup.py --getdeps
   - pip3 install . --upgrade
 script:
   - python3 setup.py build_ext -i
