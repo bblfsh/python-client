@@ -3,11 +3,31 @@ import subprocess
 import sys
 
 from setuptools import setup, find_packages, Extension
+from setuptools.command.build_ext import build_ext
 
 LIBUAST_VERSION = "v1.3.0"
 SDK_VERSION = "v1.4.2"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
+
+
+libraries = ['xml2']
+sources = ['bblfsh/pyuast.c']
+
+
+class CustomBuildExt(build_ext):
+    def run(self):
+        global libraries
+        global sources
+
+        if "--global-uast" in sys.argv:
+            libraries.append('uast')
+        else:
+            sources.append('bblfsh/libuast/uast.c')
+            sources.append('bblfsh/libuast/roles.c')
+
+        getLibuast()
+        build_ext.run(self)
 
 
 def runc(cmd):
@@ -90,9 +110,6 @@ def clean():
 
 
 def main():
-    libraries = ['xml2']
-    sources = ['bblfsh/pyuast.c']
-
     # The --global-uast flag allows to install the python driver using the installed uast library
     if "--getdeps" in sys.argv:
         doGetDeps()
@@ -101,12 +118,6 @@ def main():
     if "--clean" in sys.argv:
         clean()
         sys.exit(0)
-
-    if "--global-uast" in sys.argv:
-        libraries.append('uast')
-    else:
-        sources.append('bblfsh/libuast/uast.c')
-        sources.append('bblfsh/libuast/roles.c')
 
     # download c dependencies
     if not os.path.exists("bblfsh/libuast"):
@@ -121,9 +132,12 @@ def main():
                       '/usr/include', '/usr/include/libxml2'], sources=sources)
 
     setup(
+        cmdclass = {
+            "build_ext": CustomBuildExt,
+        },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.3.0",
+        version="2.3.1",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",

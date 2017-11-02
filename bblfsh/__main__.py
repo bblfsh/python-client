@@ -29,7 +29,7 @@ def setup():
     return args
 
 def run_query(root, query, mapn, as_array):
-    result = filter(root, query)
+    result = list(filter(root, query))
 
     if not result:
         print("Nothing found")
