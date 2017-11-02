@@ -9,13 +9,8 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - wget https://github.com/google/protobuf/releases/download/v3.4.1/protobuf-python-3.4.1.tar.gz
-  - tar -xzvf protobuf-python-3.4.1.tar.gz
-  - cd protobuf-3.4.1
-  - ./configure --prefix=/usr
-  - make
-  - sudo make install
-  - cd ..
+  - wget https://github.com/bblfsh/client-python/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
+  - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
   - pip3 install --upgrade pip
   - pip3 install -r requirements.txt
   - python3 setup.py --getdeps
