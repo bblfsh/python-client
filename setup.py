@@ -5,8 +5,8 @@ import sys
 from setuptools import setup, find_packages, Extension
 
 LIBUAST_VERSION = "v1.3.0"
-SDK_MAJOR = "v1"
 SDK_VERSION = "v1.4.2"
+SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
 
 
