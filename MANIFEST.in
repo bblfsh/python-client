@@ -4,3 +4,4 @@ include DCO
 include LICENSE
 include MAINTAINERS
 include Makefile
+include github.com/gogo/protobuf/gogoproto/gogo.proto
