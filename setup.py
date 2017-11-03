@@ -119,10 +119,6 @@ def main():
         clean()
         sys.exit(0)
 
-    # download c dependencies
-    if not os.path.exists("bblfsh/libuast"):
-        doGetDeps()
-
     libuast_module = Extension(
         'bblfsh.pyuast',
         libraries=libraries,
@@ -137,7 +133,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.4.0",
+        version="2.4.1",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
@@ -146,7 +142,7 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio", "docker"],
+        install_requires=["grpcio", "grpcio-tools", "docker"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
         classifiers=[
