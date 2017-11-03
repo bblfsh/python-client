@@ -59,10 +59,7 @@ class BblfshTests(unittest.TestCase):
         self._validate_filter(uast)
 
     def testBrokenFilter(self):
-        from sys import version_info
-        if version_info[0:2] != (3, 4):
-            # Skip test 3.4: cant capture SystemException from binary modules
-            self.assertRaises(SystemError, filter, 0, "foo")
+        self.assertRaises(RuntimeError, filter, 0, "foo")
 
     def testFilterInternalType(self):
         node = Node()

@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-LIBUAST_VERSION = "v1.3.0"
+LIBUAST_VERSION = "v1.4.1"
 SDK_VERSION = "v1.4.2"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
@@ -123,7 +123,6 @@ def main():
         'bblfsh.pyuast',
         libraries=libraries,
         library_dirs=['/usr/lib', '/usr/local/lib'],
-        extra_compile_args=['-std=c99'],
         include_dirs=['bblfsh/libuast/', '/usr/local/include', '/usr/local/include/libxml2',
                       '/usr/include', '/usr/include/libxml2'], sources=sources)
 
