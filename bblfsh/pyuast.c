@@ -154,21 +154,22 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
     return NULL;
 
   Nodes *nodes = UastFilter(ctx, obj, query);
-  if (nodes) {
-    int len = NodesSize(nodes);
-    PyObject *list = PyList_New(len);
-
-    for (int i = 0; i < len; i++) {
-      PyObject *node = (PyObject *)NodeAt(nodes, i);
-      Py_INCREF(node);
-      PyList_SET_ITEM(list, i, node);
-    }
-    NodesFree(nodes);
-    return PySeqIter_New(list);
+  if (!nodes) {
+    char *error = LastError();
+    PyErr_SetString(PyExc_RuntimeError, error);
+    free(error);
+    return NULL;
   }
+  int len = NodesSize(nodes);
+  PyObject *list = PyList_New(len);
 
+  for (int i = 0; i < len; i++) {
+    PyObject *node = (PyObject *)NodeAt(nodes, i);
+    Py_INCREF(node);
+    PyList_SET_ITEM(list, i, node);
+  }
   NodesFree(nodes);
-  return PySeqIter_New(PyList_New(0));
+  return PySeqIter_New(list);
 }
 
 static PyMethodDef extension_methods[] = {
