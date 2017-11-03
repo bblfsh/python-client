@@ -123,6 +123,7 @@ def main():
         'bblfsh.pyuast',
         libraries=libraries,
         library_dirs=['/usr/lib', '/usr/local/lib'],
+        extra_compile_args=['-std=gnu99'],
         include_dirs=['bblfsh/libuast/', '/usr/local/include', '/usr/local/include/libxml2',
                       '/usr/include', '/usr/include/libxml2'], sources=sources)
 
