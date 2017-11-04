@@ -103,3 +103,7 @@ ENV/
 .mypy_cache/
 
 libuast
+
+bblfsh/github
+bblfsh/gopkg
+gopkg.in/bblfsh
