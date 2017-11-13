@@ -1,10 +1,9 @@
-from ast import literal_eval
 import os
 import sys
-import importlib
 
 import grpc
 
+from bblfsh.aliases import ParseRequest, NativeParseRequest, VersionRequest, ProtocolServiceStub
 from bblfsh.sdkversion import VERSION
 
 # The following two insertions fix the broken pb import paths
@@ -26,10 +25,6 @@ class BblfshClient(object):
                          for example "0.0.0.0:9432"
         :type endpoint: str
         """
-        ProtocolServiceStub = importlib.import_module(
-                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
-                ).ProtocolServiceStub
-
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
 
@@ -52,9 +47,6 @@ class BblfshClient(object):
         :type timeout: float
         :return: UAST object.
         """
-        ParseRequest = importlib.import_module(
-                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-                ).ParseRequest
 
         if contents is None:
             with open(filename, "rb") as fin:
@@ -84,10 +76,6 @@ class BblfshClient(object):
         :return: Native AST object.
         """
 
-        NativeParseRequest = importlib.import_module(
-                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-                ).NativeParseRequest
-
         if contents is None:
             with open(filename, "rb") as fin:
                 contents = fin.read()
@@ -103,10 +91,6 @@ class BblfshClient(object):
         :return: A dictionary with the keys "version" for the semantic version and
                  "build" for the build timestamp.
         """
-        VersionRequest = importlib.import_module(
-                "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-                ).VersionRequest
-
         return self._stub.Version(VersionRequest())
 
     @staticmethod
