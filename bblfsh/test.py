@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import docker
@@ -117,7 +118,10 @@ class BblfshTests(unittest.TestCase):
         self.assertRaises(RuntimeError, filter, node, "//*roleModule")
 
     def testIssue60(self):
-        rep = self.client.parse("fixtures/issue60.py")
+        fixtures_dir = os.path.join(
+                        os.path.dirname(os.path.realpath(__file__)),
+                        "fixtures")
+        rep = self.client.parse(os.path.join(fixtures_dir, "issue60.py"))
         assert(rep.uast)
         self.assertFalse(any(filter(rep.uast, "//@roleLiteral")))
 

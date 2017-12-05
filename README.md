@@ -1,7 +1,7 @@
 ## client-python [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python) [![PyPI](https://img.shields.io/pypi/v/bblfsh.svg)](https://pypi.python.org/pypi/bblfsh)
 
 [Babelfish](https://doc.bblf.sh) Python client library provides functionality to both
-connect to the Babelfish server to parse code
+connect to the Babelfish bblfshd to parse code
 (obtaining an [UAST](https://doc.bblf.sh/uast/specification.html) as a result)
 and to analyse UASTs with the functionality provided by [libuast](https://github.com/bblfsh/libuast).
 
@@ -37,10 +37,11 @@ A small example of how to parse a Python file and extract the import declaration
 If you don't have a bblfsh server running you can execute it using the following command:
 
 ```sh
-docker run --privileged --rm -it -p 9432:9432 --name bblfsh bblfsh/server
+docker run --privileged --rm -it -p 9432:9432 -v bblfsh_cache:/var/lib/bblfshd --name bblfshd bblfsh/bblfshd
+docker exec -it bblfshd bblfshctl driver install python bblfsh/python-driver:latest
 ```
 
-Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html) guide to learn more about how to use and deploy a bblfsh server.
+Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html) guide to learn more about how to use and deploy a bblfshd.
 
 ```python
 from bblfsh import BblfshClient, filter

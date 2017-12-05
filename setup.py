@@ -10,7 +10,8 @@ SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
 
-
+os.environ["CC"] = "g++"
+os.environ["CXX"] = "g++"
 libraries = ['xml2']
 sources = ['bblfsh/pyuast.c']
 
