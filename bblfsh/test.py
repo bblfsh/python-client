@@ -17,7 +17,7 @@ class BblfshTests(unittest.TestCase):
     def tearDownClass(cls):
         if not cls.BBLFSH_SERVER_EXISTED:
             client = docker.from_env(version="auto")
-            client.containers.get("bblfsh").remove(force=True)
+            client.containers.get("bblfshd").remove(force=True)
             client.api.close()
 
     def setUp(self):
@@ -111,6 +111,15 @@ class BblfshTests(unittest.TestCase):
         node.end_position.col = 50
         self.assertTrue(any(filter(node, "//*[@endCol=50]")))
         self.assertFalse(any(filter(node, "//*[@endCol=5]")))
+
+    def testFilterBadQuery(self):
+        node = Node()
+        self.assertRaises(RuntimeError, filter, node, "//*roleModule")
+
+    def testIssue60(self):
+        rep = self.client.parse("fixtures/issue60.py")
+        assert(rep.uast)
+        self.assertFalse(any(filter(rep.uast, "//@roleLiteral")))
 
     def testRoleIdName(sedlf):
         assert(role_id(role_name(1)) == 1)
