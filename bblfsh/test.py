@@ -5,6 +5,7 @@ import docker
 
 from bblfsh import BblfshClient, filter, role_id, role_name, Node, ParseResponse
 from bblfsh.launcher import ensure_bblfsh_is_running
+from bblfsh.client import NonUTF8ContentException
 
 
 class BblfshTests(unittest.TestCase):
@@ -34,6 +35,10 @@ class BblfshTests(unittest.TestCase):
     def testNativeParse(self):
         reply = self.client.native_parse(__file__)
         assert(reply.ast)
+
+    def testNonUTF8ParseError(self):
+        self.assertRaises(NonUTF8ContentException,
+                          self.client.parse, "", "Python", b"a = '\x80abc'")
 
     def testUASTDefaultLanguage(self):
         self._validate_resp(self.client.parse(__file__))
@@ -116,14 +121,6 @@ class BblfshTests(unittest.TestCase):
     def testFilterBadQuery(self):
         node = Node()
         self.assertRaises(RuntimeError, filter, node, "//*roleModule")
-
-    def testIssue60(self):
-        fixtures_dir = os.path.join(
-                        os.path.dirname(os.path.realpath(__file__)),
-                        "fixtures")
-        rep = self.client.parse(os.path.join(fixtures_dir, "issue60.py"))
-        assert(rep.uast)
-        self.assertFalse(any(filter(rep.uast, "//@roleLiteral")))
 
     def testRoleIdName(sedlf):
         assert(role_id(role_name(1)) == 1)
