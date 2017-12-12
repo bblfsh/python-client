@@ -12,6 +12,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__),
 sys.path.insert(0, os.path.dirname(__file__))
 
 
+class NonUTF8ContentException(Exception):
+    pass
+
+
 class BblfshClient(object):
     """
     Babelfish gRPC client. Currently it is only capable of fetching UASTs.
@@ -27,6 +31,21 @@ class BblfshClient(object):
         """
         self._channel = grpc.insecure_channel(endpoint)
         self._stub = ProtocolServiceStub(self._channel)
+
+    @staticmethod
+    def _check_utf8(text):
+        try:
+            text.decode("utf-8")
+        except UnicodeDecodeError:
+            raise NonUTF8ContentException("Content must be UTF-8, ASCII or Base64 encoded")
+
+    @staticmethod
+    def _get_contents(contents, filename):
+        if contents is None:
+            with open(filename, "rb") as fin:
+                contents = fin.read()
+        BblfshClient._check_utf8(contents)
+        return contents
 
     def parse(self, filename, language=None, contents=None, timeout=None):
         """
@@ -48,9 +67,7 @@ class BblfshClient(object):
         :return: UAST object.
         """
 
-        if contents is None:
-            with open(filename, "rb") as fin:
-                contents = fin.read()
+        contents = self._get_contents(contents, filename)
         request = ParseRequest(filename=os.path.basename(filename),
                                content=contents,
                                language=self._scramble_language(language))
@@ -76,9 +93,7 @@ class BblfshClient(object):
         :return: Native AST object.
         """
 
-        if contents is None:
-            with open(filename, "rb") as fin:
-                contents = fin.read()
+        contents = self._get_contents(contents, filename)
         request = NativeParseRequest(filename=os.path.basename(filename),
                                content=contents,
                                language=self._scramble_language(language))
