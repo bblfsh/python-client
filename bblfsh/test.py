@@ -142,6 +142,7 @@ class BblfshTests(unittest.TestCase):
 
     def _validate_filter(self, resp):
         results = filter(resp.uast, "//Import[@roleImport and @roleDeclaration]//alias")
+        self.assertEqual(next(results).token, "os")
         self.assertEqual(next(results).token, "unittest")
         self.assertEqual(next(results).token, "docker")
 

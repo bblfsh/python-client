@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-LIBUAST_VERSION = "v1.5.0"
+LIBUAST_VERSION = "v1.5.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
