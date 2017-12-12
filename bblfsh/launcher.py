@@ -16,22 +16,24 @@ def ensure_bblfsh_is_running():
 
     def after_start(container):
         log.warning(
-            "Launched the Babelfish server (name bblfsh, id %s).\nStop it "
-            "with: docker rm -f bblfsh", container.id)
+            "Launched the Babelfish server (name bblfshd, id %s).\nStop it "
+            "with: docker rm -f bblfshd", container.id)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             result = -1
             while result != 0:
                 time.sleep(0.1)
                 result = sock.connect_ex(("0.0.0.0", 9432))
         log.warning("Babelfish server is up and running.")
+        log.info("Installing Python driver")
+        container.exec_run("bblfshctl driver install python bblfsh/python-driver:latest")
 
     try:
-        container = client.containers.get("bblfsh")
+        container = client.containers.get("bblfshd")
         if container.status != "running":
             try:
                 container.start()
             except Exception as e:
-                log.warning("Failed to start the existing bblfsh container: "
+                log.warning("Failed to start the existing bblfshd container: "
                             "%s: %s", type(e).__name__, e)
             else:
                 after_start(container)
@@ -44,7 +46,7 @@ def ensure_bblfsh_is_running():
         return False
     except docker.errors.NotFound:
         container = client.containers.run(
-                "bblfsh/server", name="bblfsh", detach=True, privileged=True,
+                "bblfsh/bblfshd", name="bblfshd", detach=True, privileged=True,
             ports={9432: 9432}
         )
         after_start(container)

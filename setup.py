@@ -5,12 +5,13 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-LIBUAST_VERSION = "v1.4.1"
+LIBUAST_VERSION = "v1.5.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
 
-
+os.environ["CC"] = "g++"
+os.environ["CXX"] = "g++"
 libraries = ['xml2']
 sources = ['bblfsh/pyuast.c']
 
@@ -23,7 +24,7 @@ class CustomBuildExt(build_ext):
         if "--global-uast" in sys.argv:
             libraries.append('uast')
         else:
-            sources.append('bblfsh/libuast/uast.c')
+            sources.append('bblfsh/libuast/uast.cc')
             sources.append('bblfsh/libuast/roles.c')
 
         getLibuast()
@@ -123,7 +124,7 @@ def main():
         'bblfsh.pyuast',
         libraries=libraries,
         library_dirs=['/usr/lib', '/usr/local/lib'],
-        extra_compile_args=['-std=gnu99'],
+        extra_compile_args=['-std=c++11'],
         include_dirs=['bblfsh/libuast/', '/usr/local/include', '/usr/local/include/libxml2',
                       '/usr/include', '/usr/include/libxml2'], sources=sources)
 

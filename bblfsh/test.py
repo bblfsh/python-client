@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import docker
@@ -17,7 +18,7 @@ class BblfshTests(unittest.TestCase):
     def tearDownClass(cls):
         if not cls.BBLFSH_SERVER_EXISTED:
             client = docker.from_env(version="auto")
-            client.containers.get("bblfsh").remove(force=True)
+            client.containers.get("bblfshd").remove(force=True)
             client.api.close()
 
     def setUp(self):
@@ -112,6 +113,18 @@ class BblfshTests(unittest.TestCase):
         self.assertTrue(any(filter(node, "//*[@endCol=50]")))
         self.assertFalse(any(filter(node, "//*[@endCol=5]")))
 
+    def testFilterBadQuery(self):
+        node = Node()
+        self.assertRaises(RuntimeError, filter, node, "//*roleModule")
+
+    def testIssue60(self):
+        fixtures_dir = os.path.join(
+                        os.path.dirname(os.path.realpath(__file__)),
+                        "fixtures")
+        rep = self.client.parse(os.path.join(fixtures_dir, "issue60.py"))
+        assert(rep.uast)
+        self.assertFalse(any(filter(rep.uast, "//@roleLiteral")))
+
     def testRoleIdName(sedlf):
         assert(role_id(role_name(1)) == 1)
         assert(role_name(role_id("IDENTIFIER")) == "IDENTIFIER")
@@ -129,6 +142,7 @@ class BblfshTests(unittest.TestCase):
 
     def _validate_filter(self, resp):
         results = filter(resp.uast, "//Import[@roleImport and @roleDeclaration]//alias")
+        self.assertEqual(next(results).token, "os")
         self.assertEqual(next(results).token, "unittest")
         self.assertEqual(next(results).token, "docker")
 
