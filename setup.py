@@ -13,7 +13,7 @@ PYTHON = "python3"
 os.environ["CC"] = "g++"
 os.environ["CXX"] = "g++"
 libraries = ['xml2']
-sources = ['bblfsh/pyuast.c']
+sources = ['bblfsh/pyuast.cc']
 
 
 class CustomBuildExt(build_ext):
@@ -73,6 +73,7 @@ def getLibuast():
     runc("mv libuast-{LIBUAST_VERSION} libuast")
     runc("cp -a libuast/src bblfsh/libuast")
     runc("rm -rf libuast")
+    # pass
 
 
 def protoDownload():

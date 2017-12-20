@@ -3,7 +3,8 @@ import unittest
 
 import docker
 
-from bblfsh import BblfshClient, filter, role_id, role_name, Node, ParseResponse
+from bblfsh import (BblfshClient, filter, iterator, role_id,
+        role_name, Node, ParseResponse)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
 
@@ -122,9 +123,22 @@ class BblfshTests(unittest.TestCase):
         node = Node()
         self.assertRaises(RuntimeError, filter, node, "//*roleModule")
 
-    def testRoleIdName(sedlf):
+    def testRoleIdName(self):
         assert(role_id(role_name(1)) == 1)
         assert(role_name(role_id("IDENTIFIER")) == "IDENTIFIER")
+
+    def testIteratorXXX(self):
+        # node = Node()
+        # node.properties['k1'] = 'v2'
+        # node.properties['k2'] = 'v1'
+        # node.end_position.col = 50
+        resp = self.client.parse(__file__)
+        print(type(resp.uast))
+        it = iterator(resp.uast)
+        from pprint import pprint
+        for node in it:
+            print(node.internal_type)
+        # print(list(it))
 
     def _validate_resp(self, resp):
         self.assertIsNotNone(resp)

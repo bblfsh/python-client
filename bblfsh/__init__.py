@@ -1,5 +1,5 @@
 from bblfsh.client import BblfshClient
-from bblfsh.pyuast import filter
+from bblfsh.pyuast import filter, iterator
 from bblfsh.aliases import *
 
 # "in" is a reserved keyword in Python thus can't be used as package name, so
