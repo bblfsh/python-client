@@ -134,7 +134,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.7.0",
+        version="2.8.0",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
