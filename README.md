@@ -44,13 +44,18 @@ docker exec -it bblfshd bblfshctl driver install python bblfsh/python-driver:lat
 Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html) guide to learn more about how to use and deploy a bblfshd.
 
 ```python
-from bblfsh import BblfshClient, filter
+import bblfsh
 
-client = BblfshClient("0.0.0.0:9432")
+client = bblfsh.BblfshClient("0.0.0.0:9432")
 uast = client.parse("/path/to/file.py").uast
 print(uast)
 # "filter' allows you to use XPath queries to filter on result nodes:
-print(filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
+print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
+
+# You can also iterate on several tree iteration orders:
+it = bblfsh.iterator(uast, bblfsh.TreeOrder.pre_order)
+for node in it:
+    print(node.internal_type)
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/user/language-clients.html)

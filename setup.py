@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-LIBUAST_VERSION = "v1.5.1"
+LIBUAST_VERSION = "v1.6.0"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
@@ -13,7 +13,7 @@ PYTHON = "python3"
 os.environ["CC"] = "g++"
 os.environ["CXX"] = "g++"
 libraries = ['xml2']
-sources = ['bblfsh/pyuast.cc']
+sources = ['bblfsh/pyuast.c']
 
 
 class CustomBuildExt(build_ext):
