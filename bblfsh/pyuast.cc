@@ -146,22 +146,22 @@ static Uast *ctx;
 /////////// PYTHON API //////////////
 /////////////////////////////////////
 
-// XXX start iterator ===============================
 typedef struct {
   PyObject_HEAD
   UastIterator *iter;
 } PyUastIter;
 
-// __iter__()
+// iterator.__iter__()
 static PyObject *PyUastIter_iter(PyObject *self)
 {
   Py_INCREF(self);
   return self;
 }
 
-// __next__()
+// iterator.__next__()
 static PyObject *PyUastIter_next(PyObject *self)
 {
+
   PyUastIter *it = (PyUastIter *)self;
 
   void *node = UastIteratorNext(it->iter);
@@ -170,6 +170,7 @@ static PyObject *PyUastIter_next(PyObject *self)
     return NULL;
   }
 
+  Py_INCREF(node);
   return (PyObject *)node;
 }
 
@@ -182,8 +183,7 @@ static PyTypeObject PyUastIterType = {
   "pyuast.UastIterator",          // tp_name
   sizeof(PyUastIter),             // tp_basicsize
   0,                              // tp_itemsize
-  //PyUastIter_dealloc,             // tp_dealloc // XXX
-  0,             // tp_dealloc // XXX
+  PyUastIter_dealloc,             // tp_dealloc
   0,                              // tp_print
   0,                              // tp_getattr
   0,                              // tp_setattr
@@ -221,25 +221,23 @@ static PyTypeObject PyUastIterType = {
 
 static PyObject *PyUastIter_new(PyObject *self, PyObject *args)
 {
-  // XXX Validate that the type is 'gopkg.in.bblfsh.sdk.v1.uast.generated_pb2.Node'
-  PyUastIter *it;
-  void *node;
+  void *node = NULL;
+  uint8_t order;
 
-  if (!PyArg_ParseTuple(args, "O", &node))
+  if (!PyArg_ParseTuple(args, "OB", &node, &order))
     return NULL;
 
-  it = PyObject_New(PyUastIter, &PyUastIterType);
-  if (!it)
+  PyUastIter *pyIt = PyObject_New(PyUastIter, &PyUastIterType);
+  if (!pyIt)
     return NULL;
 
-  if (!PyObject_Init((PyObject *)it, &PyUastIterType)) {
-    Py_DECREF(it);
+  if (!PyObject_Init((PyObject *)pyIt, &PyUastIterType)) {
+    Py_DECREF(pyIt);
     return NULL;
   }
 
-  // XXX set order, pass as argument to this
-  it->iter = UastIteratorNew(ctx, node, PRE_ORDER);
-  return (PyObject *)it;
+  pyIt->iter = UastIteratorNew(ctx, node, (TreeOrder)order);
+  return (PyObject*)pyIt;
 }
 
 
@@ -248,12 +246,11 @@ static void PyUastIter_dealloc(PyObject *self)
   UastIteratorFree(((PyUastIter *)self)->iter);
 }
 
-// XXX end iterator ======================================
-
 static PyObject *PyFilter(PyObject *self, PyObject *args)
 {
   PyObject *obj = NULL;
   const char *query = NULL;
+
   if (!PyArg_ParseTuple(args, "Os", &obj, &query))
     return NULL;
 

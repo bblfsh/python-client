@@ -73,7 +73,6 @@ def getLibuast():
     runc("mv libuast-{LIBUAST_VERSION} libuast")
     runc("cp -a libuast/src bblfsh/libuast")
     runc("rm -rf libuast")
-    # pass
 
 
 def protoDownload():
@@ -135,7 +134,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.6.1",
+        version="2.7.0",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",

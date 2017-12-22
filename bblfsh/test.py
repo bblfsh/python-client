@@ -4,7 +4,7 @@ import unittest
 import docker
 
 from bblfsh import (BblfshClient, filter, iterator, role_id,
-        role_name, Node, ParseResponse)
+        role_name, Node, ParseResponse, TreeOrder)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
 
@@ -127,18 +127,55 @@ class BblfshTests(unittest.TestCase):
         assert(role_id(role_name(1)) == 1)
         assert(role_name(role_id("IDENTIFIER")) == "IDENTIFIER")
 
-    def testIteratorXXX(self):
-        # node = Node()
-        # node.properties['k1'] = 'v2'
-        # node.properties['k2'] = 'v1'
-        # node.end_position.col = 50
-        resp = self.client.parse(__file__)
-        print(type(resp.uast))
-        it = iterator(resp.uast)
-        from pprint import pprint
-        for node in it:
-            print(node.internal_type)
-        # print(list(it))
+    def _itTestTree(self):
+        root = Node()
+        root.internal_type = 'root'
+        son1 = Node()
+        son1.internal_type = 'son1'
+
+        son1_1 = Node()
+        son1_1.internal_type = 'son1_1'
+
+        son1_2 = Node()
+        son1_2.internal_type = 'son1_2'
+        son1.children.extend([son1_1, son1_2])
+
+        son2 = Node()
+        son2.internal_type = 'son2'
+        son2_1 = Node()
+        son2_1.internal_type = 'son2_1'
+
+        son2_2 = Node()
+        son2_2.internal_type = 'son2_2'
+        son2.children.extend([son2_1, son2_2])
+
+        root.children.extend([son1, son2])
+
+        return root
+
+    def testIteratorPreOrder(self):
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.pre_order)
+        self.assertIsNotNone(it)
+        expanded = [node.internal_type for node in it]
+        self.assertListEqual(expanded, ['root', 'son1', 'son1_1', 'son1_2',
+                                        'son2', 'son2_1', 'son2_2'])
+
+    def testIteratorPostOrder(self):
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.post_order)
+        self.assertIsNotNone(it)
+        expanded = [node.internal_type for node in it]
+        self.assertListEqual(expanded, ['son1_1', 'son1_2', 'son1', 'son2_1',
+                                        'son2_2', 'son2', 'root'])
+
+    def testIteratorLevelOrder(self):
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.level_order)
+        self.assertIsNotNone(it)
+        expanded = [node.internal_type for node in it]
+        self.assertListEqual(expanded, ['root', 'son1', 'son2', 'son1_1',
+                                        'son1_2', 'son2_1', 'son2_2'])
 
     def _validate_resp(self, resp):
         self.assertIsNotNone(resp)

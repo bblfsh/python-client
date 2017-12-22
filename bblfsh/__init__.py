@@ -2,9 +2,13 @@ from bblfsh.client import BblfshClient
 from bblfsh.pyuast import filter, iterator
 from bblfsh.aliases import *
 
+class TreeOrder:
+    pre_order = 0
+    post_order = 1
+    level_order = 2
+
 # "in" is a reserved keyword in Python thus can't be used as package name, so
 # we import by string
-
 
 class RoleSearchException(Exception):
     pass
