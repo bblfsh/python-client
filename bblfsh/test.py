@@ -155,7 +155,7 @@ class BblfshTests(unittest.TestCase):
 
     def testIteratorPreOrder(self):
         root = self._itTestTree()
-        it = iterator(root, TreeOrder.pre_order)
+        it = iterator(root, TreeOrder.PRE_ORDER)
         self.assertIsNotNone(it)
         expanded = [node.internal_type for node in it]
         self.assertListEqual(expanded, ['root', 'son1', 'son1_1', 'son1_2',
@@ -163,7 +163,7 @@ class BblfshTests(unittest.TestCase):
 
     def testIteratorPostOrder(self):
         root = self._itTestTree()
-        it = iterator(root, TreeOrder.post_order)
+        it = iterator(root, TreeOrder.POST_ORDER)
         self.assertIsNotNone(it)
         expanded = [node.internal_type for node in it]
         self.assertListEqual(expanded, ['son1_1', 'son1_2', 'son1', 'son2_1',
@@ -171,7 +171,7 @@ class BblfshTests(unittest.TestCase):
 
     def testIteratorLevelOrder(self):
         root = self._itTestTree()
-        it = iterator(root, TreeOrder.level_order)
+        it = iterator(root, TreeOrder.LEVEL_ORDER)
         self.assertIsNotNone(it)
         expanded = [node.internal_type for node in it]
         self.assertListEqual(expanded, ['root', 'son1', 'son2', 'son1_1',
