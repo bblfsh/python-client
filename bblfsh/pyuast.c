@@ -237,8 +237,10 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args)
   }
 
   pyIt->iter = UastIteratorNew(ctx, node, (TreeOrder)order);
-  if (!pyIt->iter)
+  if (!pyIt->iter) {
+    Py_DECREF(pyIt);
     return NULL;
+  }
 
   return (PyObject*)pyIt;
 }
