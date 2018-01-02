@@ -18,7 +18,7 @@ pip install bblfsh
 ```bash
 git clone https://github.com/bblfsh/client-python.git
 cd client-python
-make install
+python setup.py install
 ```
 
 ### Dependencies
