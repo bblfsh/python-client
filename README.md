@@ -53,7 +53,7 @@ print(uast)
 print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
 
 # You can also iterate on several tree iteration orders:
-it = bblfsh.iterator(uast, bblfsh.TreeOrder.pre_order)
+it = bblfsh.iterator(uast, bblfsh.TreeOrder.PRE_ORDER)
 for node in it:
     print(node.internal_type)
 ```
