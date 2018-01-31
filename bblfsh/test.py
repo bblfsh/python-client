@@ -188,6 +188,20 @@ class BblfshTests(unittest.TestCase):
         # Sometimes its fully qualified, sometimes is just "Node"... ditto
         assert(resp.uast.__class__.__name__.endswith('Node'))
 
+    def testManyFilters(self):
+        root = self.client.parse(__file__).uast
+        root.properties['k1'] = 'v2'
+        root.properties['k2'] = 'v1'
+
+        import resource
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(100):
+            filter(root, "//*[@roleIdentifier]")
+        after = resource.getrusage(resource.RUSAGE_SELF)
+
+        # Check that memory usage has not doubled after running the filter
+        self.assertLess(after[2] / before[2], 2.0)
+
     def _validate_filter(self, resp):
         results = filter(resp.uast, "//Import[@roleImport and @roleDeclaration]//alias")
         self.assertEqual(next(results).token, "os")

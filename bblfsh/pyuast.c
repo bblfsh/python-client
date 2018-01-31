@@ -16,8 +16,13 @@ static PyObject *AttributeValue(const void *node, const char *prop) {
 }
 
 static const char *String(const void *node, const char *prop) {
+  const char *retval = NULL;
   PyObject *o = Attribute(node, prop);
-  return o ? PyUnicode_AsUTF8(o) : NULL;
+  if (o != NULL) {
+    retval = PyUnicode_AsUTF8(o);
+    Py_DECREF(o);
+  }
+  return retval;
 }
 
 static size_t Size(const void *node, const char *prop) {
@@ -26,8 +31,14 @@ static size_t Size(const void *node, const char *prop) {
 }
 
 static PyObject *ItemAt(PyObject *object, int index) {
+  PyObject *retval = NULL;
   PyObject *seq = PySequence_Fast(object, "expected a sequence");
-  return PyList_GET_ITEM(seq, index);
+  if (seq != NULL) {
+    retval = PyList_GET_ITEM(seq, index);
+    Py_DECREF(seq);
+  }
+
+  return retval;
 }
 
 
@@ -68,8 +79,13 @@ static const char *PropertyKeyAt(const void *node, int index) {
     return NULL;
   }
 
+  const char *retval = NULL;
   PyObject *keys = PyMapping_Keys(properties);
-  return keys ? PyUnicode_AsUTF8(ItemAt(keys, index)) : NULL;
+  if (keys != NULL) {
+    retval = PyUnicode_AsUTF8(ItemAt(keys, index));
+    Py_DECREF(keys);
+  }
+  return retval;
 }
 
 static const char *PropertyValueAt(const void *node, int index) {
@@ -78,8 +94,13 @@ static const char *PropertyValueAt(const void *node, int index) {
     return NULL;
   }
 
+  const char *retval = NULL;
   PyObject *values = PyMapping_Values(properties);
-  return values ? PyUnicode_AsUTF8(ItemAt(values, index)) : NULL;
+  if (values != NULL) {
+    retval = PyUnicode_AsUTF8(ItemAt(values, index));
+    Py_DECREF(values);
+  }
+  return retval;
 }
 
 static uint32_t PositionValue(const void* node, const char *prop, const char *field) {
@@ -275,7 +296,9 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
     PyList_SET_ITEM(list, i, node);
   }
   NodesFree(nodes);
-  return PySeqIter_New(list);
+  PyObject *iter = PySeqIter_New(list);
+  Py_DECREF(list);
+  return iter;
 }
 
 static PyMethodDef extension_methods[] = {
