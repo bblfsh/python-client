@@ -2,8 +2,16 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "uast.h"
+
+// Used to store references to the Pyobjects instanced in String() and
+// ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses the
+// so we pass ownership to these lists and free them at the end of filter()
+static PyObject *stringAllocsList;
+static PyObject *itemAtAllocsList;
 
 static PyObject *Attribute(const void *node, const char *prop) {
   PyObject *n = (PyObject *)node;
@@ -16,20 +24,38 @@ static PyObject *AttributeValue(const void *node, const char *prop) {
 }
 
 static const char *String(const void *node, const char *prop) {
+  const char *retval = NULL;
   PyObject *o = Attribute(node, prop);
-  return o ? PyUnicode_AsUTF8(o) : NULL;
+  if (o != NULL) {
+    retval = PyUnicode_AsUTF8(o);
+    PyList_Append(stringAllocsList, o);
+    Py_DECREF(o);
+  }
+  return retval;
 }
 
 static size_t Size(const void *node, const char *prop) {
+  size_t retval = 0;
   PyObject *o = Attribute(node, prop);
-  return o ? PySequence_Size(o) : 0;
+  if (o != NULL) {
+    retval = PySequence_Size(o);
+    Py_DECREF(o);
+  }
+
+  return retval;
 }
 
 static PyObject *ItemAt(PyObject *object, int index) {
+  PyObject *retval = NULL;
   PyObject *seq = PySequence_Fast(object, "expected a sequence");
-  return PyList_GET_ITEM(seq, index);
-}
+  if (seq != NULL) {
+    retval = PyList_GET_ITEM(seq, index);
+    PyList_Append(itemAtAllocsList, seq);
+    Py_DECREF(seq);
+  }
 
+  return retval;
+}
 
 static const char *InternalType(const void *node) {
   return String(node, "internal_type");
@@ -68,8 +94,13 @@ static const char *PropertyKeyAt(const void *node, int index) {
     return NULL;
   }
 
+  const char *retval = NULL;
   PyObject *keys = PyMapping_Keys(properties);
-  return keys ? PyUnicode_AsUTF8(ItemAt(keys, index)) : NULL;
+  if (keys != NULL) {
+    retval = PyUnicode_AsUTF8(ItemAt(keys, index));
+    Py_DECREF(keys);
+  }
+  return retval;
 }
 
 static const char *PropertyValueAt(const void *node, int index) {
@@ -78,8 +109,13 @@ static const char *PropertyValueAt(const void *node, int index) {
     return NULL;
   }
 
+  const char *retval = NULL;
   PyObject *values = PyMapping_Values(properties);
-  return values ? PyUnicode_AsUTF8(ItemAt(values, index)) : NULL;
+  if (values != NULL) {
+    retval = PyUnicode_AsUTF8(ItemAt(values, index));
+    Py_DECREF(values);
+  }
+  return retval;
 }
 
 static uint32_t PositionValue(const void* node, const char *prop, const char *field) {
@@ -256,14 +292,20 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
   PyObject *obj = NULL;
   const char *query = NULL;
 
-  if (!PyArg_ParseTuple(args, "Os", &obj, &query))
+  if (!PyArg_ParseTuple(args, "Os", &obj, &query)) {
     return NULL;
+  }
+
+  itemAtAllocsList = PyList_New(0);
+  stringAllocsList = PyList_New(0);
 
   Nodes *nodes = UastFilter(ctx, obj, query);
   if (!nodes) {
     char *error = LastError();
     PyErr_SetString(PyExc_RuntimeError, error);
     free(error);
+    Py_DECREF(stringAllocsList);
+    Py_DECREF(itemAtAllocsList);
     return NULL;
   }
   size_t len = NodesSize(nodes);
@@ -275,7 +317,12 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
     PyList_SET_ITEM(list, i, node);
   }
   NodesFree(nodes);
-  return PySeqIter_New(list);
+  PyObject *iter = PySeqIter_New(list);
+  Py_DECREF(list);
+
+  Py_DECREF(itemAtAllocsList);
+  Py_DECREF(stringAllocsList);
+  return iter;
 }
 
 static PyMethodDef extension_methods[] = {
