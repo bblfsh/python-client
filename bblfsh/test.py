@@ -4,7 +4,8 @@ import unittest
 import docker
 
 from bblfsh import (BblfshClient, filter, iterator, role_id,
-        role_name, Node, ParseResponse, TreeOrder)
+        role_name, Node, ParseResponse, TreeOrder, filter_bool,
+        filter_number, filter_string)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
 
@@ -28,10 +29,10 @@ class BblfshTests(unittest.TestCase):
 
     def testVersion(self):
         version = self.client.version()
-        assert(hasattr(version, "version"))
-        assert(version.version)
-        assert(hasattr(version, "build"))
-        assert(version.build)
+        self.assertTrue(hasattr(version, "version"))
+        self.assertTrue(version.version)
+        self.assertTrue(hasattr(version, "build"))
+        self.assertTrue(version.build)
 
     def testNativeParse(self):
         reply = self.client.native_parse(__file__)
@@ -119,13 +120,33 @@ class BblfshTests(unittest.TestCase):
         self.assertTrue(any(filter(node, "//*[@endCol=50]")))
         self.assertFalse(any(filter(node, "//*[@endCol=5]")))
 
+    def testFilterBool(self):
+        node = Node()
+        self.assertTrue(filter_bool(node, "boolean(//*[@startOffset or @endOffset])"))
+        self.assertFalse(filter_bool(node, "boolean(//*[@blah])"))
+
+    def testFilterNumber(self):
+        node = Node()
+        node.children.extend([Node(), Node(), Node()])
+        self.assertEqual(int(filter_number(node, "count(//*)")), 4)
+
+    def testFilterString(self):
+        node = Node()
+        node.internal_type = "test"
+        self.assertEqual(filter_string(node, "name(//*[1])"), "test")
+
     def testFilterBadQuery(self):
         node = Node()
         self.assertRaises(RuntimeError, filter, node, "//*roleModule")
 
+    def testFilterBadType(self):
+        node = Node()
+        node.end_position.col = 50
+        self.assertRaises(RuntimeError, filter, node, "boolean(//*[@startPosition or @endPosition])")
+
     def testRoleIdName(self):
-        assert(role_id(role_name(1)) == 1)
-        assert(role_name(role_id("IDENTIFIER")) == "IDENTIFIER")
+        self.assertEqual(role_id(role_name(1)), 1)
+        self.assertEqual(role_name(role_id("IDENTIFIER")),  "IDENTIFIER")
 
     def _itTestTree(self):
         root = Node()
@@ -186,7 +207,7 @@ class BblfshTests(unittest.TestCase):
         # self.assertIsInstance(resp.uast, Node)
 
         # Sometimes its fully qualified, sometimes is just "Node"... ditto
-        assert(resp.uast.__class__.__name__.endswith('Node'))
+        self.assertTrue(resp.uast.__class__.__name__.endswith('Node'))
 
     def testManyFilters(self):
         root = self.client.parse(__file__).uast
