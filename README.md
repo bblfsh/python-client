@@ -52,6 +52,12 @@ print(uast)
 # "filter' allows you to use XPath queries to filter on result nodes:
 print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
 
+# filter\_[bool|string|number] must be used when using XPath functions returning
+# these types:
+print(bblfsh.filter_bool(uast, "boolean(//*[@strtOffset or @endOffset])"))
+print(bblfsh.filter_string(uast, "name(//*[1])"))
+print(bblfsh.filter_number(uast, "count(//*)"))
+
 # You can also iterate on several tree iteration orders:
 it = bblfsh.iterator(uast, bblfsh.TreeOrder.PRE_ORDER)
 for node in it:

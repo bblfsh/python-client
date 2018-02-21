@@ -39,7 +39,6 @@ static size_t Size(const void *node, const char *prop) {
   PyObject *o = Attribute(node, prop);
   if (o != NULL) {
     retval = PySequence_Size(o);
-    Py_DECREF(o);
   }
 
   return retval;
@@ -287,25 +286,42 @@ static void PyUastIter_dealloc(PyObject *self)
   UastIteratorFree(((PyUastIter *)self)->iter);
 }
 
+static bool initFilter(PyObject *args, PyObject **obj, const char **query)
+{
+  if (!PyArg_ParseTuple(args, "Os", obj, query)) {
+    return false;
+  }
+
+  itemAtAllocsList = PyList_New(0);
+  stringAllocsList = PyList_New(0);
+  return true;
+}
+
+static void cleanupFilter(void)
+{
+    Py_DECREF(itemAtAllocsList);
+    Py_DECREF(stringAllocsList);
+}
+
+static void filterError(void)
+{
+  char *error = LastError();
+  PyErr_SetString(PyExc_RuntimeError, error);
+  free(error);
+  cleanupFilter();
+}
+
 static PyObject *PyFilter(PyObject *self, PyObject *args)
 {
   PyObject *obj = NULL;
   const char *query = NULL;
 
-  if (!PyArg_ParseTuple(args, "Os", &obj, &query)) {
+  if (!initFilter(args, &obj, &query))
     return NULL;
-  }
-
-  itemAtAllocsList = PyList_New(0);
-  stringAllocsList = PyList_New(0);
 
   Nodes *nodes = UastFilter(ctx, obj, query);
   if (!nodes) {
-    char *error = LastError();
-    PyErr_SetString(PyExc_RuntimeError, error);
-    free(error);
-    Py_DECREF(stringAllocsList);
-    Py_DECREF(itemAtAllocsList);
+    filterError();
     return NULL;
   }
   size_t len = NodesSize(nodes);
@@ -320,14 +336,71 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
   PyObject *iter = PySeqIter_New(list);
   Py_DECREF(list);
 
-  Py_DECREF(itemAtAllocsList);
-  Py_DECREF(stringAllocsList);
+  cleanupFilter();
   return iter;
 }
 
+static PyObject *PyFilterBool(PyObject *self, PyObject *args)
+{
+  PyObject *obj = NULL;
+  const char *query = NULL;
+
+  if (!initFilter(args, &obj, &query))
+    return NULL;
+
+  bool ok;
+  bool res = UastFilterBool(ctx, obj, query, &ok);
+  if (!ok) {
+    filterError();
+    return NULL;
+  }
+
+  cleanupFilter();
+  return res ? Py_True : Py_False;
+}
+
+static PyObject *PyFilterNumber(PyObject *self, PyObject *args)
+{
+  PyObject *obj = NULL;
+  const char *query = NULL;
+
+  if (!initFilter(args, &obj, &query))
+    return NULL;
+
+  bool ok;
+  double res = UastFilterNumber(ctx, obj, query, &ok);
+  if (!ok) {
+    filterError();
+    return NULL;
+  }
+
+  cleanupFilter();
+  return PyFloat_FromDouble(res);
+}
+
+static PyObject *PyFilterString(PyObject *self, PyObject *args)
+{
+  PyObject *obj = NULL;
+  const char *query = NULL;
+
+  if (!initFilter(args, &obj, &query))
+    return NULL;
+
+  const char *res = UastFilterString(ctx, obj, query);
+  if (res == NULL) {
+    filterError();
+    return NULL;
+  }
+
+  cleanupFilter();
+  return PyUnicode_FromString(res);
+}
 static PyMethodDef extension_methods[] = {
     {"filter", PyFilter, METH_VARARGS, "Filter nodes in the UAST using the given query"},
     {"iterator", PyUastIter_new, METH_VARARGS, "Get an iterator over a node"},
+    {"filter_bool", PyFilterBool, METH_VARARGS, "For queries returning boolean values"},
+    {"filter_number", PyFilterNumber, METH_VARARGS, "For queries returning boolean values"},
+    {"filter_string", PyFilterString, METH_VARARGS, "For queries returning boolean values"},
     {NULL, NULL, 0, NULL}
 };
 

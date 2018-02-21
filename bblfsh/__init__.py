@@ -1,5 +1,5 @@
 from bblfsh.client import BblfshClient
-from bblfsh.pyuast import filter, iterator
+from bblfsh.pyuast import filter, filter_bool, filter_number, filter_string, iterator
 from bblfsh.aliases import *
 
 class TreeOrder:
