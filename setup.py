@@ -134,7 +134,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.9.0",
+        version="2.9.1",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
@@ -143,7 +143,7 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio", "grpcio-tools", "docker", "protobuf>=3.4.0"],
+        install_requires=["grpcio==1.9.1", "grpcio-tools==1.9.1", "docker", "protobuf>=3.4.0"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
         classifiers=[
