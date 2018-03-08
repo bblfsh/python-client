@@ -13,7 +13,7 @@ PYTHON = "python3"
 os.environ["CC"] = "g++"
 os.environ["CXX"] = "g++"
 libraries = ['xml2']
-sources = ['bblfsh/pyuast.c']
+sources = ['bblfsh/pyuast.cc', 'bblfsh/memtracker.cc']
 
 
 class CustomBuildExt(build_ext):
@@ -134,7 +134,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.9.1",
+        version="2.10.1",
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
