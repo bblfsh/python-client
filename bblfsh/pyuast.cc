@@ -1,17 +1,18 @@
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+
 #include <Python.h>
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "uast.h"
+#include "memtracker.h"
+
+
+MemTracker memTracker;
 
 // Used to store references to the Pyobjects instanced in String() and
 // ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses the
 // so we pass ownership to these lists and free them at the end of filter()
-static PyObject *stringAllocsList;
-static PyObject *itemAtAllocsList;
 
 static PyObject *Attribute(const void *node, const char *prop) {
   PyObject *n = (PyObject *)node;
@@ -28,8 +29,7 @@ static const char *String(const void *node, const char *prop) {
   PyObject *o = Attribute(node, prop);
   if (o != NULL) {
     retval = PyUnicode_AsUTF8(o);
-    PyList_Append(stringAllocsList, o);
-    Py_DECREF(o);
+    memTracker.TrackStr(o);
   }
   return retval;
 }
@@ -49,8 +49,7 @@ static PyObject *ItemAt(PyObject *object, int index) {
   PyObject *seq = PySequence_Fast(object, "expected a sequence");
   if (seq != NULL) {
     retval = PyList_GET_ITEM(seq, index);
-    PyList_Append(itemAtAllocsList, seq);
-    Py_DECREF(seq);
+    memTracker.TrackItem(seq);
   }
 
   return retval;
@@ -127,60 +126,65 @@ static uint32_t PositionValue(const void* node, const char *prop, const char *fi
   return offset ? (uint32_t)PyLong_AsUnsignedLong(offset) : 0;
 }
 
-static bool HasStartOffset(const void *node) {
-  return AttributeValue(node, "start_position");
-}
+/////////////////////////////////////
+/////////// Node Interface //////////
+/////////////////////////////////////
 
-static uint32_t StartOffset(const void *node) {
-  return PositionValue(node, "start_position", "offset");
-}
+extern "C"
+{
+  static bool HasStartOffset(const void *node) {
+    return AttributeValue(node, "start_position");
+  }
 
-static bool HasStartLine(const void *node) {
-  return AttributeValue(node, "start_position");
-}
+  static uint32_t StartOffset(const void *node) {
+    return PositionValue(node, "start_position", "offset");
+  }
 
-static uint32_t StartLine(const void *node) {
-  return PositionValue(node, "start_position", "line");
-}
+  static bool HasStartLine(const void *node) {
+    return AttributeValue(node, "start_position");
+  }
 
-static bool HasStartCol(const void *node) {
-  return AttributeValue(node, "start_position");
-}
+  static uint32_t StartLine(const void *node) {
+    return PositionValue(node, "start_position", "line");
+  }
 
-static uint32_t StartCol(const void *node) {
-  return PositionValue(node, "start_position", "col");
-}
+  static bool HasStartCol(const void *node) {
+    return AttributeValue(node, "start_position");
+  }
 
-static bool HasEndOffset(const void *node) {
-  return AttributeValue(node, "end_position");
-}
+  static uint32_t StartCol(const void *node) {
+    return PositionValue(node, "start_position", "col");
+  }
 
-static uint32_t EndOffset(const void *node) {
-  return PositionValue(node, "end_position", "offset");
-}
+  static bool HasEndOffset(const void *node) {
+    return AttributeValue(node, "end_position");
+  }
 
-static bool HasEndLine(const void *node) {
-  return AttributeValue(node, "end_position");
-}
+  static uint32_t EndOffset(const void *node) {
+    return PositionValue(node, "end_position", "offset");
+  }
 
-static uint32_t EndLine(const void *node) {
-  return PositionValue(node, "end_position", "line");
-}
+  static bool HasEndLine(const void *node) {
+    return AttributeValue(node, "end_position");
+  }
 
-static bool HasEndCol(const void *node) {
-  return AttributeValue(node, "end_position");
-}
+  static uint32_t EndLine(const void *node) {
+    return PositionValue(node, "end_position", "line");
+  }
 
-static uint32_t EndCol(const void *node) {
-  return PositionValue(node, "end_position", "col");
-}
+  static bool HasEndCol(const void *node) {
+    return AttributeValue(node, "end_position");
+  }
 
+  static uint32_t EndCol(const void *node) {
+    return PositionValue(node, "end_position", "col");
+  }
+}
 static Uast *ctx;
 
 /////////////////////////////////////
 /////////// PYTHON API //////////////
 /////////////////////////////////////
-
 typedef struct {
   PyObject_HEAD
   UastIterator *iter;
@@ -206,6 +210,7 @@ static PyObject *PyUastIter_next(PyObject *self)
   }
 
   Py_INCREF(node);
+  memTracker.SetCurrentIterator(it->iter);
   return (PyObject *)node;
 }
 
@@ -213,46 +218,49 @@ static PyObject *PyUastIter_next(PyObject *self)
 static PyObject *PyUastIter_new(PyObject *self, PyObject *args);
 static void PyUastIter_dealloc(PyObject *self);
 
-static PyTypeObject PyUastIterType = {
-  PyVarObject_HEAD_INIT(NULL, 0)
-  "pyuast.UastIterator",          // tp_name
-  sizeof(PyUastIter),             // tp_basicsize
-  0,                              // tp_itemsize
-  PyUastIter_dealloc,             // tp_dealloc
-  0,                              // tp_print
-  0,                              // tp_getattr
-  0,                              // tp_setattr
-  0,                              // tp_reserved
-  0,                              // tp_repr
-  0,                              // tp_as_number
-  0,                              // tp_as_sequence
-  0,                              // tp_as_mapping
-  0,                              // tp_hash
-  0,                              // tp_call
-  0,                              // tp_str
-  0,                              // tp_getattro
-  0,                              // tp_setattro
-  0,                              // tp_as_buffer
-  Py_TPFLAGS_DEFAULT,             // tp_flags
-  "Internal UastIterator object", // tp_doc
-  0,                              // tp_traverse
-  0,                              // tp_clear
-  0,                              // tp_richcompare
-  0,                              // tp_weaklistoffset
-  PyUastIter_iter,                // tp_iter: __iter()__ method
-  (iternextfunc)PyUastIter_next,  // tp_iternext: next() method
-  0,                              // tp_methods
-  0,                              // tp_members
-  0,                              // tp_getset
-  0,                              // tp_base
-  0,                              // tp_dict
-  0,                              // tp_descr_get
-  0,                              // tp_descr_set
-  0,                              // tp_dictoffset
-  0,                              // tp_init
-  PyType_GenericAlloc,            // tp_alloc
-  0,                              // tp_new
-};
+extern "C"
+{
+  static PyTypeObject PyUastIterType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "pyuast.UastIterator",          // tp_name
+    sizeof(PyUastIter),             // tp_basicsize
+    0,                              // tp_itemsize
+    PyUastIter_dealloc,             // tp_dealloc
+    0,                              // tp_print
+    0,                              // tp_getattr
+    0,                              // tp_setattr
+    0,                              // tp_reserved
+    0,                              // tp_repr
+    0,                              // tp_as_number
+    0,                              // tp_as_sequence
+    0,                              // tp_as_mapping
+    0,                              // tp_hash
+    0,                              // tp_call
+    0,                              // tp_str
+    0,                              // tp_getattro
+    0,                              // tp_setattro
+    0,                              // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,             // tp_flags
+    "Internal UastIterator object", // tp_doc
+    0,                              // tp_traverse
+    0,                              // tp_clear
+    0,                              // tp_richcompare
+    0,                              // tp_weaklistoffset
+    PyUastIter_iter,                // tp_iter: __iter()__ method
+    (iternextfunc)PyUastIter_next,  // tp_iternext: next() method
+    0,                              // tp_methods
+    0,                              // tp_members
+    0,                              // tp_getset
+    0,                              // tp_base
+    0,                              // tp_dict
+    0,                              // tp_descr_get
+    0,                              // tp_descr_set
+    0,                              // tp_dictoffset
+    0,                              // tp_init
+    PyType_GenericAlloc,            // tp_alloc
+    0,                              // tp_new
+  };
+}
 
 static PyObject *PyUastIter_new(PyObject *self, PyObject *args)
 {
@@ -277,12 +285,15 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args)
     return NULL;
   }
 
+  memTracker.ClearCurrentIterator();
+  memTracker.SetCurrentIterator(pyIt->iter);
   return (PyObject*)pyIt;
 }
 
 
 static void PyUastIter_dealloc(PyObject *self)
 {
+  memTracker.DisposeMem();
   UastIteratorFree(((PyUastIter *)self)->iter);
 }
 
@@ -292,15 +303,15 @@ static bool initFilter(PyObject *args, PyObject **obj, const char **query)
     return false;
   }
 
-  itemAtAllocsList = PyList_New(0);
-  stringAllocsList = PyList_New(0);
+  memTracker.EnterFilter();
   return true;
 }
 
 static void cleanupFilter(void)
 {
-    Py_DECREF(itemAtAllocsList);
-    Py_DECREF(stringAllocsList);
+
+  memTracker.DisposeMem();
+  memTracker.ExitFilter();
 }
 
 static void filterError(void)
@@ -316,12 +327,14 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
   PyObject *obj = NULL;
   const char *query = NULL;
 
-  if (!initFilter(args, &obj, &query))
+  if (!initFilter(args, &obj, &query)) {
     return NULL;
+  }
 
   Nodes *nodes = UastFilter(ctx, obj, query);
   if (!nodes) {
     filterError();
+    cleanupFilter();
     return NULL;
   }
   size_t len = NodesSize(nodes);

@@ -151,25 +151,37 @@ class BblfshTests(unittest.TestCase):
     def _itTestTree(self):
         root = Node()
         root.internal_type = 'root'
+        root.start_position.offset = 0
+        root.start_position.line = 0
+        root.start_position.col = 1
+
         son1 = Node()
         son1.internal_type = 'son1'
+        son1.start_position.offset = 1
 
         son1_1 = Node()
         son1_1.internal_type = 'son1_1'
+        son1_1.start_position.offset = 10
 
         son1_2 = Node()
         son1_2.internal_type = 'son1_2'
+        son1_2.start_position.offset = 10
+
         son1.children.extend([son1_1, son1_2])
 
         son2 = Node()
         son2.internal_type = 'son2'
+        son2.start_position.offset = 100
+
         son2_1 = Node()
         son2_1.internal_type = 'son2_1'
+        son2_1.start_position.offset = 5
 
         son2_2 = Node()
         son2_2.internal_type = 'son2_2'
-        son2.children.extend([son2_1, son2_2])
+        son2_2.start_position.offset = 15
 
+        son2.children.extend([son2_1, son2_2])
         root.children.extend([son1, son2])
 
         return root
@@ -208,6 +220,22 @@ class BblfshTests(unittest.TestCase):
 
         # Sometimes its fully qualified, sometimes is just "Node"... ditto
         self.assertTrue(resp.uast.__class__.__name__.endswith('Node'))
+
+    def testFilterInsideIter(self):
+        root = self.client.parse(__file__).uast
+        it = iterator(root, TreeOrder.PRE_ORDER)
+        self.assertIsNotNone(it)
+        for n in it:
+            filter(n, "//*[@roleIdentifier]")
+
+    def testItersMixingIterations(self):
+        root = self.client.parse(__file__).uast
+        it = iterator(root, TreeOrder.PRE_ORDER)
+        next(it); next(it); next(it)
+        n = next(it)
+        it2 = iterator(n, TreeOrder.PRE_ORDER)
+        next(it2)
+        assert(next(it) == next(it2))
 
     def testManyFilters(self):
         root = self.client.parse(__file__).uast
