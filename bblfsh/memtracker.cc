@@ -1,5 +1,4 @@
 #include "memtracker.h"
-#include <cstdio> // XXX
 
 UastIterator* MemTracker::CurrentIterator() { return currentIter_; }
 void MemTracker::ClearCurrentIterator() { currentIter_ = nullptr; }
