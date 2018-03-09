@@ -5,6 +5,7 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
+VERSION = "2.9.4"
 LIBUAST_VERSION = "v1.8.2"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
@@ -134,7 +135,7 @@ def main():
         },
         name="bblfsh",
         description="Fetches Universal Abstract Syntax Trees from Babelfish.",
-        version="2.9.2",
+        version=VERSION,
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
