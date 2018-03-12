@@ -3,9 +3,10 @@ from bblfsh.pyuast import filter, filter_bool, filter_number, filter_string, ite
 from bblfsh.aliases import *
 
 class TreeOrder:
-    PRE_ORDER = 0
-    POST_ORDER = 1
-    LEVEL_ORDER = 2
+    PRE_ORDER      = 0
+    POST_ORDER     = 1
+    LEVEL_ORDER    = 2
+    POSITION_ORDER = 3
 
 # "in" is a reserved keyword in Python thus can't be used as package name, so
 # we import by string

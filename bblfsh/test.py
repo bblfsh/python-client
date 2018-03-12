@@ -210,6 +210,14 @@ class BblfshTests(unittest.TestCase):
         self.assertListEqual(expanded, ['root', 'son1', 'son2', 'son1_1',
                                         'son1_2', 'son2_1', 'son2_2'])
 
+    def testIteratorPositionOrder(self):
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.POSITION_ORDER)
+        self.assertIsNotNone(it)
+        expanded = [node.internal_type for node in it]
+        self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_2',
+                                        'son1_1', 'son2_2', 'son2'])
+
     def _validate_resp(self, resp):
         self.assertIsNotNone(resp)
         self.assertEqual(type(resp).DESCRIPTOR.full_name,
