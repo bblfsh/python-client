@@ -5,8 +5,8 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.9.5"
-LIBUAST_VERSION = "v1.9.0"
+VERSION = "2.9.6"
+LIBUAST_VERSION = "v1.9.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
@@ -106,9 +106,9 @@ def doGetDeps():
 
 def clean():
     runc("rm -rf gopkg.in")
-    runc("rm -rf bblfsh/libuast")
     runc("rm -rf bblfsh/github")
     runc("rm -rf bblfsh/gopkg")
+    runc("rm -rf bblfsh/libuast")
 
 
 def main():
