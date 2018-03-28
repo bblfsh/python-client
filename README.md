@@ -23,11 +23,12 @@ python setup.py install
 
 ### Dependencies
 
-You need to install `libxml2` and its header files. The command for 
-Debian and derived distributions would be:
+You need to install `libxml2` and its header files. You also will need a `curl` cli tool. 
+The command for Debian and derived distributions would be:
 
 ```bash
 sudo apt install libxml2-dev
+sudo apt install curl
 ```
 
 ## Usage
