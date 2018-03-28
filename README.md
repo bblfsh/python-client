@@ -23,12 +23,13 @@ python setup.py install
 
 ### Dependencies
 
-You need to install `libxml2` and its header files. You also will need a `curl` cli tool. 
+You need to install `libxml2` and its header files. You also will need a `curl` cli tool to dowload `libuast`, and a `g++` for building [libtuast Python bindings](https://github.com/bblfsh/client-python/blob/0037d762563ab49b3daac8a7577f7103a5628fc6/setup.py#L17). 
 The command for Debian and derived distributions would be:
 
 ```bash
 sudo apt install libxml2-dev
 sudo apt install curl
+sudo apt install build-essential
 ```
 
 ## Usage
