@@ -5,11 +5,16 @@ import sys
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.9.6"
+VERSION = "2.9.8"
 LIBUAST_VERSION = "v1.9.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 PYTHON = "python3"
+
+# For debugging libuast-client interactions, set to True in production!
+GET_LIBUAST = True
+if not GET_LIBUAST:
+    print('WARNING: not retrieving libuast, using local version')
 
 os.environ["CC"] = "g++"
 os.environ["CXX"] = "g++"
@@ -69,6 +74,9 @@ def createInits():
 
 
 def getLibuast():
+    if not GET_LIBUAST:
+        return
+
     runc("curl -SL https://github.com/bblfsh/libuast/releases/download/{LIBUAST_VERSION}/"
          "libuast-{LIBUAST_VERSION}.tar.gz | tar xz")
     runc("mv libuast-{LIBUAST_VERSION} libuast")
@@ -108,7 +116,8 @@ def clean():
     runc("rm -rf gopkg.in")
     runc("rm -rf bblfsh/github")
     runc("rm -rf bblfsh/gopkg")
-    runc("rm -rf bblfsh/libuast")
+    if GET_LIBUAST:
+        runc("rm -rf bblfsh/libuast")
 
 
 def main():

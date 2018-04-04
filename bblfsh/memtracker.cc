@@ -16,35 +16,20 @@ void MemTracker::TrackItem(PyObject *o)
   }
 }
 
-void MemTracker::TrackStr(PyObject *o)
-{
-  if (inFilter_) {
-    filterStrAllocs_.push_back(o);
-  } else {
-    iterStrAllocs_[currentIter_].push_back(o);
-  }
-}
-
 void MemTracker::DisposeMem()
 {
   if (inFilter_) {
-    for (auto &i : filterStrAllocs_) {
-      Py_XDECREF(i);
-      i = nullptr;
-    }
     for (auto &i : filterItemAllocs_) {
-      Py_XDECREF(i);
-      i = nullptr;
+      Py_CLEAR(i);
     }
+    filterItemAllocs_.clear();
+    filterItemAllocs_.shrink_to_fit();
   } else {
-    for (auto &i : iterStrAllocs_[currentIter_]) {
-      Py_XDECREF(i);
-      i = nullptr;
-    }
     for (auto &i : iterItemAllocs_[currentIter_]) {
-      Py_XDECREF(i);
-      i = nullptr;
+      Py_CLEAR(i);
     }
+    iterItemAllocs_[currentIter_].clear();
+    iterItemAllocs_.erase(currentIter_);
     ClearCurrentIterator();
   }
 }
