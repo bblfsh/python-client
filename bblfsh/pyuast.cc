@@ -121,7 +121,11 @@ static const char *PropertyKeyAt(const void *node, int index) {
 
 static const char *PropertyValueAt(const void *node, int index) {
   PyObject *properties = AttributeValue(node, "properties");
-  if (!properties || !PyMapping_Check(properties)) {
+  if (!properties)
+    return NULL;
+
+  if (!PyMapping_Check(properties)) {
+    Py_DECREF(properties);
     return NULL;
   }
 
