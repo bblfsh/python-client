@@ -252,7 +252,7 @@ class BblfshTests(unittest.TestCase):
 
         import resource
         before = resource.getrusage(resource.RUSAGE_SELF)
-        for _ in range(100):
+        for _ in range(500):
             filter(root, "//*[@roleIdentifier]")
         after = resource.getrusage(resource.RUSAGE_SELF)
 

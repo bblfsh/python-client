@@ -11,9 +11,7 @@ private:
   bool inFilter_ = false;
 
   std::unordered_map<UastIterator*, std::vector<PyObject*>> iterItemAllocs_;
-  std::unordered_map<UastIterator*, std::vector<PyObject*>> iterStrAllocs_;
   std::vector<PyObject*> filterItemAllocs_;
-  std::vector<PyObject*> filterStrAllocs_;
 
 public:
   UastIterator *CurrentIterator();
@@ -23,6 +21,5 @@ public:
   void EnterFilter();
   void ExitFilter();
   void TrackItem(PyObject *ref);
-  void TrackStr(PyObject *ref);
   void DisposeMem();
 };

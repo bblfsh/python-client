@@ -11,7 +11,7 @@
 MemTracker memTracker;
 
 // Used to store references to the Pyobjects instanced in String() and
-// ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses the
+// ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses them
 // so we pass ownership to these lists and free them at the end of filter()
 
 static PyObject *Attribute(const void *node, const char *prop) {
@@ -29,7 +29,7 @@ static const char *String(const void *node, const char *prop) {
   PyObject *o = Attribute(node, prop);
   if (o != NULL) {
     retval = PyUnicode_AsUTF8(o);
-    memTracker.TrackStr(o);
+    memTracker.TrackItem(o);
   }
   return retval;
 }
@@ -39,6 +39,7 @@ static size_t Size(const void *node, const char *prop) {
   PyObject *o = Attribute(node, prop);
   if (o != NULL) {
     retval = PySequence_Size(o);
+    Py_DECREF(o);
   }
 
   return retval;
@@ -69,7 +70,13 @@ static size_t ChildrenSize(const void *node) {
 
 static void *ChildAt(const void *node, int index) {
   PyObject *children = AttributeValue(node, "children");
-  return children ? ItemAt(children, index) : NULL;
+  void *retval = nullptr;
+  if (children) {
+    retval = ItemAt(children, index);
+    Py_DECREF(children);
+  }
+
+  return retval;
 }
 
 static size_t RolesSize(const void *node) {
@@ -77,13 +84,23 @@ static size_t RolesSize(const void *node) {
 }
 
 static uint16_t RoleAt(const void *node, int index) {
+  uint16_t retval = 0;
   PyObject *roles = AttributeValue(node, "roles");
-  return roles ? (uint16_t)PyLong_AsUnsignedLong(ItemAt(roles, index)) : 0;
+  if (roles) {
+    retval = (uint16_t)PyLong_AsUnsignedLong(ItemAt(roles, index));
+    Py_DECREF(roles);
+  }
+  return retval;
 }
 
 static size_t PropertiesSize(const void *node) {
+  size_t retval = 0;
   PyObject *properties = AttributeValue(node, "properties");
-  return properties ? PyMapping_Size(properties) : 0;
+  if (properties) {
+    retval = PyMapping_Size(properties);
+    Py_DECREF(properties);
+  }
+  return retval;
 }
 
 static const char *PropertyKeyAt(const void *node, int index) {
@@ -94,6 +111,7 @@ static const char *PropertyKeyAt(const void *node, int index) {
 
   const char *retval = NULL;
   PyObject *keys = PyMapping_Keys(properties);
+  Py_DECREF(properties);
   if (keys != NULL) {
     retval = PyUnicode_AsUTF8(ItemAt(keys, index));
     Py_DECREF(keys);
@@ -103,7 +121,11 @@ static const char *PropertyKeyAt(const void *node, int index) {
 
 static const char *PropertyValueAt(const void *node, int index) {
   PyObject *properties = AttributeValue(node, "properties");
-  if (!properties || !PyMapping_Check(properties)) {
+  if (!properties)
+    return NULL;
+
+  if (!PyMapping_Check(properties)) {
+    Py_DECREF(properties);
     return NULL;
   }
 
@@ -113,6 +135,7 @@ static const char *PropertyValueAt(const void *node, int index) {
     retval = PyUnicode_AsUTF8(ItemAt(values, index));
     Py_DECREF(values);
   }
+  Py_DECREF(properties);
   return retval;
 }
 
@@ -123,7 +146,14 @@ static uint32_t PositionValue(const void* node, const char *prop, const char *fi
   }
 
   PyObject *offset = AttributeValue(position, field);
-  return offset ? (uint32_t)PyLong_AsUnsignedLong(offset) : 0;
+  Py_DECREF(position);
+  uint32_t retval = 0;
+
+  if (offset) {
+    retval = (uint32_t)PyLong_AsUnsignedLong(offset);
+    Py_DECREF(offset);
+  }
+  return retval;
 }
 
 /////////////////////////////////////
@@ -337,6 +367,7 @@ static PyObject *PyFilter(PyObject *self, PyObject *args)
     cleanupFilter();
     return NULL;
   }
+
   size_t len = NodesSize(nodes);
   PyObject *list = PyList_New(len);
 
