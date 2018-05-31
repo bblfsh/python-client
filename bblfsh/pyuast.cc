@@ -8,20 +8,31 @@
 #include "memtracker.h"
 
 
-MemTracker memTracker;
 
 // Used to store references to the Pyobjects instanced in String() and
 // ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses them
 // so we pass ownership to these lists and free them at the end of filter()
+MemTracker memTracker;
 
+// WARNING: calls to Attribute MUST Py_DECREF the returned value once
+// used (or add it to the memtracker)
 static PyObject *Attribute(const void *node, const char *prop) {
   PyObject *n = (PyObject *)node;
   return PyObject_GetAttrString(n, prop);
 }
 
+// WARNING: calls to AttributeValue MUST Py_DECREF the returned value once
+// used (or add it to the memtracker)
 static PyObject *AttributeValue(const void *node, const char *prop) {
   PyObject *a = Attribute(node, prop);
   return a && a != Py_None ? a : NULL;
+}
+
+static bool HasAttribute(const void *node, const char *prop) {
+  PyObject *o = AttributeValue(node, prop);
+  bool res = o != NULL;
+  Py_DECREF(o);
+  return res;
 }
 
 static const char *String(const void *node, const char *prop) {
@@ -163,7 +174,7 @@ static uint32_t PositionValue(const void* node, const char *prop, const char *fi
 extern "C"
 {
   static bool HasStartOffset(const void *node) {
-    return AttributeValue(node, "start_position");
+    return HasAttribute(node, "start_position");
   }
 
   static uint32_t StartOffset(const void *node) {
@@ -171,7 +182,7 @@ extern "C"
   }
 
   static bool HasStartLine(const void *node) {
-    return AttributeValue(node, "start_position");
+    return HasAttribute(node, "start_position");
   }
 
   static uint32_t StartLine(const void *node) {
@@ -179,7 +190,7 @@ extern "C"
   }
 
   static bool HasStartCol(const void *node) {
-    return AttributeValue(node, "start_position");
+    return HasAttribute(node, "start_position");
   }
 
   static uint32_t StartCol(const void *node) {
@@ -187,7 +198,7 @@ extern "C"
   }
 
   static bool HasEndOffset(const void *node) {
-    return AttributeValue(node, "end_position");
+    return HasAttribute(node, "end_position");
   }
 
   static uint32_t EndOffset(const void *node) {
@@ -195,7 +206,7 @@ extern "C"
   }
 
   static bool HasEndLine(const void *node) {
-    return AttributeValue(node, "end_position");
+    return HasAttribute(node, "end_position");
   }
 
   static uint32_t EndLine(const void *node) {
@@ -203,7 +214,7 @@ extern "C"
   }
 
   static bool HasEndCol(const void *node) {
-    return AttributeValue(node, "end_position");
+    return HasAttribute(node, "end_position");
   }
 
   static uint32_t EndCol(const void *node) {
