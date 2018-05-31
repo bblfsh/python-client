@@ -1,4 +1,5 @@
 import os
+import resource
 import unittest
 
 import docker
@@ -250,18 +251,45 @@ class BblfshTests(unittest.TestCase):
         root.properties['k1'] = 'v2'
         root.properties['k2'] = 'v1'
 
-        import resource
         before = resource.getrusage(resource.RUSAGE_SELF)
         for _ in range(500):
             filter(root, "//*[@roleIdentifier]")
+
         after = resource.getrusage(resource.RUSAGE_SELF)
 
         # Check that memory usage has not doubled after running the filter
         self.assertLess(after[2] / before[2], 2.0)
 
+    def testManyParses(self):
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(100):
+            root = self.client.parse(__file__).uast
+            root.properties['k1'] = 'v2'
+            root.properties['k2'] = 'v1'
+
+        after = resource.getrusage(resource.RUSAGE_SELF)
+
+        # Check that memory usage has not doubled after running the parse+filter
+        self.assertLess(after[2] / before[2], 2.0)
+
+    def testManyParsersAndFilters(self):
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(100):
+            root = self.client.parse(__file__).uast
+            root.properties['k1'] = 'v2'
+            root.properties['k2'] = 'v1'
+
+            filter(root, "//*[@roleIdentifier]")
+
+        after = resource.getrusage(resource.RUSAGE_SELF)
+
+        # Check that memory usage has not doubled after running the parse+filter
+        self.assertLess(after[2] / before[2], 2.0)
+
     def _validate_filter(self, resp):
         results = filter(resp.uast, "//Import[@roleImport and @roleDeclaration]//alias")
         self.assertEqual(next(results).token, "os")
+        self.assertEqual(next(results).token, "resource")
         self.assertEqual(next(results).token, "unittest")
         self.assertEqual(next(results).token, "docker")
 
