@@ -30,9 +30,12 @@ static PyObject *AttributeValue(const void *node, const char *prop) {
 
 static bool HasAttribute(const void *node, const char *prop) {
   PyObject *o = AttributeValue(node, prop);
-  bool res = o != NULL;
+  if (o == NULL) {
+    return false;
+  }
+
   Py_DECREF(o);
-  return res;
+  return true;
 }
 
 static const char *String(const void *node, const char *prop) {
