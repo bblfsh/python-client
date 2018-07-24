@@ -43,7 +43,7 @@ docker run --privileged --rm -it -p 9432:9432 -v bblfsh_cache:/var/lib/bblfshd -
 docker exec -it bblfshd bblfshctl driver install python bblfsh/python-driver:latest
 ```
 
-Please, read the [getting started](https://doc.bblf.sh/user/getting-started.html) guide to learn more about how to use and deploy a bblfshd.
+Please, read the [getting started](https://doc.bblf.sh/using-babelfish/getting-started.html) guide to learn more about how to use and deploy a bblfshd.
 
 ```python
 import bblfsh
@@ -66,7 +66,7 @@ for node in it:
     print(node.internal_type)
 ```
 
-Please read the [Babelfish clients](https://doc.bblf.sh/user/language-clients.html)
+Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/language-clients.html)
 guide section to learn more about babelfish clients and their query language.
 
 ## License
