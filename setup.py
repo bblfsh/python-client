@@ -1,5 +1,11 @@
+import logging
 import os
+import pkg_resources
+import shutil
+import subprocess
 import sys
+import tarfile
+from urllib.request import urlopen
 
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
@@ -8,17 +14,20 @@ VERSION = "2.9.13"
 LIBUAST_VERSION = "v1.9.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
-PYTHON = "python3"
+FORMAT_ARGS = globals()
 
 # For debugging libuast-client interactions, set to True in production!
 GET_LIBUAST = True
 if not GET_LIBUAST:
-    print('WARNING: not retrieving libuast, using local version')
+    print("WARNING: not retrieving libuast, using local version")
 
-os.environ["CC"] = "g++"
-os.environ["CXX"] = "g++"
+if os.getenv("CC") is None:
+    os.environ["CC"] = "gcc"
+if os.getenv("CXX") is None:
+    os.environ["CXX"] = "g++"
 libraries = ['xml2']
-sources = ['bblfsh/pyuast.cc', 'bblfsh/memtracker.cc']
+sources = ["bblfsh/pyuast.cc", "bblfsh/memtracker.cc"]
+log = logging.getLogger("setup.py")
 
 
 class CustomBuildExt(build_ext):
@@ -27,115 +36,178 @@ class CustomBuildExt(build_ext):
         global sources
 
         if "--global-uast" in sys.argv:
-            libraries.append('uast')
+            libraries.append("uast")
         else:
-            sources.append('bblfsh/libuast/uast.cc')
-            sources.append('bblfsh/libuast/roles.c')
+            sources.append("bblfsh/libuast/uast.cc")
+            sources.append("bblfsh/libuast/roles.c")
 
-        getLibuast()
+        get_libuast()
         build_ext.run(self)
 
 
-def runc(cmd):
-    cmd = cmd.format(**globals())
-    print(cmd)
-    ret = os.system(cmd)
-    if ret != 0:
-        raise Exception("Command failed with output %d: %s" % (ret, cmd))
+def j(*paths):
+    return os.path.join(*paths)
 
 
-def createDirs():
-    runc("mkdir -p gopkg.in/bblfsh/sdk.{SDK_MAJOR}/protocol")
-    runc("mkdir -p gopkg.in/bblfsh/sdk.{SDK_MAJOR}/uast")
-    runc("mkdir -p bblfsh/gopkg/in/bblfsh/sdk/{SDK_MAJOR}/protocol")
-    runc("mkdir -p bblfsh/gopkg/in/bblfsh/sdk/{SDK_MAJOR}/uast")
-    runc("mkdir -p bblfsh/github/com/gogo/protobuf/gogoproto")
+def mkdir(path):
+    path = path.format(**FORMAT_ARGS)
+    log.info("mkdir -p " + path)
+    os.makedirs(path, exist_ok=True)
 
 
-def createInits():
-    initFiles = [
-            "bblfsh/github/__init__.py",
-            "bblfsh/github/com/__init__.py",
-            "bblfsh/github/com/gogo/__init__.py",
-            "bblfsh/github/com/gogo/protobuf/__init__.py",
-            "bblfsh/github/com/gogo/protobuf/gogoproto/__init__.py",
-            "bblfsh/gopkg/__init__.py",
-            "bblfsh/gopkg/in/__init__.py",
-            "bblfsh/gopkg/in/bblfsh/__init__.py",
-            "bblfsh/gopkg/in/bblfsh/sdk/__init__.py",
-            "bblfsh/gopkg/in/bblfsh/sdk/{}/__init__.py".format(SDK_MAJOR),
-            "bblfsh/gopkg/in/bblfsh/sdk/{}/uast/__init__.py".format(SDK_MAJOR),
-            "bblfsh/gopkg/in/bblfsh/sdk/{}/protocol/__init__.py".format(SDK_MAJOR)
+def rimraf(path):
+    path = path.format(**FORMAT_ARGS)
+    log.info("rm -rf " + path)
+    shutil.rmtree(path, ignore_errors=True)
+
+
+def mv(src, dst):
+    src = src.format(**FORMAT_ARGS)
+    dst = dst.format(**FORMAT_ARGS)
+    log.info("mv %s %s", src, dst)
+    shutil.rmtree(dst, ignore_errors=True)
+    os.rename(src, dst)
+
+
+def cp(src, dst):
+    src = src.format(**FORMAT_ARGS)
+    dst = dst.format(**FORMAT_ARGS)
+    log.info("cp -p %s %s", src, dst)
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copy2(src, dst)
+
+
+def cpr(src, dst):
+    src = src.format(**FORMAT_ARGS)
+    dst = dst.format(**FORMAT_ARGS)
+    log.info("cp -pr %s %s", src, dst)
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(src, dst, symlinks=True)
+
+
+def untar_url(url, path="."):
+    log.info("tar xf " + url)
+    with urlopen(url) as response:
+        response.tell = lambda: 0  # tarfile calls it only once in the beginning
+        with tarfile.open(fileobj=response, mode=("r:" + url.rsplit(".", 1)[-1])) as tar:
+            tar.extractall(path=path)
+
+
+def call(*cmd):
+    log.info(" ".join(cmd))
+    subprocess.check_call(cmd)
+
+
+def create_dirs():
+    mkdir(j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol"))
+    mkdir(j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast"))
+    mkdir(j("bblfsh", "github", "com", "gogo", "protobuf", "gogoproto"))
+
+
+def create_inits():
+    init_files = [
+            j("bblfsh", "github", "__init__.py"),
+            j("bblfsh", "github", "com", "__init__.py"),
+            j("bblfsh", "github", "com", "gogo", "__init__.py"),
+            j("bblfsh", "github", "com", "gogo", "protobuf", "__init__.py"),
+            j("bblfsh", "github", "com", "gogo", "protobuf", "gogoproto", "__init__.py"),
+            j("bblfsh", "gopkg", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol", "__init__.py"),
     ]
 
-    for f in initFiles:
-        open(f, 'w').close()
+    for f in init_files:
+        open(f, "w").close()
 
 
-def getLibuast():
+def get_libuast():
     if not GET_LIBUAST:
         return
 
-    runc("curl -SL https://github.com/bblfsh/libuast/archive/{LIBUAST_VERSION}/"
-         "{LIBUAST_VERSION}.tar.gz | tar xz")
-    runc("mv {} libuast".format('libuast-' + LIBUAST_VERSION.replace('v', '')))
-    runc("cp -a libuast/src bblfsh/libuast")
-    runc("rm -rf libuast")
+    untar_url(
+        "https://github.com/bblfsh/libuast/archive/{LIBUAST_VERSION}/{LIBUAST_VERSION}.tar.gz"
+        .format(**FORMAT_ARGS))
+    mv("libuast-" + LIBUAST_VERSION.replace("v", ""), "libuast")
+    cpr(j("libuast", "src"), j("bblfsh", "libuast"))
+    rimraf("libuast")
 
 
-def protoDownload():
-    runc("curl -SL https://github.com/bblfsh/sdk/archive/{SDK_VERSION}.tar.gz | tar xz")
-    dir_ = "sdk-" + SDK_VERSION[1:]
-    runc("cp %s/protocol/generated.proto gopkg.in/bblfsh/sdk.{SDK_MAJOR}/protocol/" % dir_)
-    runc("cp %s/uast/generated.proto gopkg.in/bblfsh/sdk.{SDK_MAJOR}/uast/" % dir_)
-    runc("rm -rf %s" % dir_)
+def proto_download():
+    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_VERSION)
+    sdkdir = "sdk-" + SDK_VERSION[1:]
+    cp(j(sdkdir, "protocol", "generated.proto"),
+       j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "generated.proto"),
+       j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast", "generated.proto"))
+    rimraf(sdkdir)
 
 
-def protoCompile():
+def proto_compile():
+    sysinclude = "-I" + pkg_resources.resource_filename("grpc_tools", "_proto")
+    from grpc.tools import protoc as protoc_module
+
+    def protoc(python_out, proto_file, *extra, grpc=True):
+        main_args = [protoc_module.__file__, "--python_out=" + python_out]
+        if grpc:
+            main_args += ["--grpc_python_out=" + python_out]
+        main_args += extra
+        main_args += ["-I.", sysinclude, proto_file]
+        log.info("%s -m grpc.tools.protoc " + " ".join(main_args), sys.executable)
+        protoc_module.main(main_args)
+
     # SDK
-    runc("{PYTHON} -m grpc.tools.protoc --python_out=bblfsh/gopkg/in/bblfsh/sdk/{SDK_MAJOR}/protocol "
-         "--grpc_python_out=bblfsh/gopkg/in/bblfsh/sdk/{SDK_MAJOR}/protocol "
-         "-I gopkg.in/bblfsh/sdk.{SDK_MAJOR}/protocol -I . "
-         "gopkg.in/bblfsh/sdk.{SDK_MAJOR}/protocol/generated.proto")
-
+    protoc(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"),
+           j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"),
+           "-I" + j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol"))
     # UAST
-    runc("protoc --python_out bblfsh github.com/gogo/protobuf/gogoproto/gogo.proto")
-    runc("protoc --python_out bblfsh gopkg.in/bblfsh/sdk.{SDK_MAJOR}/uast/generated.proto")
+    protoc("bblfsh", j("github.com", "gogo", "protobuf", "gogoproto", "gogo.proto"),
+           grpc=False)
+    protoc("bblfsh", j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"),
+           grpc=False)
 
 
-def doGetDeps():
-    getLibuast()
-    createDirs()
-    createInits()
-    protoDownload()
-    protoCompile()
+def do_get_deps():
+    get_libuast()
+    create_dirs()
+    create_inits()
+    proto_download()
+    proto_compile()
 
 
 def clean():
-    runc("rm -rf gopkg.in")
-    runc("rm -rf bblfsh/github")
-    runc("rm -rf bblfsh/gopkg")
+    rimraf("gopkg.in")
+    rimraf(j("bblfsh", "github"))
+    rimraf(j("bblfsh", "gopkg"))
     if GET_LIBUAST:
-        runc("rm -rf bblfsh/libuast")
+        rimraf(j("bblfsh", "libuast"))
 
 
 def main():
     # The --global-uast flag allows to install the python driver using the installed uast library
+    if "--log" in sys.argv:
+        logging.basicConfig(level=logging.INFO)
+
     if "--getdeps" in sys.argv:
-        doGetDeps()
-        sys.exit(0)
+        do_get_deps()
+        sys.exit()
 
     if "--clean" in sys.argv:
         clean()
-        sys.exit(0)
+        sys.exit()
 
     libuast_module = Extension(
-        'bblfsh.pyuast',
+        "bblfsh.pyuast",
         libraries=libraries,
-        library_dirs=['/usr/lib', '/usr/local/lib'],
-        extra_compile_args=['-std=c++11'],
-        include_dirs=['bblfsh/libuast/', '/usr/local/include', '/usr/local/include/libxml2',
-                      '/usr/include', '/usr/include/libxml2'], sources=sources)
+        library_dirs=["/usr/lib", "/usr/local/lib"],
+        extra_compile_args=["-std=c++11"],
+        include_dirs=[j("bblfsh", "libuast"), "/usr/local/include", "/usr/local/include/libxml2",
+                      "/usr/include", "/usr/include/libxml2"], sources=sources)
 
     setup(
         cmdclass = {
@@ -148,7 +220,7 @@ def main():
         author="source{d}",
         author_email="language-analysis@sourced.tech",
         url="https://github.com/bblfsh/client-python",
-        download_url='https://github.com/bblfsh/client-python',
+        download_url="https://github.com/bblfsh/client-python",
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
@@ -164,10 +236,11 @@ def main():
             "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
             "Topic :: Software Development :: Libraries"
         ]
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
