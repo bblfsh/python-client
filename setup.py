@@ -10,7 +10,7 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.9.13"
+VERSION = "2.9.14"
 LIBUAST_VERSION = "v1.9.1"
 SDK_VERSION = "v1.8.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
@@ -224,8 +224,7 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio==1.10.0", "grpcio-tools==1.10.0", "docker", "protobuf>=3.4.0"],
-
+        install_requires=["grpcio==1.13.0", "grpcio-tools==1.13.0", "docker", "protobuf>=3.4.0"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
         classifiers=[
