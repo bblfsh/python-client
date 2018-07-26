@@ -22,7 +22,7 @@ if not GET_LIBUAST:
     print("WARNING: not retrieving libuast, using local version")
 
 if os.getenv("CC") is None:
-    os.environ["CC"] = "gcc"
+    os.environ["CC"] = "g++"  # yes, g++ - otherwise distutils will use gcc -std=c++11 and explode
 if os.getenv("CXX") is None:
     os.environ["CXX"] = "g++"
 libraries = ['xml2']
