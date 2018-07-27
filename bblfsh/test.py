@@ -44,6 +44,8 @@ class BblfshTests(unittest.TestCase):
                           self.client.parse, "", "Python", b"a = '\x80abc'")
 
     def testUASTDefaultLanguage(self):
+        res = self.client.parse(__file__)
+        print(res)
         self._validate_resp(self.client.parse(__file__))
 
     def testUASTPython(self):
@@ -286,12 +288,21 @@ class BblfshTests(unittest.TestCase):
         # Check that memory usage has not doubled after running the parse+filter
         self.assertLess(after[2] / before[2], 2.0)
 
+    def testSupportedLanguages(self):
+        res = self.client.supported_languages()
+        self.assertGreater(len(res), 0)
+        for l in res:
+            for key in ('language', 'version', 'status', 'features'):
+                print(key)
+                self.assertTrue(hasattr(l, key))
+                self.assertIsNotNone(getattr(l, key))
+
     def _validate_filter(self, resp):
-        results = filter(resp.uast, "//Import[@roleImport and @roleDeclaration]//alias")
-        self.assertEqual(next(results).token, "os")
-        self.assertEqual(next(results).token, "resource")
-        self.assertEqual(next(results).token, "unittest")
-        self.assertEqual(next(results).token, "docker")
+        results = filter(resp.uast, "//Num")
+        self.assertEqual(next(results).token, "0")
+        self.assertEqual(next(results).token, "1")
+        self.assertEqual(next(results).token, "100")
+        self.assertEqual(next(results).token, "10")
 
 
 if __name__ == "__main__":

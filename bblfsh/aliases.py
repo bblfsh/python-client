@@ -40,6 +40,14 @@ VersionRequest = importlib.import_module(
         "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
         ).VersionRequest
 
+SupportedLanguagesRequest = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
+        ).SupportedLanguagesRequest
+
+SupportedLanguagesResponse = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
+        ).SupportedLanguagesResponse
+
 ProtocolServiceStub = importlib.import_module(
         "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
         ).ProtocolServiceStub

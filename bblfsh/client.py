@@ -3,7 +3,8 @@ import sys
 
 import grpc
 
-from bblfsh.aliases import ParseRequest, NativeParseRequest, VersionRequest, ProtocolServiceStub
+from bblfsh.aliases import (ParseRequest, NativeParseRequest, VersionRequest,
+        ProtocolServiceStub, SupportedLanguagesRequest, SupportedLanguagesResponse)
 from bblfsh.sdkversion import VERSION
 
 # The following two insertions fix the broken pb import paths
@@ -98,6 +99,10 @@ class BblfshClient(object):
                                content=contents,
                                language=self._scramble_language(language))
         return self._stub.NativeParse(request, timeout=timeout)
+
+    def supported_languages(self):
+        sup_response = self._stub.SupportedLanguages(SupportedLanguagesRequest())
+        return sup_response.languages
 
     def version(self):
         """
