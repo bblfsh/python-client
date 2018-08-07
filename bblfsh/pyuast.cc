@@ -477,29 +477,28 @@ static struct PyModuleDef module_def = {
 PyMODINIT_FUNC
 PyInit_pyuast(void)
 {
-  NodeIface iface = {
-    .InternalType = InternalType,
-    .Token = Token,
-    .ChildrenSize = ChildrenSize,
-    .ChildAt = ChildAt,
-    .RolesSize = RolesSize,
-    .RoleAt = RoleAt,
-    .PropertiesSize = PropertiesSize,
-    .PropertyKeyAt = PropertyKeyAt,
-    .PropertyValueAt = PropertyValueAt,
-    .HasStartOffset = HasStartOffset,
-    .StartOffset = StartOffset,
-    .HasStartLine = HasStartLine,
-    .StartLine = StartLine,
-    .HasStartCol = HasStartCol,
-    .StartCol = StartCol,
-    .HasEndOffset = HasEndOffset,
-    .EndOffset = EndOffset,
-    .HasEndLine = HasEndLine,
-    .EndLine = EndLine,
-    .HasEndCol = HasEndCol,
-    .EndCol = EndCol,
-  };
+  NodeIface iface;
+  iface.InternalType = InternalType;
+  iface.Token = Token;
+  iface.ChildrenSize = ChildrenSize;
+  iface.ChildAt = ChildAt;
+  iface.RolesSize = RolesSize;
+  iface.RoleAt = RoleAt;
+  iface.PropertiesSize = PropertiesSize;
+  iface.PropertyKeyAt = PropertyKeyAt;
+  iface.PropertyValueAt = PropertyValueAt;
+  iface.HasStartOffset = HasStartOffset;
+  iface.StartOffset = StartOffset;
+  iface.HasStartLine = HasStartLine;
+  iface.StartLine = StartLine;
+  iface.HasStartCol = HasStartCol;
+  iface.StartCol = StartCol;
+  iface.HasEndOffset = HasEndOffset;
+  iface.EndOffset = EndOffset;
+  iface.HasEndLine = HasEndLine;
+  iface.EndLine = EndLine;
+  iface.HasEndCol = HasEndCol;
+  iface.EndCol = EndCol;
 
   ctx = UastNew(iface);
   return PyModule_Create(&module_def);
