@@ -1,5 +1,6 @@
 language: python
 sudo: true
+dist: xenial
 services:
   - docker
 cache:
@@ -8,6 +9,7 @@ cache:
 python:
   - "3.5"
   - "3.6"
+  - "3.7"
 install:
   - wget https://github.com/bblfsh/client-python/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
   - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
