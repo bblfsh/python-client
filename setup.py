@@ -1,3 +1,4 @@
+import fileinput
 import logging
 import os
 import pkg_resources
@@ -81,7 +82,8 @@ def cpr(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
     log.info("cp -pr %s %s", src, dst)
-    shutil.rmtree(dst, ignore_errors=True)
+    if os.path.isdir(dst):
+        shutil.rmtree(dst)
     shutil.copytree(src, dst, symlinks=True)
 
 
@@ -161,8 +163,9 @@ def proto_compile():
         log.info("%s -m grpc.tools.protoc " + " ".join(main_args), sys.executable)
         protoc_module.main(main_args)
 
+    sdk_root = j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR)
     # SDK
-    protoc(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"),
+    protoc(j(sdk_root, "protocol"),
            j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"),
            "-I" + j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol"))
     # UAST
@@ -170,6 +173,12 @@ def proto_compile():
            grpc=False)
     protoc("bblfsh", j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"),
            grpc=False)
+    for line in fileinput.input([j(sdk_root, "protocol", "generated_pb2.py"),
+                                 j(sdk_root, "uast", "generated_pb2.py")],
+                                inplace=True):
+        print(line.replace("from github.com.gogo.protobuf.gogoproto import",
+                           "from bblfsh.github.com.gogo.protobuf.gogoproto import"),
+              end="")
 
 
 def do_get_deps():
