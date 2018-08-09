@@ -11,7 +11,7 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.11.0"
+VERSION = "2.11.1"
 LIBUAST_VERSION = "v1.9.4"
 SDK_VERSION = "v1.16.1"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
