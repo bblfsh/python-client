@@ -1,7 +1,8 @@
-import fileinput
+import glob
 import logging
 import os
 import pkg_resources
+import re
 import shutil
 import subprocess
 import sys
@@ -11,7 +12,7 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.11.2"
+VERSION = "2.12.0"
 LIBUAST_VERSION = "v1.9.5"
 SDK_VERSION = "v1.16.1"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
@@ -101,8 +102,8 @@ def call(*cmd):
 
 
 def create_dirs():
-    mkdir(j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol"))
-    mkdir(j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast"))
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol"))
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast"))
     mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"))
     mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast"))
     mkdir(j("bblfsh", "github", "com", "gogo", "protobuf", "gogoproto"))
@@ -143,10 +144,9 @@ def get_libuast():
 def proto_download():
     untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_VERSION)
     sdkdir = "sdk-" + SDK_VERSION[1:]
-    cp(j(sdkdir, "protocol", "generated.proto"),
-       j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol", "generated.proto"))
-    cp(j(sdkdir, "uast", "generated.proto"),
-       j("gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast", "generated.proto"))
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}")
+    cp(j(sdkdir, "protocol", "generated.proto"), j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "generated.proto"), j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
 
 
@@ -154,31 +154,70 @@ def proto_compile():
     sysinclude = "-I" + pkg_resources.resource_filename("grpc_tools", "_proto")
     from grpc.tools import protoc as protoc_module
 
-    def protoc(python_out, proto_file, *extra, grpc=True):
-        main_args = [protoc_module.__file__, "--python_out=" + python_out]
-        if grpc:
-            main_args += ["--grpc_python_out=" + python_out]
-        main_args += extra
-        main_args += ["-I.", sysinclude, proto_file]
-        log.info("%s -m grpc.tools.protoc " + " ".join(main_args), sys.executable)
-        protoc_module.main(main_args)
+    from_import_re = re.compile(r"from ((github|gopkg)\.[^ ]*) import (.*)")
+    importlib_import_re = re.compile(r"([^ ]+) = importlib\.import_module\('(.*)")
+    grpc_import_re = re.compile(
+        r"from (([^ .]+\.)*in(\.[^ .]+)*) import ([^ ]+) as ([^\n]+)")
 
-    sdk_root = j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR)
-    # SDK
-    protoc(j(sdk_root, "protocol"),
-           j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"),
-           "-I" + j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol"))
-    # UAST
-    protoc("bblfsh", j("github.com", "gogo", "protobuf", "gogoproto", "gogo.proto"),
-           grpc=False)
-    protoc("bblfsh", j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"),
-           grpc=False)
-    for line in fileinput.input([j(sdk_root, "protocol", "generated_pb2.py"),
-                                 j(sdk_root, "uast", "generated_pb2.py")],
-                                inplace=True):
-        print(line.replace("from github.com.gogo.protobuf.gogoproto import",
-                           "from bblfsh.github.com.gogo.protobuf.gogoproto import"),
-              end="")
+    def patch(file, *patchers):
+        with open(file) as fin:
+            code = fin.readlines()
+        for i, line in enumerate(code):
+            for regexp, replacer in patchers:
+                match = regexp.match(line)
+                if match:
+                    code[i] = replacer(match)
+                    log.info("patched import in %s: %s", file, match.groups()[0])
+                    break
+            if line.startswith("class") or line.startswith("DESCRIPTOR"):
+                break
+        with open(file, "w") as fout:
+            fout.write("".join(code))
+
+    def protoc(proto_file, grpc=False):
+        main_args = [protoc_module.__file__, "--python_out=bblfsh"]
+        target_dir = j("bblfsh", *os.path.dirname(proto_file).split("."))
+        if grpc:
+            # using "." creates "gopkg.in" instead of "gopkg/in" directories
+            main_args += ["--grpc_python_out=" + target_dir]
+        main_args += ["-Iproto", sysinclude, j("proto", proto_file)]
+        log.info("%s -m grpc.tools.protoc " + " ".join(main_args[1:]), sys.executable)
+        protoc_module.main(main_args)
+        if grpc:
+            # we need to move the file back to grpc_out
+            grpc_garbage_dir = None
+            target = j(target_dir, "generated_pb2_grpc.py")
+            for root, dirnames, filenames in os.walk(target_dir):
+                for filename in filenames:
+                    if filename == "generated_pb2_grpc.py" and grpc_garbage_dir is not None:
+                        mv(j(root, filename), target)
+                if os.path.samefile(root, target_dir):
+                    grpc_garbage_dir = j(root, dirnames[0])
+            rimraf(grpc_garbage_dir)
+
+            # grpc ignores "in" and we need to patch the import path
+            def grpc_replacer(match):
+                groups = match.groups()
+                return 'import importlib\n%s = importlib.import_module("bblfsh.%s.%s")\n' % (
+                    groups[-1], groups[0], groups[-2])
+
+            patch(target, (grpc_import_re, grpc_replacer))
+
+        target = glob.glob(j(target_dir, "*_pb2.py"))[0]
+
+        def from_import_replacer(match):
+            return "from bblfsh.%s import %s\n" % (match.group(1), match.group(3))
+
+        def importlib_import_replacer(match):
+            return "%s = importlib.import_module('bblfsh.%s\n" % (match.group(1), match.group(2))
+
+        patch(target,
+              (from_import_re, from_import_replacer),
+              (importlib_import_re, importlib_import_replacer))
+
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"), True)
+    protoc(j("github.com", "gogo", "protobuf", "gogoproto", "gogo.proto"))
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"))
 
 
 def do_get_deps():

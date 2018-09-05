@@ -299,6 +299,7 @@ class BblfshTests(unittest.TestCase):
 
     def _validate_filter(self, resp):
         results = filter(resp.uast, "//Num")
+        self.assertIsInstance(resp.uast, Node)
         self.assertEqual(next(results).token, "0")
         self.assertEqual(next(results).token, "1")
         self.assertEqual(next(results).token, "100")
