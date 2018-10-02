@@ -52,7 +52,7 @@ client = bblfsh.BblfshClient("0.0.0.0:9432")
 uast = client.parse("/path/to/file.py").uast
 print(uast)
 # "filter' allows you to use XPath queries to filter on result nodes:
-print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
+print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias"))
 
 # filter\_[bool|string|number] must be used when using XPath functions returning
 # these types:
