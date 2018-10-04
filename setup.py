@@ -12,9 +12,9 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.12.1"
-LIBUAST_VERSION = "v1.9.5"
-SDK_VERSION = "v1.16.1"
+VERSION = "3.0.0"
+LIBUAST_VERSION = "v2.0.0-rc1"
+SDK_VERSION = "v2.2.3"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
@@ -27,7 +27,7 @@ if os.getenv("CC") is None:
     os.environ["CC"] = "g++"  # yes, g++ - otherwise distutils will use gcc -std=c++11 and explode
 if os.getenv("CXX") is None:
     os.environ["CXX"] = "g++"
-libraries = ['xml2']
+libraries = []
 sources = ["bblfsh/pyuast.cc", "bblfsh/memtracker.cc"]
 log = logging.getLogger("setup.py")
 
@@ -39,9 +39,6 @@ class CustomBuildExt(build_ext):
 
         if "--global-uast" in sys.argv:
             libraries.append("uast")
-        else:
-            sources.append("bblfsh/libuast/uast.cc")
-            sources.append("bblfsh/libuast/roles.c")
 
         get_libuast()
         build_ext.run(self)
@@ -254,8 +251,8 @@ def main():
         libraries=libraries,
         library_dirs=["/usr/lib", "/usr/local/lib"],
         extra_compile_args=["-std=c++11"],
-        include_dirs=[j("bblfsh", "libuast"), "/usr/local/include", "/usr/local/include/libxml2",
-                      "/usr/include", "/usr/include/libxml2"], sources=sources)
+        include_dirs=[j("bblfsh", "libuast"), "/usr/local/include",
+                      "/usr/include"], sources=sources)
 
     setup(
         cmdclass = {
@@ -286,7 +283,8 @@ def main():
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Topic :: Software Development :: Libraries"
-        ]
+        ],
+        zip_safe=False,
     )
 
 
