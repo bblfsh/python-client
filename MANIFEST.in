@@ -7,5 +7,5 @@ include Makefile
 include github.com/gogo/protobuf/gogoproto/gogo.proto
 include gopkg.in/bblfsh/sdk.v1/protocol/generated.proto
 include gopkg.in/bblfsh/sdk.v1/uast/generated.proto
-include bblfsh/memtracker.h
+include bblfsh/libuast/libuast.hpp
 prune bblfsh/libuast

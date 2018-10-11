@@ -9,15 +9,13 @@
 #include "libuast.hpp"
 #include "memtracker.h"
 
-#define DEBUG_HERE PyErr_SetString(PyExc_NotImplementedError, "HERE"); return NULL;
-
 // Used to store references to the Pyobjects instanced in String() and
 // ItemAt() methods. Those can't be DECREF'ed to 0 because libuast uses them
 // so we pass ownership to these lists and free them at the end of filter()
 
 PyObject* asPyBuffer(uast::Buffer buf) {
-    // return PyByteArray_FromStringAndSize((const char*)(data), size);
-    return PyMemoryView_FromMemory((char*)(buf.ptr), buf.size, PyBUF_READ);
+    return PyByteArray_FromStringAndSize((const char*)(buf.ptr), buf.size);
+    //return PyMemoryView_FromMemory((char*)(buf.ptr), buf.size, PyBUF_READ);
 }
 
 /*
@@ -184,6 +182,8 @@ class ContextExt {
 private:
     uast::Context<NodeHandle> *ctx;
 
+    // toPy allocates a new NodeExt with a specified handle.
+    // Returns a new reference.
     PyObject* toPy(NodeHandle node) {
         if (node == 0) Py_RETURN_NONE;
 
@@ -194,6 +194,9 @@ private:
         pyObj->handle = node;
         return (PyObject*)pyObj;
     }
+
+    // toHandle casts an object to NodeExt and returns its handle.
+    // Borrows the reference.
     NodeHandle toHandle(PyObject* obj) {
         if (!obj || obj == Py_None) return 0;
 
@@ -231,21 +234,29 @@ public:
         delete(ctx);
     }
 
+    // lookup searches for a specific node handle.
+    // Returns a new reference.
     PyObject* lookup(NodeHandle node) {
         return toPy(node);
     }
 
+    // RootNode returns a root UAST node, if set.
+    // Returns a new reference.
     PyObject* RootNode(){
         NodeHandle root = ctx->RootNode();
-        return toPy(root);
+        return lookup(root);
     }
 
+    // Iterate iterates over an external UAST tree.
+    // Borrows the reference.
     PyObject* Iterate(PyObject* node, TreeOrder order){
         NodeHandle h = toHandle(node);
         auto iter = ctx->Iterate(h, order);
         return newIter(iter, false);
     }
 
+    // Filter queries an external UAST.
+    // Borrows the reference.
     PyObject* Filter(PyObject* node, char* query){
         NodeHandle unode = toHandle(node);
         if (unode == 0) {
@@ -256,16 +267,22 @@ public:
         delete(query);
         return newIter(it, false);
     }
+
+    // Encode serializes the external UAST.
+    // Borrows the reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
         uast::Buffer data = ctx->Encode(toHandle(node), format);
         return asPyBuffer(data);
     }
 };
 
+// PyUastIterExt_toPy is a function that looks up for nodes visited by iterator.
+// Returns a new reference.
 static PyObject *PyUastIterExt_toPy(ContextExt *ctx, NodeHandle node) {
   return ctx->lookup(node);
 }
 
+// PyUastIterExt_dealloc destroys an iterator.
 static void PyUastIterExt_dealloc(PyObject *self) {
   auto it = (PyUastIterExt *)self;
   delete(it->iter);
@@ -284,12 +301,17 @@ typedef struct {
 
 static void PyContextExt_dealloc(PyObject *self) {
   delete(((PyContextExt *)self)->p);
+  // TODO: delete self?
 }
 
+// PyContextExt_root returns a root node associated with this context.
+// Returns a new reference.
 static PyObject *PyContextExt_root(PyContextExt *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
+// PyContextExt_filter filters UAST.
+// Returns a new reference.
 static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args) {
     PyObject *node = NULL;
     char *query = NULL;
@@ -298,6 +320,8 @@ static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args) {
     return self->p->Filter(node, query);
 }
 
+// PyContextExt_filter serializes UAST.
+// Returns a new reference.
 static PyObject *PyContextExt_encode(PyContextExt *self, PyObject *args) {
     PyObject *node = NULL;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
@@ -372,20 +396,32 @@ class Interface;
 class Node : public uast::Node<Node*> {
 private:
     Interface* ctx;
-    PyObject* obj;
+    PyObject* obj; // Node owns a reference
     NodeKind  kind;
 
     PyObject* keys;
 
+    // checkPyException checks a Python error status, and if it's set, throws an error.
     static void checkPyException() {
         PyObject *type, *value, *traceback;
         PyErr_Fetch(&type, &value, &traceback);
         if (value == NULL || value == Py_None) {
             return;
         }
+        Py_DECREF(type);
+        Py_DECREF(traceback);
+
         PyObject* str = PyObject_Str(value);
-        throw std::runtime_error(PyUnicode_AsUTF8(str));
+        Py_DECREF(value);
+
+        auto err = PyUnicode_AsUTF8(str);
+        Py_DECREF(str);
+
+        throw std::runtime_error(err);
     }
+
+    // kindOf returns a kind of a Python object.
+    // Borrows the reference.
     static NodeKind kindOf(PyObject* obj) {
         if (!obj || obj == Py_None) {
           return NODE_NULL;
@@ -407,13 +443,28 @@ public:
     friend class Interface;
     friend class Context;
 
-    Node(Interface* c, NodeKind k, PyObject* v) {
+    // Node creates a new node associated with a given Python object and sets the kind.
+    // Steals the reference.
+    Node(Interface* c, NodeKind k, PyObject* v) : keys(nullptr) {
         ctx = c;
         obj = v;
         kind = k;
     }
-    Node(Interface* c, PyObject* v) {
-        Node(c, kindOf(v), v);
+    // Node creates a new node associated with a given Python object and automatically determines the kind.
+    // Creates a new reference.
+    Node(Interface* c, PyObject* v) : keys(nullptr) {
+        ctx = c;
+        obj = v; Py_INCREF(v);
+        kind = kindOf(v);
+    }
+    ~Node(){
+        if (keys) {
+            Py_DECREF(keys);
+            keys = nullptr;
+        }
+        if (obj) {
+            Py_DECREF(obj);
+        }
     }
 
     PyObject* toPy();
@@ -421,7 +472,7 @@ public:
     NodeKind Kind() {
         return kind;
     }
-    const char* AsString() {
+    std::string AsString() {
         const char* v = PyUnicode_AsUTF8(obj);
         return v;
     }
@@ -456,41 +507,48 @@ public:
         return sz;
     }
     
-    const char* KeyAt(size_t i) {
+    std::string KeyAt(size_t i) {
         if (obj == Py_None) {
             return NULL;
         }
         if (!keys) keys = PyDict_Keys(obj);
-        PyObject* key = PyList_GetItem(keys, i);
-        return PyUnicode_AsUTF8(key);
+        PyObject* key = PyList_GetItem(keys, i); // borrows
+        auto k = PyUnicode_AsUTF8(key);
+        return k;
     }
     Node* ValueAt(size_t i) {
         if (obj == Py_None) {
-            return 0;
+            return NULL;
         }
         if (PyList_Check(obj)) {
-                PyObject* v = PyList_GetItem(obj, i);
-                return lookupOrCreate(v);
+            PyObject* v = PyList_GetItem(obj, i); // borrows
+            return lookupOrCreate(v); // new ref
         }
         if (!keys) keys = PyDict_Keys(obj);
-        PyObject* key = PyList_GetItem(keys, i);
-        PyObject* val = PyDict_GetItem(obj, key);
-        Py_DECREF(key);
+        PyObject* key = PyList_GetItem(keys, i); // borrows
+        PyObject* val = PyDict_GetItem(obj, key); // borrows
 
-        return lookupOrCreate(val);
+        return lookupOrCreate(val); // new ref
     }
     
     void SetValue(size_t i, Node* val) {
-        PyObject* v = Py_None;
-        if (val && val->obj) v = val->obj;
-        // TODO: increase ref
-        PyList_SetItem(obj, i, v);
+        PyObject* v = nullptr;
+        if (val && val->obj) {
+            v = val->obj;
+        } else {
+            v = Py_None;
+        }
+        Py_INCREF(v);
+        PyList_SetItem(obj, i, v); // steals
     }
-    void SetKeyValue(const char* k, Node* val) {
-        PyObject* v = Py_None;
-        if (val && val->obj) v = val->obj;
-        // TODO: increase ref
-        PyDict_SetItemString(obj, k, v);
+    void SetKeyValue(std::string k, Node* val) {
+        PyObject* v = nullptr;
+        if (val && val->obj) {
+            v = val->obj;
+        } else {
+            v = Py_None;
+        }
+        PyDict_SetItemString(obj, k.data(), v); // new ref
     }
 };
 
@@ -502,7 +560,6 @@ class Context;
 
 class Interface : public uast::NodeCreator<Node*> {
 private:
-    // TODO: track objects
     std::map<PyObject*, Node*> obj2node;
     
     static PyObject* newBool(bool v) {
@@ -511,7 +568,12 @@ private:
         }
         Py_RETURN_FALSE;
     }
+
+    // lookupOrCreate either creates a new object or returns existing one.
+    // In the second case it creates a new reference.
     Node* lookupOrCreate(PyObject* obj) {
+        if (!obj || obj == Py_None) return NULL;
+
         Node* node = obj2node[obj];
         if (node) return node;
 
@@ -519,6 +581,9 @@ private:
         obj2node[obj] = node;
         return node;
     }
+
+    // create makes a new object with a specified kind.
+    // Steals the reference.
     Node* create(NodeKind kind, PyObject* obj) {
         Node* node = new Node(this, kind, obj);
         obj2node[obj] = node;
@@ -531,15 +596,27 @@ public:
     Interface(){
     }
     ~Interface(){
-        // TODO: dealloc for Nodes and DECREF for PyObjects
+        // Only needs to deallocate Nodes, since they own
+        // the same object as used in the map key.
+        for (auto it : obj2node) {
+            delete(it.second);
+        }
     }
+
+    // toNode creates a new or returns an existing node associated with Python object.
+    // Creates a new reference.
     Node* toNode(PyObject* obj){
         return lookupOrCreate(obj);
     }
+
+    // toPy returns a Python object associated with a node.
+    // Returns a new reference.
     PyObject* toPy(Node* node) {
         if (node == NULL) Py_RETURN_NONE;
-        return node->obj; // TODO incref?
+        Py_INCREF(node->obj);
+        return node->obj;
     }
+
     Node* NewObject(size_t size) {
         PyObject* m = PyDict_New();
         return create(NODE_OBJECT, m);
@@ -548,8 +625,8 @@ public:
         PyObject* arr = PyList_New(size);
         return create(NODE_ARRAY, arr);
     }
-    Node* NewString(const char* v) {
-        PyObject* obj = PyUnicode_FromString(v);
+    Node* NewString(std::string v) {
+        PyObject* obj = PyUnicode_FromString(v.data());
         return create(NODE_STRING, obj);
     }
     Node* NewInt(int64_t v) {
@@ -570,9 +647,14 @@ public:
     }
 };
 
+// toPy returns a Python object associated with a node.
+// Returns a new reference.
 PyObject* Node::toPy() {
     return ctx->toPy(this);
 }
+
+// lookupOrCreate either creates a new object or returns existing one.
+// In the second case it creates a new reference.
 Node* Node::lookupOrCreate(PyObject* obj) {
     return ctx->lookupOrCreate(obj);
 }
@@ -607,7 +689,7 @@ static PyObject *PyUastIter_next(PyObject *self) {
   Node* node = it->iter->node();
   if (!node) Py_RETURN_NONE;
 
-  return node->toPy();
+  return node->toPy(); // new ref
 }
 
 extern "C"
@@ -664,13 +746,15 @@ private:
     uast::PtrInterface<Node*> *impl;
     uast::Context<Node*>   *ctx;
 
+    // toPy returns a Python object associated with a node.
+    // Returns a new reference.
     PyObject* toPy(Node* node) {
         if (node == NULL) Py_RETURN_NONE;
         return iface->toPy(node);
     }
+    // toNode returns a node associated with a Python object.
+    // Creates a new reference.
     Node* toNode(PyObject* obj) {
-        if (!obj || obj == Py_None) return NULL;
-
         return iface->lookupOrCreate(obj);
     }
     PyObject* newIter(uast::Iterator<Node*> *it, bool freeCtx){
@@ -692,7 +776,7 @@ public:
         // create a class that makes and tracks UAST nodes
         iface = new Interface();
         // create an implementation that will handle libuast calls
-        auto impl = new uast::PtrInterface<Node*>(iface);
+        impl = new uast::PtrInterface<Node*>(iface);
         // create a new UAST context based on this implementation
         ctx = impl->NewContext();
     }
@@ -702,37 +786,44 @@ public:
         delete(iface);
     }
 
+    // RootNode returns a root UAST node, if set.
+    // Returns a new reference.
     PyObject* RootNode(){
         Node* root = ctx->RootNode();
-        return toPy(root);
+        return toPy(root); // new ref
     }
 
+    // Iterate enumerates UAST nodes in a specified order.
+    // Creates a new reference.
     PyObject* Iterate(PyObject* node, TreeOrder order, bool freeCtx){
         Node* unode = toNode(node);
         auto iter = ctx->Iterate(unode, order);
         return newIter(iter, freeCtx);
     }
 
-    PyObject* Filter(PyObject* node, char* query){
+    // Filter queries UAST.
+    // Creates a new reference.
+    PyObject* Filter(PyObject* node, std::string query){
         Node* unode = toNode(node);
         if (unode == NULL) {
           unode = ctx->RootNode();
         }
 
         auto it = ctx->Filter(unode, query);
-        delete(query);
         return newIter(it, false);
     }
+    // Encode serializes UAST.
+    // Creates a new reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
         uast::Buffer data = ctx->Encode(toNode(node), format);
-        return asPyBuffer(data);
+        return asPyBuffer(data); // TODO: this probably won't deallocate the buffer
     }
     PyObject* LoadFrom(NodeExt *src) {
         auto sctx = src->ctx->ctx;
         NodeHandle snode = src->handle;
 
         Node* node = uast::Load(sctx, snode, ctx);
-        return toPy(node);
+        return toPy(node); // new ref
     }
 };
 
@@ -761,13 +852,14 @@ typedef struct {
 
 static void PyUast_dealloc(PyObject *self) {
   delete(((PyUast *)self)->p);
+  // TODO: delete self?
 }
 
 static PyObject *PyUast_root(PyUast *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
-static PyObject *PyUast_filter(PyContextExt *self, PyObject *args) {
+static PyObject *PyUast_filter(PyUast *self, PyObject *args) {
     PyObject *node = NULL;
     char *query = NULL;
     if (!PyArg_ParseTuple(args, "Os", &node, &query))
@@ -775,7 +867,7 @@ static PyObject *PyUast_filter(PyContextExt *self, PyObject *args) {
     return self->p->Filter(node, query);
 }
 
-static PyObject *PyUast_encode(PyContextExt *self, PyObject *args) {
+static PyObject *PyUast_encode(PyUast *self, PyObject *args) {
     PyObject *node = NULL;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
     if (!PyArg_ParseTuple(args, "Oi", &node, &format))

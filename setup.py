@@ -19,7 +19,7 @@ SDK_MAJOR = SDK_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
 # For debugging libuast-client interactions, set to True in production!
-GET_LIBUAST = True
+GET_LIBUAST = False
 if not GET_LIBUAST:
     print("WARNING: not retrieving libuast, using local version")
 
@@ -27,8 +27,8 @@ if os.getenv("CC") is None:
     os.environ["CC"] = "g++"  # yes, g++ - otherwise distutils will use gcc -std=c++11 and explode
 if os.getenv("CXX") is None:
     os.environ["CXX"] = "g++"
-libraries = []
-sources = ["bblfsh/pyuast.cc", "bblfsh/memtracker.cc"]
+libraries = ['uast']
+sources = ["bblfsh/pyuast.cc"]
 log = logging.getLogger("setup.py")
 
 
@@ -249,7 +249,7 @@ def main():
     libuast_module = Extension(
         "bblfsh.pyuast",
         libraries=libraries,
-        library_dirs=["/usr/lib", "/usr/local/lib"],
+        library_dirs=["/usr/lib", "/usr/local/lib", "."],
         extra_compile_args=["-std=c++11"],
         include_dirs=[j("bblfsh", "libuast"), "/usr/local/include",
                       "/usr/include"], sources=sources)
