@@ -39,12 +39,12 @@ typedef struct {
   PyObject_HEAD
   ContextExt    *ctx;
   NodeHandle handle;
-} NodeExt;
+} PyNodeExt;
 
-static PyObject *NodeExt_load(NodeExt *self, PyObject *Py_UNUSED(ignored));
+static PyObject *PyNodeExt_load(PyNodeExt *self, PyObject *Py_UNUSED(ignored));
 
-static PyMethodDef NodeExt_methods[] = {
-    {"load", (PyCFunction) NodeExt_load, METH_NOARGS,
+static PyMethodDef PyNodeExt_methods[] = {
+    {"load", (PyCFunction) PyNodeExt_load, METH_NOARGS,
      "Load external node to Python"
     },
     {nullptr}  // Sentinel
@@ -55,7 +55,7 @@ extern "C"
     static PyTypeObject PyNodeExtType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.NodeExt",               // tp_name
-      sizeof(NodeExt),                // tp_basicsize
+      sizeof(PyNodeExt),                // tp_basicsize
       0,                              // tp_itemsize
       0,                              // tp_dealloc
       0,                              // tp_print
@@ -80,7 +80,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      NodeExt_methods,                // tp_methods
+      PyNodeExt_methods,                // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -186,7 +186,7 @@ private:
     PyObject* toPy(NodeHandle node) {
         if (node == 0) Py_RETURN_NONE;
 
-        NodeExt *pyObj = PyObject_New(NodeExt, &PyNodeExtType);
+        PyNodeExt *pyObj = PyObject_New(PyNodeExt, &PyNodeExtType);
         if (!pyObj) return nullptr;
 
         pyObj->ctx = this;
@@ -206,7 +206,7 @@ private:
             return 0;
         }
 
-        auto node = (NodeExt*)obj;
+        auto node = (PyNodeExt*)obj;
         return node->handle;
     }
 
@@ -828,7 +828,7 @@ public:
         uast::Buffer data = ctx->Encode(toNode(node), format);
         return asPyBuffer(data); // TODO: this probably won't deallocate the buffer
     }
-    PyObject* LoadFrom(NodeExt *src) {
+    PyObject* LoadFrom(PyNodeExt *src) {
         auto sctx = src->ctx->ctx;
         NodeHandle snode = src->handle;
 
@@ -837,7 +837,7 @@ public:
     }
 };
 
-static PyObject *NodeExt_load(NodeExt *self, PyObject *Py_UNUSED(ignored)) {
+static PyObject *PyNodeExt_load(PyNodeExt *self, PyObject *Py_UNUSED(ignored)) {
     auto ctx = new Context();
     PyObject* node = ctx->LoadFrom(self);
     delete(ctx);
@@ -956,7 +956,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   // the node can either be external or any other Python object
   if (PyObject_TypeCheck(obj, &PyNodeExtType)) {
     // external node -> external iterator
-    auto node = (NodeExt*)obj;
+    auto node = (PyNodeExt*)obj;
     return node->ctx->Iterate(obj, (TreeOrder)order);
   }
   // Python object -> create a new context and attach it to an iterator
