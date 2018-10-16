@@ -858,18 +858,18 @@ static void PyUastIter_dealloc(PyObject *self) {
 typedef struct {
   PyObject_HEAD
   Context *p;
-} PyUast;
+} PyContext;
 
-static void PyUast_dealloc(PyObject *self) {
+static void PyContext_dealloc(PyObject *self) {
   delete(((PyUast *)self)->p);
   // TODO: delete self?
 }
 
-static PyObject *PyUast_root(PyUast *self, PyObject *Py_UNUSED(ignored)) {
+static PyObject *PyContext_root(PyContext *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
-static PyObject *PyUast_filter(PyUast *self, PyObject *args) {
+static PyObject *PyContext_filter(PyContext *self, PyObject *args) {
     PyObject *node = nullptr;
     char *query = nullptr;
     if (!PyArg_ParseTuple(args, "Os", &node, &query))
@@ -877,7 +877,7 @@ static PyObject *PyUast_filter(PyUast *self, PyObject *args) {
     return self->p->Filter(node, query);
 }
 
-static PyObject *PyUast_encode(PyUast *self, PyObject *args) {
+static PyObject *PyContext_encode(PyContext *self, PyObject *args) {
     PyObject *node = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
     if (!PyArg_ParseTuple(args, "Oi", &node, &format))
@@ -885,14 +885,14 @@ static PyObject *PyUast_encode(PyUast *self, PyObject *args) {
     return self->p->Encode(node, format);
 }
 
-static PyMethodDef PyUast_methods[] = {
-    {"root", (PyCFunction) PyUast_root, METH_NOARGS,
+static PyMethodDef PyContext_methods[] = {
+    {"root", (PyCFunction) PyContext_root, METH_NOARGS,
      "Return the root node attached to this query context"
     },
-    {"filter", (PyCFunction) PyUast_filter, METH_VARARGS,
+    {"filter", (PyCFunction) PyContext_filter, METH_VARARGS,
      "Filter a provided UAST with XPath"
     },
-    {"encode", (PyCFunction) PyUast_encode, METH_VARARGS,
+    {"encode", (PyCFunction) PyContext_encode, METH_VARARGS,
      "Encodes a UAST into a buffer"
     },
     {nullptr}  // Sentinel
@@ -903,9 +903,9 @@ extern "C"
   static PyTypeObject PyContextType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.Context",               // tp_name
-      sizeof(PyUast),                 // tp_basicsize
+      sizeof(PyContext),                 // tp_basicsize
       0,                              // tp_itemsize
-      PyUast_dealloc,                 // tp_dealloc
+      PyContext_dealloc,                 // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -928,7 +928,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PyUast_methods,                 // tp_methods
+      PyContext_methods,                 // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -964,7 +964,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   return ctx->Iterate(obj, (TreeOrder)order, true);
 }
 
-static PyObject *PyUastDecode(PyObject *self, PyObject *args) {
+static PyObject *PyContextDecode(PyObject *self, PyObject *args) {
     PyObject *obj = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg
 
@@ -991,12 +991,12 @@ static PyObject *PyUastDecode(PyObject *self, PyObject *args) {
     return (PyObject*)pyU;
 }
 
-static PyObject *PyUast_new(PyObject *self, PyObject *args) {
+static PyObject *PyContext_new(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args, "")) {
       return nullptr;
     }
 
-    PyUast *pyU = PyObject_New(PyUast, &PyContextType);
+    PyContext *pyU = PyObject_New(PyContext, &PyContextType);
     if (!pyU) {
       return nullptr;
     }
@@ -1006,8 +1006,8 @@ static PyObject *PyUast_new(PyObject *self, PyObject *args) {
 
 static PyMethodDef extension_methods[] = {
     {"iterator", PyUastIter_new, METH_VARARGS, "Get an iterator over a node"},
-    {"decode", PyUastDecode, METH_VARARGS, "Decode UAST from a byte array"},
-    {"uast", PyUast_new, METH_VARARGS, "Creates a new UAST context"},
+    {"decode", PyContextDecode, METH_VARARGS, "Decode UAST from a byte array"},
+    {"uast", PyContext_new, METH_VARARGS, "Creates a new UAST context"},
     {nullptr, nullptr, 0, nullptr}
 };
 
