@@ -900,7 +900,7 @@ static PyMethodDef PyUast_methods[] = {
 
 extern "C"
 {
-  static PyTypeObject PyUastType = {
+  static PyTypeObject PyContextType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.Context",               // tp_name
       sizeof(PyUast),                 // tp_basicsize
@@ -996,7 +996,7 @@ static PyObject *PyUast_new(PyObject *self, PyObject *args) {
       return nullptr;
     }
 
-    PyUast *pyU = PyObject_New(PyUast, &PyUastType);
+    PyUast *pyU = PyObject_New(PyUast, &PyContextType);
     if (!pyU) {
       return nullptr;
     }
@@ -1030,7 +1030,7 @@ PyInit_pyuast(void)
   if (PyType_Ready(&PyNodeExtType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterExtType) < 0) return nullptr;
 
-  if (PyType_Ready(&PyUastType) < 0) return nullptr;
+  if (PyType_Ready(&PyContextType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterType) < 0) return nullptr;
   return PyModule_Create(&module_def);
 }
