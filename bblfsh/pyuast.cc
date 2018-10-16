@@ -52,7 +52,7 @@ static PyMethodDef NodeExt_methods[] = {
 
 extern "C"
 {
-    static PyTypeObject NodeExtType = {
+    static PyTypeObject PyNodeExtType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.NodeExt",               // tp_name
       sizeof(NodeExt),                // tp_basicsize
@@ -186,7 +186,7 @@ private:
     PyObject* toPy(NodeHandle node) {
         if (node == 0) Py_RETURN_NONE;
 
-        NodeExt *pyObj = PyObject_New(NodeExt, &NodeExtType);
+        NodeExt *pyObj = PyObject_New(NodeExt, &PyNodeExtType);
         if (!pyObj) return nullptr;
 
         pyObj->ctx = this;
@@ -199,7 +199,7 @@ private:
     NodeHandle toHandle(PyObject* obj) {
         if (!obj || obj == Py_None) return 0;
 
-        if (!PyObject_TypeCheck(obj, &NodeExtType)) {
+        if (!PyObject_TypeCheck(obj, &PyNodeExtType)) {
             const char* err = "unknown node type";
             PyErr_SetString(PyExc_NotImplementedError, err);
             ctx->SetError(err);
@@ -954,7 +954,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
     return nullptr;
 
   // the node can either be external or any other Python object
-  if (PyObject_TypeCheck(obj, &NodeExtType)) {
+  if (PyObject_TypeCheck(obj, &PyNodeExtType)) {
     // external node -> external iterator
     auto node = (NodeExt*)obj;
     return node->ctx->Iterate(obj, (TreeOrder)order);
@@ -1027,7 +1027,7 @@ PyMODINIT_FUNC
 PyInit_pyuast(void)
 {
   if (PyType_Ready(&PyContextExtType) < 0) return nullptr;
-  if (PyType_Ready(&NodeExtType) < 0) return nullptr;
+  if (PyType_Ready(&PyNodeExtType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterExtType) < 0) return nullptr;
 
   if (PyType_Ready(&PyUastType) < 0) return nullptr;
