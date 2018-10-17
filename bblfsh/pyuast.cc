@@ -55,7 +55,7 @@ extern "C"
     static PyTypeObject PyNodeExtType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.NodeExt",               // tp_name
-      sizeof(PyNodeExt),                // tp_basicsize
+      sizeof(PyNodeExt),              // tp_basicsize
       0,                              // tp_itemsize
       0,                              // tp_dealloc
       0,                              // tp_print
@@ -80,7 +80,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PyNodeExt_methods,                // tp_methods
+      PyNodeExt_methods,              // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -181,7 +181,7 @@ class ContextExt {
 private:
     uast::Context<NodeHandle> *ctx;
 
-    // toPy allocates a new NodeExt with a specified handle.
+    // toPy allocates a new PyNodeExt with a specified handle.
     // Returns a new reference.
     PyObject* toPy(NodeHandle node) {
         if (node == 0) Py_RETURN_NONE;
@@ -194,7 +194,7 @@ private:
         return (PyObject*)pyObj;
     }
 
-    // toHandle casts an object to NodeExt and returns its handle.
+    // toHandle casts an object to PyNodeExt and returns its handle.
     // Borrows the reference.
     NodeHandle toHandle(PyObject* obj) {
         if (!obj || obj == Py_None) return 0;
@@ -903,9 +903,9 @@ extern "C"
   static PyTypeObject PyContextType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.Context",               // tp_name
-      sizeof(PyContext),                 // tp_basicsize
+      sizeof(PyContext),              // tp_basicsize
       0,                              // tp_itemsize
-      PyContext_dealloc,                 // tp_dealloc
+      PyContext_dealloc,              // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -928,7 +928,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PyContext_methods,                 // tp_methods
+      PyContext_methods,              // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
