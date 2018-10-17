@@ -424,7 +424,7 @@ private:
     // Borrows the reference.
     static NodeKind kindOf(PyObject* obj) {
         if (!obj || obj == Py_None) {
-          return NODE_nullptr;
+          return NODE_NULL;
         } else if (PyUnicode_Check(obj)) {
           return NODE_STRING;
         } else if (PyLong_Check(obj)) {
