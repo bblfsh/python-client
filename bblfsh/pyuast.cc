@@ -964,7 +964,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   return ctx->Iterate(obj, (TreeOrder)order, true);
 }
 
-static PyObject *PyContextDecode(PyObject *self, PyObject *args) {
+static PyObject *PyContextExt_decode(PyObject *self, PyObject *args) {
     PyObject *obj = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg
 
