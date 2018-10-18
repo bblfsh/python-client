@@ -13,23 +13,20 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 VERSION = "3.0.0"
-LIBUAST_VERSION = "v2.0.0-rc1"
-SDK_VERSION = "v2.2.3"
+LIBUAST_VERSION = "v3.0.0-rc2"
+SDK_VERSION = "v2.3.0"
 SDK_MAJOR = SDK_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
-# For debugging libuast-client interactions, set to True in production!
-GET_LIBUAST = False
-if not GET_LIBUAST:
-    print("WARNING: not retrieving libuast, using local version")
-
-if os.getenv("CC") is None:
-    os.environ["CC"] = "g++"  # yes, g++ - otherwise distutils will use gcc -std=c++11 and explode
-if os.getenv("CXX") is None:
-    os.environ["CXX"] = "g++"
 libraries = ['uast']
 sources = ["bblfsh/pyuast.cc"]
 log = logging.getLogger("setup.py")
+
+# For debugging libuast-client interactions, set to True in production!
+GET_LIBUAST = True
+if not GET_LIBUAST:
+    log.warning("WARNING: not retrieving libuast, using local version")
+
 
 
 class CustomBuildExt(build_ext):
@@ -47,6 +44,13 @@ class CustomBuildExt(build_ext):
 def j(*paths):
     return os.path.join(*paths)
 
+def runorexit(cmd, errmsg = ""):
+    log.info(">>", cmd)
+    if os.system(cmd) != 0:
+        sep = ". " if errmsg else ""
+        log.error(errmsg + sep + "Failed command: '%s'" % cmd)
+        sys.exit(1)
+
 
 def mkdir(path):
     path = path.format(**FORMAT_ARGS)
@@ -63,7 +67,7 @@ def rimraf(path):
 def mv(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("mv %s %s", src, dst)
+    log.info(">> mv %s %s", src, dst)
     shutil.rmtree(dst, ignore_errors=True)
     os.rename(src, dst)
 
@@ -71,7 +75,7 @@ def mv(src, dst):
 def cp(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("cp -p %s %s", src, dst)
+    log.info(">> cp %s %s", src, dst)
     shutil.rmtree(dst, ignore_errors=True)
     shutil.copy2(src, dst)
 
@@ -79,14 +83,14 @@ def cp(src, dst):
 def cpr(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("cp -pr %s %s", src, dst)
+    log.info(">> cp -pr %s %s", src, dst)
     if os.path.isdir(dst):
         shutil.rmtree(dst)
     shutil.copytree(src, dst, symlinks=True)
 
 
 def untar_url(url, path="."):
-    log.info("tar xf " + url)
+    log.info(">> tar xf " + url)
     with urlopen(url) as response:
         response.tell = lambda: 0  # tarfile calls it only once in the beginning
         with tarfile.open(fileobj=response, mode=("r:" + url.rsplit(".", 1)[-1])) as tar:
@@ -130,20 +134,44 @@ def get_libuast():
     if not GET_LIBUAST:
         return
 
-    untar_url(
-        "https://github.com/bblfsh/libuast/archive/{LIBUAST_VERSION}/{LIBUAST_VERSION}.tar.gz"
-        .format(**FORMAT_ARGS))
-    mv("libuast-" + LIBUAST_VERSION.replace("v", ""), "libuast")
-    cpr(j("libuast", "src"), j("bblfsh", "libuast"))
-    rimraf("libuast")
+    gopath = os.environ["GOPATH"]
+    if not gopath:
+        log.error("GOPATH must be set")
+        sys.exit(1)
+
+    mkdir(j("bblfsh", "libuast"))
+
+    # Retrieve libuast
+    runorexit("go get -u -v github.com/bblfsh/libuast")
+
+    # Build it
+    py_dir = os.getcwd()
+    libuast_path = j(gopath, "src", "github.com", "bblfsh", "libuast")
+    log.info(">> cd ", libuast_path)
+    libuast_dir = j(gopath, "src", "github.com", "bblfsh", "libuast")
+    os.chdir(libuast_dir)
+    runorexit("make build")
+
+    # Generate libuast.h
+    local_libuast = j("bblfsh", "libuast")
+    mkdir(local_libuast)
+    runorexit("go run gen_header.go -o libuast.h")
+
+    # Copy the files
+    os.chdir(py_dir)
+    cp(j(libuast_path, "src", "libuast.hpp"), j(local_libuast, "libuast.hpp"))
+    cp(j(libuast_path, "libuast.h"), j(local_libuast, "libuast.h"))
+
+    for i in ("helpers.c", "uast_go.h", "uast.h"):
+        cp(j(libuast_path, "src", i), j(local_libuast, i))
 
 
 def proto_download():
     untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_VERSION)
     sdkdir = "sdk-" + SDK_VERSION[1:]
     destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}")
-    cp(j(sdkdir, "protocol", "generated.proto"), j(destdir, "protocol", "generated.proto"))
-    cp(j(sdkdir, "uast", "generated.proto"), j(destdir, "uast", "generated.proto"))
+    cp(j(sdkdir, "protocol", "driver.proto"), j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "role", "generated.proto"), j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
 
 
@@ -174,20 +202,26 @@ def proto_compile():
     def protoc(proto_file, grpc=False):
         main_args = [protoc_module.__file__, "--python_out=bblfsh"]
         target_dir = j("bblfsh", *os.path.dirname(proto_file).split("."))
+
         if grpc:
             # using "." creates "gopkg.in" instead of "gopkg/in" directories
             main_args += ["--grpc_python_out=" + target_dir]
+
         main_args += ["-Iproto", sysinclude, j("proto", proto_file)]
         log.info("%s -m grpc.tools.protoc " + " ".join(main_args[1:]), sys.executable)
         protoc_module.main(main_args)
+
         if grpc:
             # we need to move the file back to grpc_out
             grpc_garbage_dir = None
             target = j(target_dir, "generated_pb2_grpc.py")
+
             for root, dirnames, filenames in os.walk(target_dir):
                 for filename in filenames:
+
                     if filename == "generated_pb2_grpc.py" and grpc_garbage_dir is not None:
                         mv(j(root, filename), target)
+
                 if os.path.samefile(root, target_dir):
                     grpc_garbage_dir = j(root, dirnames[0])
             rimraf(grpc_garbage_dir)

@@ -499,7 +499,7 @@ public:
     bool AsBool() {
         return obj == Py_True;
     }
-    
+
     size_t Size() {
         size_t sz = 0;
         if (PyList_Check(obj)) {
@@ -514,7 +514,7 @@ public:
         assert(int64_t(sz) >= 0);
         return sz;
     }
-    
+
     std::string* KeyAt(size_t i) {
         if (obj == Py_None) {
             return nullptr;
@@ -540,7 +540,7 @@ public:
 
         return lookupOrCreate(val); // new ref
     }
-    
+
     void SetValue(size_t i, Node* val) {
         PyObject* v = nullptr;
         if (val && val->obj) {
@@ -571,7 +571,7 @@ class Context;
 class Interface : public uast::NodeCreator<Node*> {
 private:
     std::map<PyObject*, Node*> obj2node;
-    
+
     static PyObject* newBool(bool v) {
         if (v) {
             Py_RETURN_TRUE;
@@ -861,7 +861,7 @@ typedef struct {
 } PyContext;
 
 static void PyContext_dealloc(PyObject *self) {
-  delete(((PyUast *)self)->p);
+  delete(((PyContext *)self)->p);
   // TODO: delete self?
 }
 
@@ -1006,7 +1006,7 @@ static PyObject *PyContext_new(PyObject *self, PyObject *args) {
 
 static PyMethodDef extension_methods[] = {
     {"iterator", PyUastIter_new, METH_VARARGS, "Get an iterator over a node"},
-    {"decode", PyContextDecode, METH_VARARGS, "Decode UAST from a byte array"},
+    {"decode", PyContextExt_decode, METH_VARARGS, "Decode UAST from a byte array"},
     {"uast", PyContext_new, METH_VARARGS, "Creates a new UAST context"},
     {nullptr, nullptr, 0, nullptr}
 };
