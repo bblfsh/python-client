@@ -1,5 +1,3 @@
-__all__ = ["DESCRIPTOR", "ParseResponse", "ParseRequest"]
-
 import importlib
 
 from bblfsh.sdkversion import VERSION
@@ -8,55 +6,43 @@ from bblfsh.sdkversion import VERSION
 # we import by string
 
 DESCRIPTOR = importlib.import_module(
-        "bblfsh.gopkg.in.bblfsh.sdk.%s.uast.generated_pb2" % VERSION).DESCRIPTOR
+        "bblfsh.gopkg.in.bblfsh.sdk.v2.uast.generated_pb2").DESCRIPTOR
 
 # Node = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.uast.generated_pb2" % VERSION).Node
+        # "bblfsh.gopkg.in.bblfsh.sdk.v2.uast.generated_pb2").Node
 
 ParseResponse = importlib.import_module(
-    "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION).ParseResponse
+    "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2").ParseResponse
 
 ParseError = importlib.import_module(
-    "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION).ParseError
+    "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2").ParseError
 
 Mode = importlib.import_module(
-    "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION).Mode
-
-# NativeParseResponse = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).NativeParseResponse
+    "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2").Mode
 
 ParseRequest = importlib.import_module(
-    "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION).ParseRequest
+    "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2").ParseRequest
 
-# NativeParseRequest = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).NativeParseRequest
+VersionRequest = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.v1.protocol.generated_pb2"
+        ).VersionRequest
 
-# VersionRequest = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).VersionRequest
+SupportedLanguagesRequest = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.v1.protocol.generated_pb2"
+        ).SupportedLanguagesRequest
 
-# VersionRequest = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).Driver
+SupportedLanguagesResponse = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.v1.protocol.generated_pb2"
+        ).SupportedLanguagesResponse
 
-# SupportedLanguagesRequest = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).SupportedLanguagesRequest
-
-# SupportedLanguagesResponse = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2" % VERSION
-        # ).SupportedLanguagesResponse
-
-# ProtocolServiceStub = importlib.import_module(
-        # "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
-        # ).ProtocolServiceStub
+ProtocolServiceStub = importlib.import_module(
+        "bblfsh.gopkg.in.bblfsh.sdk.v1.protocol.generated_pb2_grpc"
+        ).ProtocolServiceStub
 
 DriverStub = importlib.import_module(
-        "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
+        "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2_grpc"
         ).DriverStub
 
 DriverServicer = importlib.import_module(
-        "bblfsh.gopkg.in.bblfsh.sdk.%s.protocol.generated_pb2_grpc" % VERSION
+        "bblfsh.gopkg.in.bblfsh.sdk.v2.protocol.generated_pb2_grpc"
         ).DriverServicer

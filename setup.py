@@ -14,8 +14,10 @@ from setuptools.command.build_ext import build_ext
 
 VERSION = "3.0.0"
 LIBUAST_VERSION = "v3.0.0-rc2"
-SDK_VERSION = "v2.3.0"
-SDK_MAJOR = SDK_VERSION.split('.')[0]
+SDK_V1_VERSION = "v1.16.1"
+SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
+SDK_V2_VERSION = "v2.3.0"
+SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
 libraries = ['uast']
@@ -102,15 +104,15 @@ def call(*cmd):
     subprocess.check_call(cmd)
 
 
-def create_dirs():
-    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol"))
-    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast"))
-    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"))
-    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast"))
+def create_dirs(sdk_major):
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.%s" % sdk_major, "protocol"))
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.%s" % sdk_major, "uast"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "protocol"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "uast"))
     mkdir(j("bblfsh", "github", "com", "gogo", "protobuf", "gogoproto"))
 
 
-def create_inits():
+def create_inits(sdk_major):
     init_files = [
             j("bblfsh", "github", "__init__.py"),
             j("bblfsh", "github", "com", "__init__.py"),
@@ -121,9 +123,9 @@ def create_inits():
             j("bblfsh", "gopkg", "in", "__init__.py"),
             j("bblfsh", "gopkg", "in", "bblfsh", "__init__.py"),
             j("bblfsh", "gopkg", "in", "bblfsh", "sdk", "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast", "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "uast", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "protocol", "__init__.py"),
     ]
 
     for f in init_files:
@@ -165,15 +167,22 @@ def get_libuast():
     for i in ("helpers.c", "uast_go.h", "uast.h"):
         cp(j(libuast_path, "src", i), j(local_libuast, i))
 
+def proto_download_v1():
+    url ="https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V1_VERSION
+    untar_url(url)
+    sdkdir = "sdk-" + SDK_V1_VERSION[1:]
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V1_MAJOR}")
+    cp(j(sdkdir, "protocol", "generated.proto"), j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "generated.proto"), j(destdir, "uast", "generated.proto"))
+    rimraf(sdkdir)
 
-def proto_download():
-    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_VERSION)
-    sdkdir = "sdk-" + SDK_VERSION[1:]
-    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}")
+def proto_download_v2():
+    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V2_VERSION)
+    sdkdir = "sdk-" + SDK_V2_VERSION[1:]
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V2_MAJOR}")
     cp(j(sdkdir, "protocol", "driver.proto"), j(destdir, "protocol", "generated.proto"))
     cp(j(sdkdir, "uast", "role", "generated.proto"), j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
-
 
 def proto_compile():
     sysinclude = "-I" + pkg_resources.resource_filename("grpc_tools", "_proto")
@@ -224,7 +233,9 @@ def proto_compile():
 
                 if os.path.samefile(root, target_dir):
                     grpc_garbage_dir = j(root, dirnames[0])
-            rimraf(grpc_garbage_dir)
+
+            if grpc_garbage_dir:
+                rimraf(grpc_garbage_dir)
 
             # grpc ignores "in" and we need to patch the import path
             def grpc_replacer(match):
@@ -246,18 +257,27 @@ def proto_compile():
               (from_import_re, from_import_replacer),
               (importlib_import_re, importlib_import_replacer))
 
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"), True)
     protoc(j("github.com", "gogo", "protobuf", "gogoproto", "gogo.proto"))
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"))
+
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "protocol", "generated.proto"), True)
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "uast", "generated.proto"))
+
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "uast", "generated.proto"))
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "protocol", "generated.proto"), True)
 
 
 def do_get_deps():
     get_libuast()
-    create_dirs()
-    create_inits()
-    proto_download()
-    proto_compile()
 
+    create_dirs(SDK_V1_MAJOR)
+    create_dirs(SDK_V2_MAJOR)
+
+    create_inits(SDK_V1_MAJOR)
+    create_inits(SDK_V2_MAJOR)
+
+    proto_download_v1()
+    proto_download_v2()
+    proto_compile()
 
 def clean():
     rimraf("gopkg.in")
