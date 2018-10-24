@@ -17,6 +17,14 @@ install:
   - pip3 install -r requirements.txt
   - python3 setup.py --getdeps --log
   - pip3 install . --upgrade
+  - if [[ -z "$TRAVIS_TAG" ]]; then exit 0; fi
+  - echo "[distutils]" > $HOME/.pypirc
+  - echo "index-servers = " >> $HOME/.pypirc
+  - echo "  pypi" >> $HOME/.pypirc
+  - echo "[pypi]" >> $HOME/.pypirc
+  - echo "username=$PYPI_USER" >> $HOME/.pypirc
+  - echo "password=$PYPI_PASS" >> $home/.pypirc
+  - python setup.py sdist upload
 script:
   - python3 setup.py build_ext -i
   - python3 -m unittest discover .
