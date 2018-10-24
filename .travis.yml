@@ -18,13 +18,14 @@ install:
   - python3 setup.py --getdeps --log
   - pip3 install . --upgrade
   - if [[ -z "$TRAVIS_TAG" ]]; then exit 0; fi
-  - echo "[distutils]" > $HOME/.pypirc
-  - echo "index-servers = " >> $HOME/.pypirc
-  - echo "  pypi" >> $HOME/.pypirc
-  - echo "[pypi]" >> $HOME/.pypirc
-  - echo "username=$PYPI_USER" >> $HOME/.pypirc
-  - echo "password=$PYPI_PASS" >> $home/.pypirc
-  - python setup.py sdist upload
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.6' ]]; then exit 0; fi # disable double uploads to pypi
+  - echo "[distutils]" > .pypirc
+  - echo "index-servers = " >> .pypirc
+  - echo "  pypi" >> .pypirc
+  - echo "[pypi]" >> .pypirc
+  - echo "username=$PYPI_USER" >> .pypirc
+  - echo "password=$PYPI_PASS" >> .pypirc
+  - HOME=. python setup.py sdist upload
 script:
   - python3 setup.py build_ext -i
   - python3 -m unittest discover .

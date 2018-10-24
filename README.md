@@ -2,7 +2,7 @@
 
 [Babelfish](https://doc.bblf.sh) Python client library provides functionality to both
 connect to the Babelfish bblfshd to parse code
-(obtaining an [UAST](https://doc.bblf.sh/uast/specification.html) as a result)
+(obtaining an [UAST](https://doc.bblf.sh/uast/uast-specification.html) as a result)
 and to analyse UASTs with the functionality provided by [libuast](https://github.com/bblfsh/libuast).
 
 ## Installation
@@ -33,7 +33,7 @@ sudo apt install build-essential
 
 ## Usage
 
-A small example of how to parse a Python file and extract the import declarations from the [UAST](https://doc.bblf.sh/uast/specification.html).
+A small example of how to parse a Python file and extract the import declarations from the [UAST](https://doc.bblf.sh/uast/uast-specification.html).
 
 If you don't have a bblfsh server running you can execute it using the following command:
 
@@ -51,7 +51,7 @@ client = bblfsh.BblfshClient("0.0.0.0:9432")
 uast = client.parse("/path/to/file.py").uast
 print(uast)
 # "filter' allows you to use XPath queries to filter on result nodes:
-print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias")
+print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias"))
 
 # filter\_[bool|string|number] must be used when using XPath functions returning
 # these types:
@@ -65,7 +65,7 @@ for node in it:
     print(node.internal_type)
 ```
 
-Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/language-clients.html)
+Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/clients.html)
 guide section to learn more about babelfish clients and their query language.
 
 ## License
