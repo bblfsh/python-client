@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+import bblfsh
 from bblfsh.pyuast import filter
 
 from bblfsh.client import BblfshClient
@@ -28,7 +29,7 @@ def setup():
     args = parser.parse_args()
     return args
 
-def run_query(root, query, mapn, as_array):
+def run_query(root: bblfsh.Node, query: str, mapn: str, as_array: bool) -> None:
     result = list(filter(root, query))
 
     if not result:

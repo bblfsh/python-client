@@ -5,7 +5,7 @@ import time
 import docker
 
 
-def ensure_bblfsh_is_running():
+def ensure_bblfsh_is_running() -> bool:
     log = logging.getLogger("bblfsh")
     try:
         client = docker.from_env(version="auto")

@@ -15,7 +15,7 @@ class RoleSearchException(Exception):
     pass
 
 
-def role_id(role_name):
+def role_id(role_name: str) -> int:
     try:
         name = DESCRIPTOR.enum_types_by_name["Role"].values_by_name[role_name].number
     except KeyError:
@@ -24,7 +24,7 @@ def role_id(role_name):
     return name
 
 
-def role_name(role_id):
+def role_name(role_id: int) -> str:
     try:
         id_ = DESCRIPTOR.enum_types_by_name["Role"].values_by_number[role_id].name
     except KeyError:
