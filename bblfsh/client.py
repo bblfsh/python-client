@@ -3,13 +3,13 @@ import sys
 
 import grpc
 
-from bblfsh.aliases import ParseRequest, DriverStub
+import bblfsh.pyuast
 
-from bblfsh.sdkversion import VERSION
+from bblfsh.aliases import ParseRequest, DriverStub, ProtocolServiceStub, VersionRequest, SupportedLanguagesRequest
 
 # The following two insertions fix the broken pb import paths
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                "gopkg/in/bblfsh/sdk/%s/protocol" % VERSION))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "gopkg/in/bblfsh/sdk/v1/protocol"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "gopkg/in/bblfsh/sdk/v2/protocol"))
 sys.path.insert(0, os.path.dirname(__file__))
 
 
@@ -31,7 +31,8 @@ class BblfshClient(object):
         :type endpoint: str
         """
         self._channel = grpc.insecure_channel(endpoint)
-        self._stub = DriverStub(self._channel)
+        self._stub_v1 = ProtocolServiceStub(self._channel)
+        self._stub_v2 = DriverStub(self._channel)
 
     @staticmethod
     def _check_utf8(text):
@@ -48,7 +49,7 @@ class BblfshClient(object):
         BblfshClient._check_utf8(contents)
         return contents
 
-    def parse(self, filename, language=None, contents=None, timeout=None):
+    def parse(self, filename, language=None, contents=None, mode=None, raw=False, timeout=None):
         """
         Queries the Babelfish server and receives the UAST response for the specified
         file.
@@ -60,6 +61,8 @@ class BblfshClient(object):
                          currently supported languages. None means autodetect.
         :param contents: The contents of the file. IF None, it is read from \
                          filename.
+        :param mode:     UAST transformation mode.
+        :param raw:      Return raw binary UAST without decoding it.
         :param timeout: The request timeout in seconds.
         :type filename: str
         :type language: str
@@ -71,47 +74,29 @@ class BblfshClient(object):
         contents = self._get_contents(contents, filename)
         request = ParseRequest(filename=os.path.basename(filename),
                                content=contents,
+                               mode=mode,
                                language=self._scramble_language(language))
-        return self._stub.Parse(request, timeout=timeout)
+        response = self._stub_v2.Parse(request, timeout=timeout)
+        """
+        TODO: return detected language
+        TODO: handle syntax errors
+        """
+        if raw:
+            return response.uast
+        return pyuast.decode(response.uast, 0)
 
-    # def native_parse(self, filename, language=None, contents=None, timeout=None):
-        # """
-        # Queries the Babelfish server and receives the native AST response for the specified
-        # file.
+    def supported_languages(self):
+        sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())
+        return sup_response.languages
 
-        # :param filename: The path to the file. Can be arbitrary if contents \
-                         # is not None.
-        # :param language: The programming language of the file. Refer to \
-                         # https://doc.bblf.sh/languages.html for the list of \
-                         # currently supported languages. None means autodetect.
-        # :param contents: The contents of the file. IF None, it is read from \
-                         # filename.
-        # :param timeout: The request timeout in seconds.
-        # :type filename: str
-        # :type language: str
-        # :type contents: str
-        # :type timeout: float
-        # :return: Native AST object.
-        # """
+    def version(self):
+        """
+        Queries the Babelfish server for version and runtime information.
 
-        # contents = self._get_contents(contents, filename)
-        # request = NativeParseRequest(filename=os.path.basename(filename),
-                               # content=contents,
-                               # language=self._scramble_language(language))
-        # return self._stub.NativeParse(request, timeout=timeout)
-
-    # def supported_languages(self):
-        # sup_response = self._stub.SupportedLanguages(SupportedLanguagesRequest())
-        # return sup_response.languages
-
-    # def version(self):
-        # """
-        # Queries the Babelfish server for version and runtime information.
-
-        # :return: A dictionary with the keys "version" for the semantic version and
+        :return: A dictionary with the keys "version" for the semantic version and
                  # "build" for the build timestamp.
-        # """
-        # return self._stub.Version(VersionRequest())
+        """
+        return self._stub_v1.Version(VersionRequest())
 
     @staticmethod
     def _scramble_language(lang):
