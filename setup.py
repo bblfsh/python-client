@@ -14,9 +14,10 @@ from setuptools.command.build_ext import build_ext
 
 VERSION = "3.0.0"
 LIBUAST_VERSION = "v3.0.0-rc2"
+LIBUAST_ARCH = "linux-amd64"
 SDK_V1_VERSION = "v1.16.1"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
-SDK_V2_VERSION = "v2.3.0"
+SDK_V2_VERSION = "v2.5.0"
 SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
@@ -136,36 +137,20 @@ def get_libuast():
     if not GET_LIBUAST:
         return
 
-    gopath = os.environ["GOPATH"]
+    gopath = os.environ.get("GOPATH")
+    if not gopath:
+        gopath = subprocess.check_output(['go', 'env', 'GOPATH']).decode("utf-8").strip()
     if not gopath:
         log.error("GOPATH must be set")
         sys.exit(1)
 
-    mkdir(j("bblfsh", "libuast"))
+    py_dir = os.getcwd()
+    local_libuast = j(py_dir, "bblfsh", "libuast")
+    mkdir(local_libuast)
 
     # Retrieve libuast
-    runorexit("go get -u -v github.com/bblfsh/libuast")
-
-    # Build it
-    py_dir = os.getcwd()
-    libuast_path = j(gopath, "src", "github.com", "bblfsh", "libuast")
-    log.info(">> cd ", libuast_path)
-    libuast_dir = j(gopath, "src", "github.com", "bblfsh", "libuast")
-    os.chdir(libuast_dir)
-    runorexit("make build")
-
-    # Generate libuast.h
-    local_libuast = j("bblfsh", "libuast")
-    mkdir(local_libuast)
-    runorexit("go run gen_header.go -o libuast.h")
-
-    # Copy the files
-    os.chdir(py_dir)
-    cp(j(libuast_path, "src", "libuast.hpp"), j(local_libuast, "libuast.hpp"))
-    cp(j(libuast_path, "libuast.h"), j(local_libuast, "libuast.h"))
-
-    for i in ("helpers.c", "uast_go.h", "uast.h"):
-        cp(j(libuast_path, "src", i), j(local_libuast, i))
+    untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (LIBUAST_VERSION, LIBUAST_ARCH))
+    mv(LIBUAST_ARCH, local_libuast)
 
 def proto_download_v1():
     url ="https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V1_VERSION
@@ -303,7 +288,7 @@ def main():
     libuast_module = Extension(
         "bblfsh.pyuast",
         libraries=libraries,
-        library_dirs=["/usr/lib", "/usr/local/lib", "."],
+        library_dirs=["/usr/lib", "/usr/local/lib", j("bblfsh", "libuast")],
         extra_compile_args=["-std=c++11"],
         include_dirs=[j("bblfsh", "libuast"), "/usr/local/include",
                       "/usr/include"], sources=sources)
