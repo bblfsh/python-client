@@ -1,7 +1,5 @@
 import importlib
 
-from bblfsh.sdkversion import VERSION
-
 # "in" is a reserved keyword in Python thus can't be used as package name, so
 # we import by string
 
