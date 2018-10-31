@@ -21,24 +21,19 @@ SDK_V2_VERSION = "v2.5.0"
 SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
 FORMAT_ARGS = globals()
 
-libraries = ['uast']
 sources = ["bblfsh/pyuast.cc"]
 log = logging.getLogger("setup.py")
 
 # For debugging libuast-client interactions, set to True in production!
-GET_LIBUAST = True
+# FIXME: change to true
+GET_LIBUAST = False
 if not GET_LIBUAST:
     log.warning("WARNING: not retrieving libuast, using local version")
 
 
-
 class CustomBuildExt(build_ext):
     def run(self):
-        global libraries
         global sources
-
-        if "--global-uast" in sys.argv:
-            libraries.append("uast")
 
         get_libuast()
         build_ext.run(self)
@@ -285,13 +280,24 @@ def main():
         clean()
         sys.exit()
 
+    libraries = []
+    static_libraries = ["uast"]
+    static_lib_dir = j("bblfsh", "libuast")
+
+    if sys.platform == 'win32':
+        # FIXME: untested!
+        libraries.extend(static_libraries)
+        extra_objects = []
+    else: # POSIX
+        extra_objects = ['{}/lib{}.a'.format(static_lib_dir, l) for l in static_libraries]
+
     libuast_module = Extension(
         "bblfsh.pyuast",
         libraries=libraries,
-        library_dirs=["/usr/lib", "/usr/local/lib", j("bblfsh", "libuast")],
         extra_compile_args=["-std=c++11"],
-        include_dirs=[j("bblfsh", "libuast"), "/usr/local/include",
-                      "/usr/include"], sources=sources)
+        extra_objects=extra_objects,
+        include_dirs=[j("bblfsh", "libuast")],
+        sources=sources)
 
     setup(
         cmdclass = {
