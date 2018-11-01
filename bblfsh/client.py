@@ -3,7 +3,7 @@ import sys
 
 import grpc
 
-import bblfsh.pyuast
+from bblfsh.pyuast import decode as uast_decode
 
 from bblfsh.aliases import ParseRequest, DriverStub, ProtocolServiceStub, VersionRequest, SupportedLanguagesRequest
 
@@ -83,7 +83,8 @@ class BblfshClient(object):
         """
         if raw:
             return response.uast
-        return pyuast.decode(response.uast, 0)
+        ctx = uast_decode(response.uast, format=0)
+        return ctx
 
     def supported_languages(self):
         sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())

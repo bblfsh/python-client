@@ -309,12 +309,20 @@ static PyObject *PyContextExt_root(PyContextExt *self, PyObject *Py_UNUSED(ignor
     return self->p->RootNode();
 }
 
+// PyContextExt_load returns a root node converted to Python object.
+// Returns a new reference.
+static PyObject *PyContextExt_load(PyContextExt *self, PyObject *Py_UNUSED(ignored)) {
+    PyObject* root = PyContextExt_root(self, nullptr);
+    return PyNodeExt_load((PyNodeExt*)root, nullptr);
+}
+
 // PyContextExt_filter filters UAST.
 // Returns a new reference.
-static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args) {
-    PyObject *node = nullptr;
+static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args, PyObject *kwargs) {
+    char* kwds[] = {"query", "node", NULL};
     char *query = nullptr;
-    if (!PyArg_ParseTuple(args, "Os", &node, &query))
+    PyObject *node = nullptr;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
     // TODO: freeing the query leads to a segfault; need to clarify why
     return self->p->Filter(node, query);
@@ -334,7 +342,10 @@ static PyMethodDef PyContextExt_methods[] = {
     {"root", (PyCFunction) PyContextExt_root, METH_NOARGS,
      "Return the root node attached to this query context"
     },
-    {"filter", (PyCFunction) PyContextExt_filter, METH_VARARGS,
+    {"load", (PyCFunction) PyContextExt_load, METH_NOARGS,
+     "Load external node to Python"
+    },
+    {"filter", (PyCFunction) PyContextExt_filter, METH_VARARGS | METH_KEYWORDS,
      "Filter a provided UAST with XPath"
     },
     {"encode", (PyCFunction) PyContextExt_encode, METH_VARARGS,
@@ -870,10 +881,11 @@ static PyObject *PyContext_root(PyContext *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
-static PyObject *PyContext_filter(PyContext *self, PyObject *args) {
-    PyObject *node = nullptr;
+static PyObject *PyContext_filter(PyContext *self, PyObject *args, PyObject *kwargs) {
+    char* kwds[] = {"query", "node", NULL};
     char *query = nullptr;
-    if (!PyArg_ParseTuple(args, "Os", &node, &query))
+    PyObject *node = nullptr;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
     return self->p->Filter(node, query);
 }
@@ -890,7 +902,7 @@ static PyMethodDef PyContext_methods[] = {
     {"root", (PyCFunction) PyContext_root, METH_NOARGS,
      "Return the root node attached to this query context"
     },
-    {"filter", (PyCFunction) PyContext_filter, METH_VARARGS,
+    {"filter", (PyCFunction) PyContext_filter, METH_VARARGS | METH_KEYWORDS,
      "Filter a provided UAST with XPath"
     },
     {"encode", (PyCFunction) PyContext_encode, METH_VARARGS,
@@ -965,11 +977,12 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   return ctx->Iterate(obj, (TreeOrder)order, true);
 }
 
-static PyObject *PyContextExt_decode(PyObject *self, PyObject *args) {
+static PyObject *PyContextExt_decode(PyObject *self, PyObject *args, PyObject *kwargs) {
+    char* kwds[] = {"data", "format", NULL};
     PyObject *obj = nullptr;
-    UastFormat format = UAST_BINARY; // TODO: make it a kwarg
+    UastFormat format = UAST_BINARY; // TODO: make it an enum
 
-    if (!PyArg_ParseTuple(args, "Oi", &obj, &format))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|i", kwds, &obj, &format))
       return nullptr;
 
     Py_buffer buf;
@@ -993,6 +1006,7 @@ static PyObject *PyContextExt_decode(PyObject *self, PyObject *args) {
 }
 
 static PyObject *PyContext_new(PyObject *self, PyObject *args) {
+    // TODO: optionally accept root object
     if (!PyArg_ParseTuple(args, "")) {
       return nullptr;
     }
@@ -1007,7 +1021,7 @@ static PyObject *PyContext_new(PyObject *self, PyObject *args) {
 
 static PyMethodDef extension_methods[] = {
     {"iterator", PyUastIter_new, METH_VARARGS, "Get an iterator over a node"},
-    {"decode", PyContextExt_decode, METH_VARARGS, "Decode UAST from a byte array"},
+    {"decode", (PyCFunction)PyContextExt_decode, METH_VARARGS | METH_KEYWORDS, "Decode UAST from a byte array"},
     {"uast", PyContext_new, METH_VARARGS, "Creates a new UAST context"},
     {nullptr, nullptr, 0, nullptr}
 };

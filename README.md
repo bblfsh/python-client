@@ -48,16 +48,18 @@ Please, read the [getting started](https://doc.bblf.sh/using-babelfish/getting-s
 import bblfsh
 
 client = bblfsh.BblfshClient("0.0.0.0:9432")
-uast = client.parse("/path/to/file.py").uast
-print(uast)
-# "filter' allows you to use XPath queries to filter on result nodes:
-print(bblfsh.filter(uast, "//Import[@roleImport and @roleDeclaration]//alias"))
+uast = client.parse("/path/to/file.py")
+print(uast.load())
 
-# filter\_[bool|string|number] must be used when using XPath functions returning
-# these types:
-print(bblfsh.filter_bool(uast, "boolean(//*[@strtOffset or @endOffset])"))
-print(bblfsh.filter_string(uast, "name(//*[1])"))
-print(bblfsh.filter_number(uast, "count(//*)"))
+# "filter' allows you to use XPath queries to filter on result nodes:
+it = uast.filter("//Import[@role='Import' and @role='Declaration']//alias")
+for node in it:
+    print(node.load())
+
+# filter must be used when using XPath functions returning these types:
+print(uast.filter("boolean(//*[@strtOffset or @endOffset])"))
+print(uast.filter("name(//*[1])"))
+print(uast.filter("count(//*)"))
 
 # You can also iterate on several tree iteration orders:
 it = bblfsh.iterator(uast, bblfsh.TreeOrder.PRE_ORDER)
