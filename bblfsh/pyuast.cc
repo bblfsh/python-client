@@ -263,7 +263,7 @@ public:
         }
 
         uast::Iterator<NodeHandle> *it = ctx->Filter(unode, query);
-        delete(query);
+
         return newIter(it, false);
     }
 
@@ -316,6 +316,7 @@ static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args) {
     char *query = nullptr;
     if (!PyArg_ParseTuple(args, "Os", &node, &query))
       return nullptr;
+    // TODO: freeing the query leads to a segfault; need to clarify why
     return self->p->Filter(node, query);
 }
 
