@@ -13,7 +13,7 @@ from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 VERSION = "3.0.0"
-LIBUAST_VERSION = "v3.0.0-rc2"
+LIBUAST_VERSION = "v3.0.0-rc3"
 LIBUAST_ARCH = "linux-amd64"
 SDK_V1_VERSION = "v1.16.1"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
@@ -25,8 +25,7 @@ sources = ["bblfsh/pyuast.cc"]
 log = logging.getLogger("setup.py")
 
 # For debugging libuast-client interactions, set to True in production!
-# FIXME: change to true
-GET_LIBUAST = False
+GET_LIBUAST = True
 if not GET_LIBUAST:
     log.warning("WARNING: not retrieving libuast, using local version")
 
