@@ -29,6 +29,16 @@ static bool checkError(const Uast* ctx) {
 }
 */
 
+bool isContext(PyObject* obj);
+
+bool assertNotContext(PyObject* obj) {
+    if (isContext(obj)) {
+        PyErr_SetString(PyExc_RuntimeError, "cannot use uast context as a node");
+        return false;
+    }
+    return true;
+}
+
 // ==========================================
 //  External UAST Node (managed by libuast)
 // ==========================================
@@ -249,6 +259,9 @@ public:
     // Iterate iterates over an external UAST tree.
     // Borrows the reference.
     PyObject* Iterate(PyObject* node, TreeOrder order){
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         NodeHandle h = toHandle(node);
         auto iter = ctx->Iterate(h, order);
         return newIter(iter, false);
@@ -257,6 +270,9 @@ public:
     // Filter queries an external UAST.
     // Borrows the reference.
     PyObject* Filter(PyObject* node, char* query){
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         NodeHandle unode = toHandle(node);
         if (unode == 0) {
           unode = ctx->RootNode();
@@ -270,6 +286,9 @@ public:
     // Encode serializes the external UAST.
     // Borrows the reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         uast::Buffer data = ctx->Encode(toHandle(node), format);
         return asPyBuffer(data);
     }
@@ -324,8 +343,15 @@ static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args, PyObjec
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
+
+    PyObject* it = nullptr;
+    try {
+        it = self->p->Filter(node, query);
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+    }
     // TODO: freeing the query leads to a segfault; need to clarify why
-    return self->p->Filter(node, query);
+    return it;
 }
 
 // PyContextExt_filter serializes UAST.
@@ -420,8 +446,10 @@ private:
         if (value == nullptr || value == Py_None) {
             return;
         }
-        Py_DECREF(type);
-        Py_DECREF(traceback);
+        if (type)
+            Py_DECREF(type);
+        if (traceback)
+            Py_DECREF(traceback);
 
         PyObject* str = PyObject_Str(value);
         Py_DECREF(value);
@@ -513,15 +541,18 @@ public:
     }
 
     size_t Size() {
+        if (obj == Py_None) {
+            return 0;
+        }
         size_t sz = 0;
         if (PyList_Check(obj)) {
             sz = (size_t)(PyList_Size(obj));
         } else {
             sz = (size_t)(PyObject_Size(obj));
-            if (int64_t(sz) == -1) {
-                checkPyException();
-                return 0; // error
-            }
+        }
+        if (int64_t(sz) == -1) {
+            checkPyException();
+            return 0; // error
         }
         assert(int64_t(sz) >= 0);
         return sz;
@@ -532,6 +563,9 @@ public:
             return nullptr;
         }
         if (!keys) keys = PyDict_Keys(obj);
+        if (!keys) {
+            return nullptr;
+        }
         PyObject* key = PyList_GetItem(keys, i); // borrows
         const char * k = PyUnicode_AsUTF8(key);
 
@@ -818,6 +852,9 @@ public:
     // Iterate enumerates UAST nodes in a specified order.
     // Creates a new reference.
     PyObject* Iterate(PyObject* node, TreeOrder order, bool freeCtx){
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         Node* unode = toNode(node);
         auto iter = ctx->Iterate(unode, order);
         return newIter(iter, freeCtx);
@@ -826,6 +863,9 @@ public:
     // Filter queries UAST.
     // Creates a new reference.
     PyObject* Filter(PyObject* node, std::string query){
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         Node* unode = toNode(node);
         if (unode == nullptr) {
           unode = ctx->RootNode();
@@ -837,6 +877,9 @@ public:
     // Encode serializes UAST.
     // Creates a new reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
+        if (!assertNotContext(node)) {
+            return nullptr;
+        }
         uast::Buffer data = ctx->Encode(toNode(node), format);
         return asPyBuffer(data); // TODO: this probably won't deallocate the buffer
     }
@@ -887,7 +930,15 @@ static PyObject *PyContext_filter(PyContext *self, PyObject *args, PyObject *kwa
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
-    return self->p->Filter(node, query);
+
+    PyObject* it = nullptr;
+    try {
+        it = self->p->Filter(node, query);
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+    }
+    // TODO: freeing the query leads to a segfault; need to clarify why
+    return it;
 }
 
 static PyObject *PyContext_encode(PyContext *self, PyObject *args) {
@@ -1017,6 +1068,11 @@ static PyObject *PyContext_new(PyObject *self, PyObject *args) {
     }
     pyU->p = new Context();
     return (PyObject*)pyU;
+}
+
+bool isContext(PyObject* obj) {
+    if (!obj || obj == Py_None) return false;
+    return PyObject_TypeCheck(obj, &PyContextExtType) || PyObject_TypeCheck(obj, &PyContextType);
 }
 
 static PyMethodDef extension_methods[] = {
