@@ -315,29 +315,29 @@ static void PyUastIterExt_dealloc(PyObject *self) {
 typedef struct {
   PyObject_HEAD
   ContextExt *p;
-} PyContextExt;
+} PythonContextExt;
 
-static void PyContextExt_dealloc(PyObject *self) {
-  delete(((PyContextExt *)self)->p);
+static void PythonContextExt_dealloc(PyObject *self) {
+  delete(((PythonContextExt *)self)->p);
   // TODO: delete self?
 }
 
-// PyContextExt_root returns a root node associated with this context.
+// PythonContextExt_root returns a root node associated with this context.
 // Returns a new reference.
-static PyObject *PyContextExt_root(PyContextExt *self, PyObject *Py_UNUSED(ignored)) {
+static PyObject *PythonContextExt_root(PythonContextExt *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
-// PyContextExt_load returns a root node converted to Python object.
+// PythonContextExt_load returns a root node converted to Python object.
 // Returns a new reference.
-static PyObject *PyContextExt_load(PyContextExt *self, PyObject *Py_UNUSED(ignored)) {
-    PyObject* root = PyContextExt_root(self, nullptr);
+static PyObject *PythonContextExt_load(PythonContextExt *self, PyObject *Py_UNUSED(ignored)) {
+    PyObject* root = PythonContextExt_root(self, nullptr);
     return PyNodeExt_load((PyNodeExt*)root, nullptr);
 }
 
-// PyContextExt_filter filters UAST.
+// PythonContextExt_filter filters UAST.
 // Returns a new reference.
-static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args, PyObject *kwargs) {
+static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args, PyObject *kwargs) {
     char* kwds[] = {(char*)"query", (char*)"node", NULL};
     char *query = nullptr;
     PyObject *node = nullptr;
@@ -354,9 +354,9 @@ static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args, PyObjec
     return it;
 }
 
-// PyContextExt_filter serializes UAST.
+// PythonContextExt_filter serializes UAST.
 // Returns a new reference.
-static PyObject *PyContextExt_encode(PyContextExt *self, PyObject *args) {
+static PyObject *PythonContextExt_encode(PythonContextExt *self, PyObject *args) {
     PyObject *node = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
     if (!PyArg_ParseTuple(args, "Oi", &node, &format))
@@ -364,17 +364,17 @@ static PyObject *PyContextExt_encode(PyContextExt *self, PyObject *args) {
     return self->p->Encode(node, format);
 }
 
-static PyMethodDef PyContextExt_methods[] = {
-    {"root", (PyCFunction) PyContextExt_root, METH_NOARGS,
+static PyMethodDef PythonContextExt_methods[] = {
+    {"root", (PyCFunction) PythonContextExt_root, METH_NOARGS,
      "Return the root node attached to this query context"
     },
-    {"load", (PyCFunction) PyContextExt_load, METH_NOARGS,
+    {"load", (PyCFunction) PythonContextExt_load, METH_NOARGS,
      "Load external node to Python"
     },
-    {"filter", (PyCFunction) PyContextExt_filter, METH_VARARGS | METH_KEYWORDS,
+    {"filter", (PyCFunction) PythonContextExt_filter, METH_VARARGS | METH_KEYWORDS,
      "Filter a provided UAST with XPath"
     },
-    {"encode", (PyCFunction) PyContextExt_encode, METH_VARARGS,
+    {"encode", (PyCFunction) PythonContextExt_encode, METH_VARARGS,
      "Encodes a UAST into a buffer"
     },
     {nullptr}  // Sentinel
@@ -382,12 +382,12 @@ static PyMethodDef PyContextExt_methods[] = {
 
 extern "C"
 {
-    static PyTypeObject PyContextExtType = {
+    static PyTypeObject PythonContextExtType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.ContextExt",               // tp_name
-      sizeof(PyContextExt),                 // tp_basicsize
+      sizeof(PythonContextExt),                 // tp_basicsize
       0,                              // tp_itemsize
-      PyContextExt_dealloc,                 // tp_dealloc
+      PythonContextExt_dealloc,                 // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -410,7 +410,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PyContextExt_methods,                 // tp_methods
+      PythonContextExt_methods,                 // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -913,18 +913,18 @@ static void PyUastIter_dealloc(PyObject *self) {
 typedef struct {
   PyObject_HEAD
   Context *p;
-} PyContext;
+} PythonContext;
 
-static void PyContext_dealloc(PyObject *self) {
-  delete(((PyContext *)self)->p);
+static void PythonContext_dealloc(PyObject *self) {
+  delete(((PythonContext *)self)->p);
   // TODO: delete self?
 }
 
-static PyObject *PyContext_root(PyContext *self, PyObject *Py_UNUSED(ignored)) {
+static PyObject *PythonContext_root(PythonContext *self, PyObject *Py_UNUSED(ignored)) {
     return self->p->RootNode();
 }
 
-static PyObject *PyContext_filter(PyContext *self, PyObject *args, PyObject *kwargs) {
+static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObject *kwargs) {
     char* kwds[] = {(char*)"query", (char*)"node", NULL};
     char *query = nullptr;
     PyObject *node = nullptr;
@@ -941,7 +941,7 @@ static PyObject *PyContext_filter(PyContext *self, PyObject *args, PyObject *kwa
     return it;
 }
 
-static PyObject *PyContext_encode(PyContext *self, PyObject *args) {
+static PyObject *PythonContext_encode(PythonContext *self, PyObject *args) {
     PyObject *node = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
     if (!PyArg_ParseTuple(args, "Oi", &node, &format))
@@ -949,14 +949,14 @@ static PyObject *PyContext_encode(PyContext *self, PyObject *args) {
     return self->p->Encode(node, format);
 }
 
-static PyMethodDef PyContext_methods[] = {
-    {"root", (PyCFunction) PyContext_root, METH_NOARGS,
+static PyMethodDef PythonContext_methods[] = {
+    {"root", (PyCFunction) PythonContext_root, METH_NOARGS,
      "Return the root node attached to this query context"
     },
-    {"filter", (PyCFunction) PyContext_filter, METH_VARARGS | METH_KEYWORDS,
+    {"filter", (PyCFunction) PythonContext_filter, METH_VARARGS | METH_KEYWORDS,
      "Filter a provided UAST with XPath"
     },
-    {"encode", (PyCFunction) PyContext_encode, METH_VARARGS,
+    {"encode", (PyCFunction) PythonContext_encode, METH_VARARGS,
      "Encodes a UAST into a buffer"
     },
     {nullptr}  // Sentinel
@@ -964,12 +964,12 @@ static PyMethodDef PyContext_methods[] = {
 
 extern "C"
 {
-  static PyTypeObject PyContextType = {
+  static PyTypeObject PythonContextType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.Context",               // tp_name
-      sizeof(PyContext),              // tp_basicsize
+      sizeof(PythonContext),              // tp_basicsize
       0,                              // tp_itemsize
-      PyContext_dealloc,              // tp_dealloc
+      PythonContext_dealloc,              // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -992,7 +992,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PyContext_methods,              // tp_methods
+      PythonContext_methods,              // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -1028,7 +1028,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   return ctx->Iterate(obj, (TreeOrder)order, true);
 }
 
-static PyObject *PyContextExt_decode(PyObject *self, PyObject *args, PyObject *kwargs) {
+static PyObject *PythonContextExt_decode(PyObject *self, PyObject *args, PyObject *kwargs) {
     char* kwds[] = {(char*)"data", (char*)"format", NULL};
     PyObject *obj = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it an enum
@@ -1047,7 +1047,7 @@ static PyObject *PyContextExt_decode(PyObject *self, PyObject *args, PyObject *k
     uast::Context<NodeHandle>* ctx = uast::Decode(ubuf, format);
     PyBuffer_Release(&buf);
 
-    PyContextExt *pyU = PyObject_New(PyContextExt, &PyContextExtType);
+    PythonContextExt *pyU = PyObject_New(PythonContextExt, &PythonContextExtType);
     if (!pyU) {
       delete(ctx);
       return nullptr;
@@ -1056,13 +1056,13 @@ static PyObject *PyContextExt_decode(PyObject *self, PyObject *args, PyObject *k
     return (PyObject*)pyU;
 }
 
-static PyObject *PyContext_new(PyObject *self, PyObject *args) {
+static PyObject *PythonContext_new(PyObject *self, PyObject *args) {
     // TODO: optionally accept root object
     if (!PyArg_ParseTuple(args, "")) {
       return nullptr;
     }
 
-    PyContext *pyU = PyObject_New(PyContext, &PyContextType);
+    PythonContext *pyU = PyObject_New(PythonContext, &PythonContextType);
     if (!pyU) {
       return nullptr;
     }
@@ -1072,13 +1072,13 @@ static PyObject *PyContext_new(PyObject *self, PyObject *args) {
 
 bool isContext(PyObject* obj) {
     if (!obj || obj == Py_None) return false;
-    return PyObject_TypeCheck(obj, &PyContextExtType) || PyObject_TypeCheck(obj, &PyContextType);
+    return PyObject_TypeCheck(obj, &PythonContextExtType) || PyObject_TypeCheck(obj, &PythonContextType);
 }
 
 static PyMethodDef extension_methods[] = {
     {"iterator", PyUastIter_new, METH_VARARGS, "Get an iterator over a node"},
-    {"decode", (PyCFunction)PyContextExt_decode, METH_VARARGS | METH_KEYWORDS, "Decode UAST from a byte array"},
-    {"uast", PyContext_new, METH_VARARGS, "Creates a new UAST context"},
+    {"decode", (PyCFunction)PythonContextExt_decode, METH_VARARGS | METH_KEYWORDS, "Decode UAST from a byte array"},
+    {"uast", PythonContext_new, METH_VARARGS, "Creates a new UAST context"},
     {nullptr, nullptr, 0, nullptr}
 };
 
@@ -1097,11 +1097,11 @@ static struct PyModuleDef module_def = {
 PyMODINIT_FUNC
 PyInit_pyuast(void)
 {
-  if (PyType_Ready(&PyContextExtType) < 0) return nullptr;
+  if (PyType_Ready(&PythonContextExtType) < 0) return nullptr;
   if (PyType_Ready(&PyNodeExtType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterExtType) < 0) return nullptr;
 
-  if (PyType_Ready(&PyContextType) < 0) return nullptr;
+  if (PyType_Ready(&PythonContextType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterType) < 0) return nullptr;
   return PyModule_Create(&module_def);
 }
