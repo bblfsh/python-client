@@ -41,7 +41,8 @@ class CustomBuildExt(build_ext):
 def j(*paths):
     return os.path.join(*paths)
 
-def runorexit(cmd, errmsg = ""):
+
+def runorexit(cmd, errmsg=""):
     log.info(">>", cmd)
     if os.system(cmd) != 0:
         sep = ". " if errmsg else ""
@@ -89,7 +90,8 @@ def cpr(src, dst):
 def untar_url(url, path="."):
     log.info(">> tar xf " + url)
     with urlopen(url) as response:
-        response.tell = lambda: 0  # tarfile calls it only once in the beginning
+        # tarfile calls it only once in the beginning
+        response.tell = lambda: 0
         with tarfile.open(fileobj=response, mode=("r:" + url.rsplit(".", 1)[-1])) as tar:
             tar.extractall(path=path)
 
@@ -133,7 +135,8 @@ def get_libuast():
 
     gopath = os.environ.get("GOPATH")
     if not gopath:
-        gopath = subprocess.check_output(['go', 'env', 'GOPATH']).decode("utf-8").strip()
+        gopath = subprocess.check_output(
+                ['go', 'env', 'GOPATH']).decode("utf-8").strip()
     if not gopath:
         log.error("GOPATH must be set")
         sys.exit(1)
@@ -146,22 +149,30 @@ def get_libuast():
     untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (LIBUAST_VERSION, LIBUAST_ARCH))
     mv(LIBUAST_ARCH, local_libuast)
 
+
 def proto_download_v1():
-    url ="https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V1_VERSION
+    url = "https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V1_VERSION
     untar_url(url)
     sdkdir = "sdk-" + SDK_V1_VERSION[1:]
     destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V1_MAJOR}")
-    cp(j(sdkdir, "protocol", "generated.proto"), j(destdir, "protocol", "generated.proto"))
-    cp(j(sdkdir, "uast", "generated.proto"), j(destdir, "uast", "generated.proto"))
+    cp(j(sdkdir, "protocol", "generated.proto"),
+        j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "generated.proto"),
+        j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
 
+
 def proto_download_v2():
-    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V2_VERSION)
+    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz"
+              % SDK_V2_VERSION)
     sdkdir = "sdk-" + SDK_V2_VERSION[1:]
     destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V2_MAJOR}")
-    cp(j(sdkdir, "protocol", "driver.proto"), j(destdir, "protocol", "generated.proto"))
-    cp(j(sdkdir, "uast", "role", "generated.proto"), j(destdir, "uast", "generated.proto"))
+    cp(j(sdkdir, "protocol", "driver.proto"),
+       j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "role", "generated.proto"),
+       j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
+
 
 def proto_compile():
     sysinclude = "-I" + pkg_resources.resource_filename("grpc_tools", "_proto")
@@ -196,7 +207,8 @@ def proto_compile():
             main_args += ["--grpc_python_out=" + target_dir]
 
         main_args += ["-Iproto", sysinclude, j("proto", proto_file)]
-        log.info("%s -m grpc.tools.protoc " + " ".join(main_args[1:]), sys.executable)
+        log.info("%s -m grpc.tools.protoc " +
+                 " ".join(main_args[1:]), sys.executable)
         protoc_module.main(main_args)
 
         if grpc:
@@ -207,7 +219,8 @@ def proto_compile():
             for root, dirnames, filenames in os.walk(target_dir):
                 for filename in filenames:
 
-                    if filename == "generated_pb2_grpc.py" and grpc_garbage_dir is not None:
+                    if filename == "generated_pb2_grpc.py" and\
+                            grpc_garbage_dir is not None:
                         mv(j(root, filename), target)
 
                 if os.path.samefile(root, target_dir):
@@ -258,6 +271,7 @@ def do_get_deps():
     proto_download_v2()
     proto_compile()
 
+
 def clean():
     rimraf("gopkg.in")
     rimraf(j("bblfsh", "github"))
@@ -267,7 +281,8 @@ def clean():
 
 
 def main():
-    # The --global-uast flag allows to install the python driver using the installed uast library
+    # The --global-uast flag allows to install the python driver
+    # using the installed uast library
     if "--log" in sys.argv:
         logging.basicConfig(level=logging.INFO)
 
@@ -287,8 +302,9 @@ def main():
         # FIXME: untested!
         libraries.extend(static_libraries)
         extra_objects = []
-    else: # POSIX
-        extra_objects = ['{}/lib{}.a'.format(static_lib_dir, l) for l in static_libraries]
+    else:  # POSIX
+        extra_objects = ['{}/lib{}.a'.format(
+            static_lib_dir, l) for l in static_libraries]
 
     libuast_module = Extension(
         "bblfsh.pyuast",
@@ -299,7 +315,7 @@ def main():
         sources=sources)
 
     setup(
-        cmdclass = {
+        cmdclass={
             "build_ext": CustomBuildExt,
         },
         name="bblfsh",
@@ -313,7 +329,8 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio==1.13.0", "grpcio-tools==1.13.0", "docker", "protobuf>=3.4.0"],
+        install_requires=["grpcio==1.13.0", "grpcio-tools==1.13.0",
+                          "docker", "protobuf>=3.4.0"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
         classifiers=[
