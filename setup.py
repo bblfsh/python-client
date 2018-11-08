@@ -295,7 +295,7 @@ def main():
         sys.exit()
 
     libraries = []
-    static_libraries = ["uast"]
+    static_libraries = ["libuast"]
     static_lib_dir = j("bblfsh", "libuast")
 
     if sys.platform == 'win32':
@@ -303,7 +303,7 @@ def main():
         libraries.extend(static_libraries)
         extra_objects = []
     else:  # POSIX
-        extra_objects = ['{}/lib{}.a'.format(
+        extra_objects = ['{}/{}.a'.format(
             static_lib_dir, l) for l in static_libraries]
 
     libuast_module = Extension(
