@@ -338,7 +338,7 @@ static PyObject *PyContextExt_load(PyContextExt *self, PyObject *Py_UNUSED(ignor
 // PyContextExt_filter filters UAST.
 // Returns a new reference.
 static PyObject *PyContextExt_filter(PyContextExt *self, PyObject *args, PyObject *kwargs) {
-    char* kwds[] = {"query", "node", NULL};
+    char* kwds[] = {(char*)"query", (char*)"node", NULL};
     char *query = nullptr;
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
@@ -925,7 +925,7 @@ static PyObject *PyContext_root(PyContext *self, PyObject *Py_UNUSED(ignored)) {
 }
 
 static PyObject *PyContext_filter(PyContext *self, PyObject *args, PyObject *kwargs) {
-    char* kwds[] = {"query", "node", NULL};
+    char* kwds[] = {(char*)"query", (char*)"node", NULL};
     char *query = nullptr;
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
@@ -1029,7 +1029,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
 }
 
 static PyObject *PyContextExt_decode(PyObject *self, PyObject *args, PyObject *kwargs) {
-    char* kwds[] = {"data", "format", NULL};
+    char* kwds[] = {(char*)"data", (char*)"format", NULL};
     PyObject *obj = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it an enum
 
