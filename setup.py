@@ -295,16 +295,16 @@ def main():
         sys.exit()
 
     libraries = []
-    static_libraries = ["libuast"]
     static_lib_dir = j("bblfsh", "libuast")
+    static_libraries = ["{}/libuast".format(static_lib_dir)]
 
     if sys.platform == 'win32':
         # FIXME: untested!
         libraries.extend(static_libraries)
+        libraries.extend(["legacy_stdio_definitions", "winmm", "ws2_32"])
         extra_objects = []
     else:  # POSIX
-        extra_objects = ['{}/{}.a'.format(
-            static_lib_dir, l) for l in static_libraries]
+        extra_objects = ['{}.a'.format(l) for l in static_libraries]
 
     libuast_module = Extension(
         "bblfsh.pyuast",
