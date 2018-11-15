@@ -1,28 +1,26 @@
 import os
 import sys
+import typing as t
 
 import grpc
 
 from bblfsh.pyuast import decode as uast_decode
+from bblfsh.pyuast import uast as uast_ctx
 
-from bblfsh.aliases import ParseRequest, DriverStub, ProtocolServiceStub, VersionRequest, SupportedLanguagesRequest
-
-# The following two insertions fix the broken pb import paths
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "gopkg/in/bblfsh/sdk/v1/protocol"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "gopkg/in/bblfsh/sdk/v2/protocol"))
-sys.path.insert(0, os.path.dirname(__file__))
+from bblfsh.aliases import (ParseRequest, DriverStub, ProtocolServiceStub,
+                            VersionRequest, SupportedLanguagesRequest, ModeType)
 
 
 class NonUTF8ContentException(Exception):
     pass
 
 
-class BblfshClient(object):
+class BblfshClient:
     """
-    Babelfish gRPC client. Currently it is only capable of fetching UASTs.
+    Babelfish gRPC client.
     """
 
-    def __init__(self, endpoint):
+    def __init__(self, endpoint:str) -> None:
         """
         Initializes a new instance of BblfshClient.
 
@@ -30,26 +28,32 @@ class BblfshClient(object):
                          for example "0.0.0.0:9432"
         :type endpoint: str
         """
+
         self._channel = grpc.insecure_channel(endpoint)
         self._stub_v1 = ProtocolServiceStub(self._channel)
         self._stub_v2 = DriverStub(self._channel)
 
     @staticmethod
-    def _check_utf8(text):
+    def _ensure_utf8(text: bytes) -> str:
         try:
-            text.decode("utf-8")
+            return text.decode("utf-8")
         except UnicodeDecodeError:
             raise NonUTF8ContentException("Content must be UTF-8, ASCII or Base64 encoded")
 
     @staticmethod
-    def _get_contents(contents, filename):
+    def _get_contents(contents: t.Optional[t.Union[str, bytes]], filename: str) -> str:
         if contents is None:
             with open(filename, "rb") as fin:
                 contents = fin.read()
-        BblfshClient._check_utf8(contents)
+
+        if isinstance(contents, bytes):
+            contents = BblfshClient._ensure_utf8(contents)
+
         return contents
 
-    def parse(self, filename, language=None, contents=None, mode=None, raw=False, timeout=None):
+    def parse(self, filename: str, language: t.Optional[str]=None,
+              contents: t.Optional[str]=None, mode: t.Optional[ModeType]=None,
+              raw: bool=False, timeout: t.Optional[int]=None) -> uast_ctx:
         """
         Queries the Babelfish server and receives the UAST response for the specified
         file.
@@ -81,16 +85,18 @@ class BblfshClient(object):
         TODO: return detected language
         TODO: handle syntax errors
         """
+
         if raw:
             return response.uast
+
         ctx = uast_decode(response.uast, format=0)
         return ctx
 
-    def supported_languages(self):
+    def supported_languages(self) -> t.List[str]:
         sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())
         return sup_response.languages
 
-    def version(self):
+    def version(self) -> str:
         """
         Queries the Babelfish server for version and runtime information.
 
@@ -100,7 +106,7 @@ class BblfshClient(object):
         return self._stub_v1.Version(VersionRequest())
 
     @staticmethod
-    def _scramble_language(lang):
+    def _scramble_language(lang: t.Optional[str]) -> t.Optional[str]:
         if lang is None:
             return None
         lang = lang.lower()

@@ -273,6 +273,7 @@ def do_get_deps():
 
 
 def clean():
+    rimraf("build")
     rimraf("gopkg.in")
     rimraf(j("bblfsh", "github"))
     rimraf(j("bblfsh", "gopkg"))
@@ -285,6 +286,8 @@ def main():
     # using the installed uast library
     if "--log" in sys.argv:
         logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.ERROR)
 
     if "--getdeps" in sys.argv:
         do_get_deps()
