@@ -1,14 +1,11 @@
 import os
-import sys
 import typing as t
 
 import grpc
 
-from bblfsh.pyuast import decode as uast_decode
-from bblfsh.pyuast import uast as uast_ctx
-
 from bblfsh.aliases import (ParseRequest, DriverStub, ProtocolServiceStub,
                             VersionRequest, SupportedLanguagesRequest, ModeType)
+from bblfsh.result_context import ResultContext
 
 
 class NonUTF8ContentException(Exception):
@@ -53,7 +50,7 @@ class BblfshClient:
 
     def parse(self, filename: str, language: t.Optional[str]=None,
               contents: t.Optional[str]=None, mode: t.Optional[ModeType]=None,
-              raw: bool=False, timeout: t.Optional[int]=None) -> uast_ctx:
+              timeout: t.Optional[int]=None) -> ResultContext:
         """
         Queries the Babelfish server and receives the UAST response for the specified
         file.
@@ -75,22 +72,13 @@ class BblfshClient:
         :return: UAST object.
         """
 
+        # TODO: handle syntax errors
         contents = self._get_contents(contents, filename)
         request = ParseRequest(filename=os.path.basename(filename),
-                               content=contents,
-                               mode=mode,
+                               content=contents, mode=mode,
                                language=self._scramble_language(language))
         response = self._stub_v2.Parse(request, timeout=timeout)
-        """
-        TODO: return detected language
-        TODO: handle syntax errors
-        """
-
-        if raw:
-            return response.uast
-
-        ctx = uast_decode(response.uast, format=0)
-        return ctx
+        return ResultContext(response)
 
     def supported_languages(self) -> t.List[str]:
         sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())

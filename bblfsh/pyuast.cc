@@ -1103,5 +1103,16 @@ PyInit_pyuast(void)
 
   if (PyType_Ready(&PythonContextType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterType) < 0) return nullptr;
-  return PyModule_Create(&module_def);
+
+  PyObject* m = PyModule_Create(&module_def);
+
+  Py_INCREF(&PythonContextType);
+  PyModule_AddObject(m, "Context", (PyObject *)&PythonContextType);
+
+  Py_INCREF(&PyNodeExtType);
+  PyModule_AddObject(m, "NodeExt", (PyObject *)&PyNodeExtType);
+
+  Py_INCREF(&PyUastIterExtType);
+  PyModule_AddObject(m, "IteratorExt", (PyObject *)&PyUastIterExtType);
+  return m;
 }

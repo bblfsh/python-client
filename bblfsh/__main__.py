@@ -49,12 +49,12 @@ def main() -> int:
         ensure_bblfsh_is_running()
 
     client = BblfshClient(args.endpoint)
-    uast = client.parse(args.file, args.language)
+    ctx = client.parse(args.file, args.language)
 
     if args.query:
-        run_query(uast, args.query, array=args.array)
+        run_query(ctx, args.query, array=args.array)
     else:
-        pprint.pprint(uast.load())
+        pprint.pprint(ctx.load())
 
     return 0
 
