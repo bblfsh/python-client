@@ -1,18 +1,11 @@
 from bblfsh.client import BblfshClient
 from bblfsh.pyuast import decode, iterator, uast
+from bblfsh.tree_order import TreeOrder
 from bblfsh.aliases import *
-
-
-class TreeOrder:
-    PRE_ORDER = 0
-    POST_ORDER = 1
-    LEVEL_ORDER = 2
-    POSITION_ORDER = 3
 
 
 class RoleSearchException(Exception):
     pass
-
 
 def role_id(rname: str) -> int:
     try:

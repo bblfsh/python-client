@@ -1,8 +1,8 @@
 import typing as t
 
 from bblfsh.aliases import ParseResponse
-
-from bblfsh.pyuast import decode, IteratorExt, NodeExt
+from bblfsh.pyuast import decode, IteratorExt, NodeExt, iterator
+from bblfsh.tree_order import TreeOrder
 
 
 class ResponseError(Exception):
@@ -13,10 +13,14 @@ class ResultTypeException(Exception):
     pass
 
 
+class NotNodeIterationException(Exception):
+    pass
+
+
 ResultMultiType = t.NewType("ResultType", t.Union[dict, int, float, bool, str])
 
 
-class FilterItem:
+class Node:
     def __init__(self, node_ext: NodeExt) -> None:
         self._node_ext = node_ext
         self._loaded_node: t.Optional[ResultMultiType] = None
@@ -59,16 +63,27 @@ class FilterItem:
     def get_dict(self) -> dict:
         return self._get_typed(dict)
 
+    def iterate(self, order) -> 'NodeIterator':
+        if not isinstance(self._node_ext, NodeExt):
+            raise NotNodeIterationException("Cannot iterate over leaf of type '{}'"
+                                            .format(type(self._node_ext)))
+        TreeOrder.check_order(order)
+        return NodeIterator(iterator(self._node_ext, order))
 
-class FilterResults:
+
+class NodeIterator:
     def __init__(self, iter_ext: IteratorExt) -> None:
         self._iter_ext = iter_ext
 
-    def __iter__(self) -> object:
+    def __iter__(self) -> 'NodeIterator':
         return self
 
-    def __next__(self) -> FilterItem:
-        return FilterItem(next(self._iter_ext))
+    def __next__(self) -> Node:
+        return Node(next(self._iter_ext))
+
+    def iterate(self, order) -> 'NodeIterator':
+        TreeOrder.check_order(order)
+        return NodeIterator(iterator(next(self._iter_ext), order))
 
 
 class ResultContext:
@@ -82,11 +97,15 @@ class ResultContext:
         self._ctx = decode(grpc_response.uast, format=0)
         self.language = grpc_response.language
 
-    def filter(self, query: str) -> FilterResults:
-        return FilterResults(self._ctx.filter(query))
+    def filter(self, query: str) -> NodeIterator:
+        return NodeIterator(self._ctx.filter(query))
 
     def get_all(self) -> dict:
         return self._ctx.load()
+
+    def iterate(self, order: int) -> NodeIterator:
+        TreeOrder.check_order(order)
+        return NodeIterator(iterator(self._ctx.root(), order))
 
     def __str__(self) -> str:
         return str(self.get_all())

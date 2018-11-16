@@ -18,7 +18,10 @@ pip install bblfsh
 ```bash
 git clone https://github.com/bblfsh/client-python.git
 cd client-python
+pip install -r requirements.txt
+python setup.py --getdeps
 python setup.py install
+# or: pip install .
 ```
 
 ### Dependencies
@@ -48,23 +51,45 @@ Please, read the [getting started](https://doc.bblf.sh/using-babelfish/getting-s
 import bblfsh
 
 client = bblfsh.BblfshClient("0.0.0.0:9432")
-uast = client.parse("/path/to/file.py")
-print(uast.load())
+ctx = client.parse("/path/to/file.py")
+print(ctx)
+# or to get the results in a dictionary:
+resdict = ctx.get_all()
 
 # "filter' allows you to use XPath queries to filter on result nodes:
-it = uast.filter("//Import[@role='Import' and @role='Declaration']//alias")
+it = ctx.filter("//python:Call")
 for node in it:
-    print(node.load())
+    print(node)
+    # or:
+    doSomething(node.get())
 
 # filter must be used when using XPath functions returning these types:
-print(uast.filter("boolean(//*[@strtOffset or @endOffset])"))
-print(uast.filter("name(//*[1])"))
-print(uast.filter("count(//*)"))
+# XPath queries can return different types (dicts, int, float, bool or str), 
+# calling get() with an item will return the right type, but if you must ensure
+# that you are getting the expected type (to avoid errors in the queries) there
+# are alterative typed versions:
+x = next(ctx.filter("boolean(//*[@strtOffset or @endOffset])").get_bool()
+y = next(ctx.filter("name(//*[1])")).get_str()
+z = next(ctx.filter("count(//*)").get_int() # or get_float()
 
-# You can also iterate on several tree iteration orders:
-it = bblfsh.iterator(uast, bblfsh.TreeOrder.PRE_ORDER)
-for node in it:
-    print(node.internal_type)
+# You can also iterate using iteration orders different than the 
+# default preorder using the `iterate` method on `parse` result or node objects:
+
+# Directly over parse results
+iter = client.parse("/path/to/file.py").iterate(bblfsh.TreeOrder.POST_ORDER)
+for i in iter: ...
+
+# Over filter results (which by default are already iterators with PRE_ORDER):
+ctx = client.parse("file.py")
+newiter = ctx.filter("//python:Call").iterate(bblfsh.TreeOrder.LEVEL_ORDER)
+for i in newiter: ...
+
+# Over individual node objects to change the iteration order of
+# a specific subtree:
+ctx = client.parse("file.py")
+first_node = next(ctx)
+newiter = first_node.iterate(bblfsh.TreeOrder.POSITION_ORDER)
+for i in newiter: ...
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/clients.html)

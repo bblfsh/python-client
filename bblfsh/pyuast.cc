@@ -1114,5 +1114,9 @@ PyInit_pyuast(void)
 
   Py_INCREF(&PyUastIterExtType);
   PyModule_AddObject(m, "IteratorExt", (PyObject *)&PyUastIterExtType);
+
+  Py_INCREF(&PyUastIterType);
+  PyModule_AddObject(m, "Iterator", (PyObject *)&PyUastIterType);
+
   return m;
 }
