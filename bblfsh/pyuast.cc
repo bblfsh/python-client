@@ -13,7 +13,9 @@
 // so we pass ownership to these lists and free them at the end of filter()
 
 PyObject* asPyBuffer(uast::Buffer buf) {
-    return PyByteArray_FromStringAndSize((const char*)(buf.ptr), buf.size);
+    PyObject* arr = PyByteArray_FromStringAndSize((const char*)(buf.ptr), buf.size);
+    free(buf.ptr);
+    return arr;
     //return PyMemoryView_FromMemory((char*)(buf.ptr), buf.size, PyBUF_READ);
 }
 
@@ -881,7 +883,7 @@ public:
             return nullptr;
         }
         uast::Buffer data = ctx->Encode(toNode(node), format);
-        return asPyBuffer(data); // TODO: this probably won't deallocate the buffer
+        return asPyBuffer(data);
     }
     PyObject* LoadFrom(PyNodeExt *src) {
         auto sctx = src->ctx->ctx;
