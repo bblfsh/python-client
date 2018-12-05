@@ -310,6 +310,7 @@ static void PyUastIterExt_dealloc(PyObject *self) {
   }
   it->freeCtx = false;
   it->ctx = nullptr;
+  Py_TYPE(self)->tp_free(self);
 }
 
 typedef struct {
@@ -319,7 +320,7 @@ typedef struct {
 
 static void PythonContextExt_dealloc(PyObject *self) {
   delete(((PythonContextExt *)self)->p);
-  // TODO: delete self?
+  Py_TYPE(self)->tp_free(self);
 }
 
 // PythonContextExt_root returns a root node associated with this context.
@@ -907,6 +908,7 @@ static void PyUastIter_dealloc(PyObject *self) {
   }
   it->freeCtx = false;
   it->ctx = nullptr;
+  Py_TYPE(self)->tp_free(self);
 }
 
 typedef struct {
@@ -916,7 +918,7 @@ typedef struct {
 
 static void PythonContext_dealloc(PyObject *self) {
   delete(((PythonContext *)self)->p);
-  // TODO: delete self?
+  Py_TYPE(self)->tp_free(self);
 }
 
 static PyObject *PythonContext_root(PythonContext *self, PyObject *Py_UNUSED(ignored)) {
