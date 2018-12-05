@@ -269,7 +269,7 @@ public:
 
     // Filter queries an external UAST.
     // Borrows the reference.
-    PyObject* Filter(PyObject* node, char* query){
+    PyObject* Filter(PyObject* node, const char* query){
         if (!assertNotContext(node)) {
             return nullptr;
         }
@@ -339,7 +339,7 @@ static PyObject *PythonContextExt_load(PythonContextExt *self, PyObject *Py_UNUS
 // Returns a new reference.
 static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args, PyObject *kwargs) {
     char* kwds[] = {(char*)"query", (char*)"node", NULL};
-    char *query = nullptr;
+    const char *query = nullptr;
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
@@ -350,7 +350,6 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
-    // TODO: freeing the query leads to a segfault; need to clarify why
     return it;
 }
 
@@ -926,7 +925,7 @@ static PyObject *PythonContext_root(PythonContext *self, PyObject *Py_UNUSED(ign
 
 static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObject *kwargs) {
     char* kwds[] = {(char*)"query", (char*)"node", NULL};
-    char *query = nullptr;
+    const char *query = nullptr;
     PyObject *node = nullptr;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwds, &query, &node))
       return nullptr;
@@ -937,7 +936,6 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
-    // TODO: freeing the query leads to a segfault; need to clarify why
     return it;
 }
 
