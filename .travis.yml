@@ -17,6 +17,7 @@ install:
   - pip3 install -r requirements.txt
   - python3 setup.py --getdeps --log
   - pip3 install . --upgrade
+  - cd bblfsh && python3 -m unittest discover
   - if [[ -z "$TRAVIS_TAG" ]]; then exit 0; fi
   - if [[ $TRAVIS_PYTHON_VERSION != '3.6' ]]; then exit 0; fi # disable double uploads to pypi
   - echo "[distutils]" > .pypirc
@@ -28,6 +29,5 @@ install:
   - HOME=. python setup.py sdist upload
 script:
   - python3 setup.py build_ext -i
-  - python3 -m unittest discover .
 notifications:
   email: false
