@@ -17,53 +17,61 @@ class NotNodeIterationException(Exception):
     pass
 
 
-ResultMultiType = t.NewType("ResultType", t.Union[dict, int, float, bool, str])
+# ResultMultiType = t.NewType("ResultMultiType", t.Union[dict, int, float, bool, str])
+ResultMultiType = t.Union[dict, int, float, bool, str, None]
 
 
 class Node:
     def __init__(self, node_ext: NodeExt) -> None:
         self._node_ext = node_ext
-        self._loaded_node: t.Optional[ResultMultiType] = None
+        self._loaded_node: ResultMultiType = None
 
-    def _ensure_load(self):
+    def _ensure_load(self) -> None:
         if self._loaded_node is None:
             self._loaded_node = self._node_ext.load()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.get())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.get())
 
     def get(self) -> ResultMultiType:
         self._ensure_load()
         return self._loaded_node
 
-    def _get_typed(self, type_: type) -> ResultMultiType:
+    def _get_typed(self, type_: t.Union[type, t.List[type]]) -> ResultMultiType:
         self._ensure_load()
-        if not isinstance(self._loaded_node, type_):
+
+        if not isinstance(type_, list) and not isinstance(type_, tuple):
+            type_list = [type_]
+        else:
+            type_list = type_
+
+        if type(self._loaded_node) not in type_list:
             raise ResultTypeException("Expected {} result, but type is '{}'"
-                                      .format(type_.__name__, type(self._loaded_node)))
+                                      .format(str(type_list), type(self._loaded_node)))
+        return self._loaded_node
 
     def get_bool(self) -> bool:
-        return self._get_typed(bool)
+        return t.cast(bool, self._get_typed(bool))
 
     def get_float(self) -> float:
-        res = self._get_typed(float)
+        res: ResultMultiType = self._get_typed([float, int])
         if isinstance(res, int):
             res = float(res)
-        return res
+        return t.cast(float, res)
 
     def get_int(self) -> int:
-        return self._get_typed(int)
+        return t.cast(int, self._get_typed(int))
 
     def get_str(self) -> str:
-        return self._get_typed(str)
+        return t.cast(str, self._get_typed(str))
 
     def get_dict(self) -> dict:
-        return self._get_typed(dict)
+        return t.cast(dict, self._get_typed(dict))
 
-    def iterate(self, order) -> 'NodeIterator':
+    def iterate(self, order: int) -> 'NodeIterator':
         if not isinstance(self._node_ext, NodeExt):
             raise NotNodeIterationException("Cannot iterate over leaf of type '{}'"
                                             .format(type(self._node_ext)))
@@ -81,7 +89,7 @@ class NodeIterator:
     def __next__(self) -> Node:
         return Node(next(self._iter_ext))
 
-    def iterate(self, order) -> 'NodeIterator':
+    def iterate(self, order: int) -> 'NodeIterator':
         TreeOrder.check_order(order)
         return NodeIterator(iterator(next(self._iter_ext), order))
 
@@ -95,7 +103,6 @@ class ResultContext:
 
         self._response = grpc_response
         self._ctx = decode(grpc_response.uast, format=0)
-        self.language = grpc_response.language
 
     def filter(self, query: str) -> NodeIterator:
         return NodeIterator(self._ctx.filter(query))
@@ -106,6 +113,14 @@ class ResultContext:
     def iterate(self, order: int) -> NodeIterator:
         TreeOrder.check_order(order)
         return NodeIterator(iterator(self._ctx.root(), order))
+
+    @property
+    def language(self) -> str:
+        return self._response.language
+
+    @property
+    def uast(self) -> t.Any:
+        return self._response.uast
 
     def __str__(self) -> str:
         return str(self.get_all())

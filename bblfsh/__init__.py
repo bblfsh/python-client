@@ -7,6 +7,7 @@ from bblfsh.aliases import *
 class RoleSearchException(Exception):
     pass
 
+
 def role_id(rname: str) -> int:
     try:
         name = DESCRIPTOR.enum_types_by_name["Role"].values_by_name[rname].number

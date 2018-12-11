@@ -90,6 +90,10 @@ ctx = client.parse("file.py")
 first_node = next(ctx)
 newiter = first_node.iterate(bblfsh.TreeOrder.POSITION_ORDER)
 for i in newiter: ...
+
+# You can also get the non semantic UAST or native AST:
+ctx = client.parse("file.py", mode=bblfsh.ModeDict["NATIVE"])
+# Possible values for ModeDict: DEFAULT_MODE, NATIVE, PREPROCESSED, ANNOTATED, SEMANTIC
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/clients.html)

@@ -4,7 +4,8 @@ import typing as t
 import grpc
 
 from bblfsh.aliases import (ParseRequest, DriverStub, ProtocolServiceStub,
-                            VersionRequest, SupportedLanguagesRequest, ModeType)
+                            VersionRequest, SupportedLanguagesRequest, ModeType,
+                            VersionResponse)
 from bblfsh.result_context import ResultContext
 
 
@@ -84,7 +85,7 @@ class BblfshClient:
         sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())
         return sup_response.languages
 
-    def version(self) -> str:
+    def version(self) -> VersionResponse:
         """
         Queries the Babelfish server for version and runtime information.
 

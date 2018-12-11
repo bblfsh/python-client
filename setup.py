@@ -302,7 +302,6 @@ def main():
     static_libraries = ["{}/libuast".format(static_lib_dir)]
 
     if sys.platform == 'win32':
-        # FIXME: untested!
         libraries.extend(static_libraries)
         libraries.extend(["legacy_stdio_definitions", "winmm", "ws2_32"])
         extra_objects = []
