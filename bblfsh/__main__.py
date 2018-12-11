@@ -28,7 +28,6 @@ def setup() -> argparse.Namespace:
 
 def run_query(uast, query: str, array: bool) -> None:
     result_iter = uast.filter(query)
-
     if not result_iter:
         print("Nothing found")
 
