@@ -100,12 +100,12 @@ class BblfshTests(unittest.TestCase):
         self.assertRaises(RuntimeError, ctx.filter, "dsdfkj32423#$@#$")
 
     # FIXME: doesnt work?
-    # def testFilterToken(self):
-    #     ctx = self._parse_fixture()
-    #     it = ctx.filter("//*[@token='else']/@token")
-    #     # Problem: returns the node containing the @token, not the @token string ("else")
-    #     first = next(it).get_str()
-        # self.assertEqual(first, "with")
+    def testFilterToken(self):
+        ctx = self._parse_fixture()
+        it = ctx.filter("//*[@token='else']/@token")
+        # Problem: returns the node containing the @token, not the @token string ("else")
+        first = next(it).get_str()
+        self.assertEqual(first, "else")
 
     def testFilterRoles(self) -> None:
         ctx = self._parse_fixture()
