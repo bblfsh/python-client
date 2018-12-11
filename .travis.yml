@@ -1,6 +1,8 @@
 language: python
 sudo: true
 dist: xenial
+env: 
+- BBLFSHD_VERSION=v2.9.1 BBLFSH_PYTHON_VERSION=v2.3.0
 services:
   - docker
 cache:
@@ -11,6 +13,8 @@ python:
   - "3.6"
   - "3.7"
 install:
+  - docker run --privileged -d -p 9432:9432 --name bblfshd bblfsh/bblfshd:$BBLFSHD_VERSION
+  - docker exec bblfshd bblfshctl driver install bblfsh/python-driver:$BBLFSH_PYTHON_VERSION
   - wget https://github.com/bblfsh/client-python/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
   - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
   - pip3 install --upgrade pip
