@@ -331,7 +331,7 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio==1.13.0", "grpcio-tools==1.13.0",
+        install_requires=["grpcio>=1.13.0", "grpcio-tools>=1.13.0",
                           "docker", "protobuf>=3.4.0"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
