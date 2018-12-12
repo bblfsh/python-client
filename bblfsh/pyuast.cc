@@ -49,7 +49,7 @@ class ContextExt;
 
 typedef struct {
   PyObject_HEAD
-  ContextExt    *ctx;
+  ContextExt *ctx;
   NodeHandle handle;
 } PyNodeExt;
 
@@ -145,43 +145,43 @@ extern "C"
 {
   static PyTypeObject PyUastIterExtType = {
     PyVarObject_HEAD_INIT(nullptr, 0)
-    "pyuast.IteratorExt",           // tp_name
-    sizeof(PyUastIterExt),          // tp_basicsize
-    0,                              // tp_itemsize
-    PyUastIterExt_dealloc,          // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_reserved
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    "External UastIterator object", // tp_doc
-    0,                              // tp_traverse
-    0,                              // tp_clear
-    0,                              // tp_richcompare
-    0,                              // tp_weaklistoffset
-    PyUastIterExt_iter,                // tp_iter: __iter()__ method
-    (iternextfunc)PyUastIterExt_next,  // tp_iternext: next() method
-    0,                              // tp_methods
-    0,                              // tp_members
-    0,                              // tp_getset
-    0,                              // tp_base
-    0,                              // tp_dict
-    0,                              // tp_descr_get
-    0,                              // tp_descr_set
-    0,                              // tp_dictoffset
-    0,                              // tp_init
-    PyType_GenericAlloc,            // tp_alloc
-    0,                              // tp_new
+    "pyuast.IteratorExt",             // tp_name
+    sizeof(PyUastIterExt),            // tp_basicsize
+    0,                                // tp_itemsize
+    PyUastIterExt_dealloc,            // tp_dealloc
+    0,                                // tp_print
+    0,                                // tp_getattr
+    0,                                // tp_setattr
+    0,                                // tp_reserved
+    0,                                // tp_repr
+    0,                                // tp_as_number
+    0,                                // tp_as_sequence
+    0,                                // tp_as_mapping
+    0,                                // tp_hash
+    0,                                // tp_call
+    0,                                // tp_str
+    0,                                // tp_getattro
+    0,                                // tp_setattro
+    0,                                // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,               // tp_flags
+    "External UastIterator object",   // tp_doc
+    0,                                // tp_traverse
+    0,                                // tp_clear
+    0,                                // tp_richcompare
+    0,                                // tp_weaklistoffset
+    PyUastIterExt_iter,               // tp_iter: __iter()__ method
+    (iternextfunc)PyUastIterExt_next, // tp_iternext: next() method
+    0,                                // tp_methods
+    0,                                // tp_members
+    0,                                // tp_getset
+    0,                                // tp_base
+    0,                                // tp_dict
+    0,                                // tp_descr_get
+    0,                                // tp_descr_set
+    0,                                // tp_dictoffset
+    0,                                // tp_init
+    PyType_GenericAlloc,              // tp_alloc
+    0,                                // tp_new
   };
 }
 
@@ -224,8 +224,7 @@ private:
 
     PyObject* newIter(uast::Iterator<NodeHandle> *it, bool freeCtx){
         PyUastIterExt *pyIt = PyObject_New(PyUastIterExt, &PyUastIterExtType);
-        if (!pyIt)
-          return nullptr;
+        if (!pyIt) return nullptr;
 
         if (!PyObject_Init((PyObject *)pyIt, &PyUastIterExtType)) {
           Py_DECREF(pyIt);
@@ -261,9 +260,8 @@ public:
     // Iterate iterates over an external UAST tree.
     // Borrows the reference.
     PyObject* Iterate(PyObject* node, TreeOrder order){
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         NodeHandle h = toHandle(node);
         auto iter = ctx->Iterate(h, order);
         return newIter(iter, false);
@@ -272,13 +270,10 @@ public:
     // Filter queries an external UAST.
     // Borrows the reference.
     PyObject* Filter(PyObject* node, const char* query){
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         NodeHandle unode = toHandle(node);
-        if (unode == 0) {
-          unode = ctx->RootNode();
-        }
+        if (unode == 0) unode = ctx->RootNode();
 
         uast::Iterator<NodeHandle> *it = ctx->Filter(unode, query);
 
@@ -288,9 +283,8 @@ public:
     // Encode serializes the external UAST.
     // Borrows the reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         uast::Buffer data = ctx->Encode(toHandle(node), format);
         return asPyBuffer(data);
     }
@@ -307,9 +301,8 @@ static void PyUastIterExt_dealloc(PyObject *self) {
   auto it = (PyUastIterExt *)self;
   delete(it->iter);
 
-  if (it->freeCtx && it->ctx) {
-    delete(it->ctx);
-  }
+  if (it->freeCtx && it->ctx) delete(it->ctx);
+
   it->freeCtx = false;
   it->ctx = nullptr;
   Py_TYPE(self)->tp_free(self);
@@ -356,13 +349,12 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
     return it;
 }
 
-// PythonContextExt_filter serializes UAST.
+// PythonContextExt_encode serializes UAST.
 // Returns a new reference.
 static PyObject *PythonContextExt_encode(PythonContextExt *self, PyObject *args) {
     PyObject *node = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
-    if (!PyArg_ParseTuple(args, "Oi", &node, &format))
-      return nullptr;
+    if (!PyArg_ParseTuple(args, "Oi", &node, &format)) return nullptr;
     return self->p->Encode(node, format);
 }
 
@@ -386,10 +378,10 @@ extern "C"
 {
     static PyTypeObject PythonContextExtType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
-      "pyuast.ContextExt",               // tp_name
-      sizeof(PythonContextExt),                 // tp_basicsize
+      "pyuast.ContextExt",            // tp_name
+      sizeof(PythonContextExt),       // tp_basicsize
       0,                              // tp_itemsize
-      PythonContextExt_dealloc,                 // tp_dealloc
+      PythonContextExt_dealloc,       // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -405,14 +397,14 @@ extern "C"
       0,                              // tp_setattro
       0,                              // tp_as_buffer
       Py_TPFLAGS_DEFAULT,             // tp_flags
-      "Internal ContextExt object",      // tp_doc
+      "Internal ContextExt object",   // tp_doc
       0,                              // tp_traverse
       0,                              // tp_clear
       0,                              // tp_richcompare
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PythonContextExt_methods,                 // tp_methods
+      PythonContextExt_methods,       // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -445,13 +437,10 @@ private:
     static void checkPyException() {
         PyObject *type, *value, *traceback;
         PyErr_Fetch(&type, &value, &traceback);
-        if (value == nullptr || value == Py_None) {
-            return;
-        }
-        if (type)
-            Py_DECREF(type);
-        if (traceback)
-            Py_DECREF(traceback);
+        if (value == nullptr || value == Py_None) return;
+
+        if (type) Py_DECREF(type);
+        if (traceback) Py_DECREF(traceback);
 
         PyObject* str = PyObject_Str(value);
         Py_DECREF(value);
@@ -504,12 +493,9 @@ public:
             Py_DECREF(keys);
             keys = nullptr;
         }
-        if (obj) {
-            Py_DECREF(obj);
-        }
-        if (str) {
-            delete str;
-        }
+        if (obj) Py_DECREF(obj);
+        if (str) delete str;
+
     }
 
     PyObject* toPy();
@@ -543,9 +529,8 @@ public:
     }
 
     size_t Size() {
-        if (obj == Py_None) {
-            return 0;
-        }
+        if (obj == Py_None) return 0;
+
         size_t sz = 0;
         if (PyList_Check(obj)) {
             sz = (size_t)(PyList_Size(obj));
@@ -561,13 +546,11 @@ public:
     }
 
     std::string* KeyAt(size_t i) {
-        if (obj == Py_None) {
-            return nullptr;
-        }
+        if (obj == Py_None) return nullptr;
+
         if (!keys) keys = PyDict_Keys(obj);
-        if (!keys) {
-            return nullptr;
-        }
+        if (!keys) return nullptr;
+
         PyObject* key = PyList_GetItem(keys, i); // borrows
         const char * k = PyUnicode_AsUTF8(key);
 
@@ -575,9 +558,8 @@ public:
         return s;
     }
     Node* ValueAt(size_t i) {
-        if (obj == Py_None) {
-            return nullptr;
-        }
+        if (obj == Py_None) return nullptr;
+
         if (PyList_Check(obj)) {
             PyObject* v = PyList_GetItem(obj, i); // borrows
             return lookupOrCreate(v); // new ref
@@ -621,9 +603,8 @@ private:
     std::map<PyObject*, Node*> obj2node;
 
     static PyObject* newBool(bool v) {
-        if (v) {
-            Py_RETURN_TRUE;
-        }
+        if (v) Py_RETURN_TRUE;
+
         Py_RETURN_FALSE;
     }
 
@@ -817,8 +798,7 @@ private:
     }
     PyObject* newIter(uast::Iterator<Node*> *it, bool freeCtx){
         PyUastIter *pyIt = PyObject_New(PyUastIter, &PyUastIterType);
-        if (!pyIt)
-          return nullptr;
+        if (!pyIt) return nullptr;
 
         if (!PyObject_Init((PyObject *)pyIt, &PyUastIterType)) {
           Py_DECREF(pyIt);
@@ -854,9 +834,8 @@ public:
     // Iterate enumerates UAST nodes in a specified order.
     // Creates a new reference.
     PyObject* Iterate(PyObject* node, TreeOrder order, bool freeCtx){
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         Node* unode = toNode(node);
         auto iter = ctx->Iterate(unode, order);
         return newIter(iter, freeCtx);
@@ -865,13 +844,10 @@ public:
     // Filter queries UAST.
     // Creates a new reference.
     PyObject* Filter(PyObject* node, std::string query){
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         Node* unode = toNode(node);
-        if (unode == nullptr) {
-          unode = ctx->RootNode();
-        }
+        if (unode == nullptr) unode = ctx->RootNode();
 
         auto it = ctx->Filter(unode, query);
         return newIter(it, false);
@@ -879,9 +855,8 @@ public:
     // Encode serializes UAST.
     // Creates a new reference.
     PyObject* Encode(PyObject *node, UastFormat format) {
-        if (!assertNotContext(node)) {
-            return nullptr;
-        }
+        if (!assertNotContext(node)) return nullptr;
+
         uast::Buffer data = ctx->Encode(toNode(node), format);
         return asPyBuffer(data);
     }
@@ -905,9 +880,8 @@ static void PyUastIter_dealloc(PyObject *self) {
   auto it = (PyUastIter *)self;
   delete(it->iter);
 
-  if (it->freeCtx && it->ctx) {
-    delete(it->ctx);
-  }
+  if (it->freeCtx && it->ctx) delete(it->ctx);
+
   it->freeCtx = false;
   it->ctx = nullptr;
   Py_TYPE(self)->tp_free(self);
@@ -946,8 +920,7 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
 static PyObject *PythonContext_encode(PythonContext *self, PyObject *args) {
     PyObject *node = nullptr;
     UastFormat format = UAST_BINARY; // TODO: make it a kwarg and enum
-    if (!PyArg_ParseTuple(args, "Oi", &node, &format))
-      return nullptr;
+    if (!PyArg_ParseTuple(args, "Oi", &node, &format)) return nullptr;
     return self->p->Encode(node, format);
 }
 
@@ -969,9 +942,9 @@ extern "C"
   static PyTypeObject PythonContextType = {
       PyVarObject_HEAD_INIT(nullptr, 0)
       "pyuast.Context",               // tp_name
-      sizeof(PythonContext),              // tp_basicsize
+      sizeof(PythonContext),          // tp_basicsize
       0,                              // tp_itemsize
-      PythonContext_dealloc,              // tp_dealloc
+      PythonContext_dealloc,          // tp_dealloc
       0,                              // tp_print
       0,                              // tp_getattr
       0,                              // tp_setattr
@@ -994,7 +967,7 @@ extern "C"
       0,                              // tp_weaklistoffset
       0,                              // tp_iter: __iter()__ method
       0,                              // tp_iternext: next() method
-      PythonContext_methods,              // tp_methods
+      PythonContext_methods,          // tp_methods
       0,                              // tp_members
       0,                              // tp_getset
       0,                              // tp_base
@@ -1016,8 +989,7 @@ static PyObject *PyUastIter_new(PyObject *self, PyObject *args) {
   PyObject *obj = nullptr;
   uint8_t order;
 
-  if (!PyArg_ParseTuple(args, "OB", &obj, &order))
-    return nullptr;
+  if (!PyArg_ParseTuple(args, "OB", &obj, &order)) return nullptr;
 
   // the node can either be external or any other Python object
   if (PyObject_TypeCheck(obj, &PyNodeExtType)) {
@@ -1041,8 +1013,7 @@ static PyObject *PythonContextExt_decode(PyObject *self, PyObject *args, PyObjec
     Py_buffer buf;
 
     int res = PyObject_GetBuffer(obj, &buf, PyBUF_C_CONTIGUOUS);
-    if (res != 0)
-        return nullptr;
+    if (res != 0) return nullptr;
 
     uast::Buffer ubuf(buf.buf, (size_t)(buf.len));
 
@@ -1060,14 +1031,12 @@ static PyObject *PythonContextExt_decode(PyObject *self, PyObject *args, PyObjec
 
 static PyObject *PythonContext_new(PyObject *self, PyObject *args) {
     // TODO: optionally accept root object
-    if (!PyArg_ParseTuple(args, "")) {
-      return nullptr;
-    }
+    if (!PyArg_ParseTuple(args, "")) return nullptr;
+
 
     PythonContext *pyU = PyObject_New(PythonContext, &PythonContextType);
-    if (!pyU) {
-      return nullptr;
-    }
+    if (!pyU) return nullptr;
+
     pyU->p = new Context();
     return (PyObject*)pyU;
 }
