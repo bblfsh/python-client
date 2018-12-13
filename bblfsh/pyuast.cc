@@ -16,20 +16,10 @@ PyObject* asPyBuffer(uast::Buffer buf) {
     PyObject* arr = PyByteArray_FromStringAndSize((const char*)(buf.ptr), buf.size);
     free(buf.ptr);
     return arr;
+
+    // TODO: this is an alternative way of exposing the data; check which one is faster
     //return PyMemoryView_FromMemory((char*)(buf.ptr), buf.size, PyBUF_READ);
 }
-
-/*
-static bool checkError(const Uast* ctx) {
-    char *error = LastError((Uast*)ctx);
-    if (!error) {
-        return true;
-    }
-    PyErr_SetString(PyExc_RuntimeError, error);
-    free(error);
-    return false;
-}
-*/
 
 bool isContext(PyObject* obj);
 
@@ -129,10 +119,14 @@ static PyObject *PyUastIterExt_toPy(ContextExt *ctx, NodeHandle node);
 static PyObject *PyUastIterExt_next(PyObject *self) {
   auto it = (PyUastIterExt *)self;
 
-  // TODO: check errors
-  if (!it->iter->next()) {
-    PyErr_SetNone(PyExc_StopIteration);
-    return nullptr;
+  try {
+      if (!it->iter->next()) {
+        PyErr_SetNone(PyExc_StopIteration);
+        return nullptr;
+      }
+  } catch (const std::exception& e) {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return nullptr;
   }
 
   NodeHandle node = it->iter->node();
@@ -719,10 +713,14 @@ static PyObject *PyUastIter_iter(PyObject *self) {
 static PyObject *PyUastIter_next(PyObject *self) {
   auto it = (PyUastIter *)self;
 
-  // TODO: check errors
-  if (!it->iter->next()) {
-    PyErr_SetNone(PyExc_StopIteration);
-    return nullptr;
+  try {
+      if (!it->iter->next()) {
+        PyErr_SetNone(PyExc_StopIteration);
+        return nullptr;
+      }
+  } catch (const std::exception& e) {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return nullptr;
   }
 
   Node* node = it->iter->node();
