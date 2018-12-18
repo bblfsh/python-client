@@ -19,6 +19,7 @@ SDK_V1_VERSION = "v1.16.1"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
 SDK_V2_VERSION = "v2.12.0"
 SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
+
 FORMAT_ARGS = globals()
 
 sources = ["bblfsh/pyuast.cc"]
