@@ -90,7 +90,7 @@ class BblfshClient:
         Queries the Babelfish server for version and runtime information.
 
         :return: A dictionary with the keys "version" for the semantic version and
-                 # "build" for the build timestamp.
+                 "build" for the build timestamp.
         """
         return self._stub_v1.Version(VersionRequest())
 

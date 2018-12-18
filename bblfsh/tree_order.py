@@ -1,4 +1,7 @@
-class TreeOrder:
+from enum import IntEnum
+
+
+class TreeOrder(IntEnum):
     _MIN = 0
     PRE_ORDER = 0
     POST_ORDER = 1
