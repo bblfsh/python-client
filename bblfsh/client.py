@@ -18,7 +18,7 @@ class BblfshClient:
     Babelfish gRPC client.
     """
 
-    def __init__(self, endpoint:str) -> None:
+    def __init__(self, endpoint: str) -> None:
         """
         Initializes a new instance of BblfshClient.
 
