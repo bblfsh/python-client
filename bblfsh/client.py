@@ -18,7 +18,7 @@ class BblfshClient:
     Babelfish gRPC client.
     """
 
-    def __init__(self, endpoint: str) -> None:
+    def __init__(self, endpoint: Union[str, grpc.Channel]) -> None:
         """
         Initializes a new instance of BblfshClient.
 
@@ -27,7 +27,11 @@ class BblfshClient:
         :type endpoint: str
         """
 
-        self._channel = grpc.insecure_channel(endpoint)
+        if isinstance(endpoint, str):
+            self._channel = grpc.insecure_channel(endpoint)
+        else:
+            self._channel = grpc.endpoint
+
         self._stub_v1 = ProtocolServiceStub(self._channel)
         self._stub_v2 = DriverStub(self._channel)
 
