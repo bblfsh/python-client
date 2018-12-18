@@ -21,10 +21,13 @@ ParseError = protocol_v2_module.ParseError
 Mode = protocol_v2_module.Mode
 ModeType = google.protobuf.internal.enum_type_wrapper.EnumTypeWrapper
 
+
+class Modes:
+    pass
+
 # Current values: {'DEFAULT_MODE': 0, 'NATIVE': 1, 'PREPROCESSED': 2, 'ANNOTATED': 4, 'SEMANTIC': 8}
-ModeDict = {}
 for k, v in Mode.DESCRIPTOR.values_by_name.items():
-    ModeDict[k] = v.number
+    setattr(Modes, k, v.number)
 
 DriverStub = protocol_grpc_v2_module.DriverStub
 DriverServicer = protocol_grpc_v2_module.DriverServicer

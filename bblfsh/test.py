@@ -5,7 +5,7 @@ import unittest
 import docker
 
 from bblfsh import (BblfshClient, iterator, TreeOrder,
-                    ModeDict, role_id, role_name)
+                    Modes, role_id, role_name)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
 from bblfsh.result_context import (Node, NodeIterator,
@@ -45,7 +45,7 @@ class BblfshTests(unittest.TestCase):
         self.assertTrue(version.build)
 
     def testNativeParse(self) -> None:
-        ctx = self.client.parse(self.fixtures_file, mode=ModeDict["NATIVE"])
+        ctx = self.client.parse(self.fixtures_file, mode=Modes.NATIVE)
         self._validate_ctx(ctx)
         self.assertIsNotNone(ctx)
 
