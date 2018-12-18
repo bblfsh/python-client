@@ -76,8 +76,8 @@ z = next(ctx.filter("count(//*)").get_int() # or get_float()
 # default preorder using the `iterate` method on `parse` result or node objects:
 
 # Directly over parse results
-iter = client.parse("/path/to/file.py").iterate(bblfsh.TreeOrder.POST_ORDER)
-for i in iter: ...
+it = client.parse("/path/to/file.py").iterate(bblfsh.TreeOrder.POST_ORDER)
+for i in it: ...
 
 # Over filter results (which by default are already iterators with PRE_ORDER):
 ctx = client.parse("file.py")
