@@ -34,7 +34,6 @@ class BblfshTests(unittest.TestCase):
     def _parse_fixture(self) -> ResultContext:
         ctx = self.client.parse(self.fixtures_file)
         self._validate_ctx(ctx)
-
         return ctx
 
     def testVersion(self) -> None:
@@ -99,14 +98,11 @@ class BblfshTests(unittest.TestCase):
 
         self.assertRaises(RuntimeError, ctx.filter, "dsdfkj32423#$@#$")
 
-    # FIXME: Uncomment once https://github.com/bblfsh/sdk/issues/340 is fixed
     def testFilterToken(self):
         ctx = self._parse_fixture()
-        it = ctx.filter("//*[@token='else']/@token")
-        print(next(it))
-        # Problem: returns the node containing the @token, not the @token string ("else")
-        # first = next(it).get_str()
-        # self.assertEqual(first, "else")
+        it = ctx.filter("//*[@token='else']/text()")
+        first = next(it).get_str()
+        self.assertEqual(first, "else")
 
     def testFilterRoles(self) -> None:
         ctx = self._parse_fixture()
@@ -277,10 +273,9 @@ class BblfshTests(unittest.TestCase):
                                         'son1_2', 'son2_2', 'son2'])
 
     def _validate_ctx(self, ctx: ResultContext) -> None:
-        import bblfsh
         self.assertIsNotNone(ctx)
-        self.assertIsInstance(ctx, bblfsh.result_context.ResultContext)
-        self.assertIsInstance(ctx.uast, bytes)
+        self.assertIsInstance(ctx, ResultContext)
+        self.assertIsInstance(ctx.uast, Node)
 
     def testFilterInsideIter(self) -> None:
         ctx = self._parse_fixture()
@@ -294,45 +289,44 @@ class BblfshTests(unittest.TestCase):
         next(it); next(it); next(it)
 
         n = next(it)
-        it2 = n.iterate(TreeOrder.PRE_ORDER)
+        it2 = it.iterate(TreeOrder.PRE_ORDER)
         next(it2)
         a = next(it).get()
         b = next(it2).get()
         self.assertListEqual(a, b)
 
-    # XXX uncomment
-    # def testManyFilters(self) -> None:
-        # ctx = self._parse_fixture()
+    def testManyFilters(self) -> None:
+        ctx = self._parse_fixture()
 
-        # before = resource.getrusage(resource.RUSAGE_SELF)
-        # for _ in range(500):
-            # ctx.filter("//*[@role='Identifier']")
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(10000):
+            ctx.filter("//*[@role='Identifier']")
 
-        # after = resource.getrusage(resource.RUSAGE_SELF)
+        after = resource.getrusage(resource.RUSAGE_SELF)
 
-        # # Check that memory usage has not doubled
-        # self.assertLess(after[2] / before[2], 2.0)
+        # Check that memory usage has not doubled
+        self.assertLess(after[2] / before[2], 2.0)
 
-    # def testManyParses(self) -> None:
-        # before = resource.getrusage(resource.RUSAGE_SELF)
-        # for _ in range(100):
-            # self._parse_fixture()
+    def testManyParses(self) -> None:
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(100):
+            self.client.parse(self.fixtures_file)
 
-        # after = resource.getrusage(resource.RUSAGE_SELF)
+        after = resource.getrusage(resource.RUSAGE_SELF)
 
-        # # Check that memory usage has not doubled
-        # self.assertLess(after[2] / before[2], 2.0)
+        # Check that memory usage has not doubled
+        self.assertLess(after[2] / before[2], 2.0)
 
-    # def testManyParsersAndFilters(self) -> None:
-        # before = resource.getrusage(resource.RUSAGE_SELF)
-        # for _ in range(100):
-            # ctx = self.client.parse(self.fixtures_file)
-            # ctx.filter("//*[@role='Identifier']")
+    def testManyParsesAndFilters(self) -> None:
+        before = resource.getrusage(resource.RUSAGE_SELF)
+        for _ in range(100):
+            ctx = self.client.parse(self.fixtures_file)
+            ctx.filter("//*[@role='Identifier']")
 
-        # after = resource.getrusage(resource.RUSAGE_SELF)
+        after = resource.getrusage(resource.RUSAGE_SELF)
 
-        # # Check that memory usage has not doubled
-        # self.assertLess(after[2] / before[2], 2.0)
+        # Check that memory usage has not doubled
+        self.assertLess(after[2] / before[2], 2.0)
 
     def testSupportedLanguages(self) -> None:
         res = self.client.supported_languages()

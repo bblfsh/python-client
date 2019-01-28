@@ -1078,6 +1078,9 @@ PyInit_pyuast(void)
   Py_INCREF(&PythonContextType);
   PyModule_AddObject(m, "Context", (PyObject *)&PythonContextType);
 
+  Py_INCREF(&PythonContextExtType);
+  PyModule_AddObject(m, "ContextExt", (PyObject *)&PythonContextExtType);
+
   Py_INCREF(&PyNodeExtType);
   PyModule_AddObject(m, "NodeExt", (PyObject *)&PyNodeExtType);
 
