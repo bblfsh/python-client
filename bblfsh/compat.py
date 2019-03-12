@@ -7,7 +7,6 @@ import grpc
 import bblfsh.client as bcli
 from bblfsh import role_id, role_name
 from bblfsh.result_context import ResultContext, NodeIterator, Node
-from bblfsh.result_context import iterator as bcli_iterator
 from bblfsh.aliases import (
     ParseRequest, ParseResponse, DriverStub, ProtocolServiceStub,
     VersionRequest, SupportedLanguagesRequest, ModeType,
@@ -16,12 +15,10 @@ from bblfsh.aliases import (
 from bblfsh.pyuast import uast, iterator as native_iterator
 from bblfsh.tree_order import TreeOrder
 
-# TODO XXX: cleanup imports and stuff
-# TODO(juanjux): mark officially as deprecated
-
 if "BBLFSH_COMPAT_SHUTUP" not in os.environ:
     print("Warning: using deprecated bblfsh v1 compatibility layer.",
           file=sys.stderr)
+
 
 class WrongTypeException(Exception):
     pass
@@ -149,7 +146,7 @@ class CompatNodeIterator:
         self._last_node = ret_val
         return ret_val
 
-    def filter(self, query) -> 'CompatNodeIterator':
+    def filter(self, query: str) -> 'CompatNodeIterator':
         return CompatNodeIterator(NodeIterator(self._ctx.filter(query), self._ctx))
 
     @property
@@ -160,8 +157,6 @@ class CompatNodeIterator:
             return {}
 
 
-# FIXME XXX: if the native node was created from a dictionary, the returned iterator
-# is empty
 def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PRE_ORDER)\
         -> CompatNodeIterator:
 
@@ -178,27 +173,27 @@ def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PR
             "iterator on non node or iterator type (%s)" % str(type(n))
         )
 
+class FilterTypeException(Exception):
+    pass
+
 def filter(n: Node, query: str) -> CompatNodeIterator:
-    # XXX remove check
     if not isinstance(n, Node):
-        raise WrongTypeException(
-            "Filter on non node or iterator type (%s)" % str(type(n))
-        )
+        raise FilterTypeException("Filter on non node or iterator type (%s)" % str(type(n)) )
     ctx = uast()
     return CompatNodeIterator(NodeIterator(ctx.filter(query, n._internal_node), ctx))
 
 
 def filter_nodes(n: Node, query: str) -> CompatNodeIterator:
-    # XXX Create from NodeIterator from n._ctx.filter
     return CompatNodeIterator(filter(n, query), only_nodes=True)
 
+class TypedQueryException(Exception):
+    pass
 
 def _scalariter2item(n: Node, query: str, wanted_type: type) -> Any:
     rlist = list(filter(n, query))
 
     if len(rlist) > 1:
-        # XXX some exception type
-        raise Exception("More than one result for %s typed query" % str(type))
+        raise TypedQueryException("More than one result for %s typed query" % str(type))
 
     value = rlist[0]
     if isinstance(value, Node):
@@ -209,8 +204,7 @@ def _scalariter2item(n: Node, query: str, wanted_type: type) -> Any:
         value = float(value)
 
     if not isinstance(value, wanted_type):
-        # XXX some exception type
-        raise Exception("Typed query for type %s returned type %s instead"
+        raise TypedQueryException("Typed query for type %s returned type %s instead"
                         % (str(wanted_type), str(type(value))))
 
     return wanted_type(value)

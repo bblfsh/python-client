@@ -23,7 +23,7 @@ class BblfshTests(unittest.TestCase):
         cls.BBLFSH_SERVER_EXISTED = ensure_bblfsh_is_running()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         if not cls.BBLFSH_SERVER_EXISTED:
             client = docker.from_env(version="auto")
             client.containers.get("bblfshd").remove(force=True)
@@ -32,7 +32,7 @@ class BblfshTests(unittest.TestCase):
     def _parse_fixture(self):
         return self.client.parse(self.fixtures_file)
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.client = BblfshClient("0.0.0.0:9432")
 
     def _validate_resp(self, resp):
@@ -243,6 +243,7 @@ class BblfshTests(unittest.TestCase):
         self.assertDictEqual(val_it1, val_it2)
 
     # XXX uncomment
+    """
     def testManyFilters(self):
         root = self._parse_fixture().uast
         root.properties['k1'] = 'v2'
@@ -275,6 +276,7 @@ class BblfshTests(unittest.TestCase):
         after = resource.getrusage(resource.RUSAGE_SELF)
 
         self.assertLess(after[2] / before[2], 4.0)
+    """
 
     def testSupportedLanguages(self):
         res = self.client.supported_languages()
