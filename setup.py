@@ -12,36 +12,28 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "2.12.7"
-LIBUAST_VERSION = "v1.9.5"
-SDK_VERSION = "v1.16.1"
-SDK_MAJOR = SDK_VERSION.split('.')[0]
+VERSION = "3.0.0"
+LIBUAST_VERSION = "v3.1.0"
+LIBUAST_ARCH = "linux-amd64"
+SDK_V1_VERSION = "v1.16.1"
+SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
+SDK_V2_VERSION = "v2.12.0"
+SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
+
 FORMAT_ARGS = globals()
+
+sources = ["bblfsh/pyuast.cc"]
+log = logging.getLogger("setup.py")
 
 # For debugging libuast-client interactions, set to True in production!
 GET_LIBUAST = True
 if not GET_LIBUAST:
-    print("WARNING: not retrieving libuast, using local version")
-
-if os.getenv("CC") is None:
-    os.environ["CC"] = "g++"  # yes, g++ - otherwise distutils will use gcc -std=c++11 and explode
-if os.getenv("CXX") is None:
-    os.environ["CXX"] = "g++"
-libraries = ['xml2']
-sources = ["bblfsh/pyuast.cc", "bblfsh/memtracker.cc"]
-log = logging.getLogger("setup.py")
+    log.warning("WARNING: not retrieving libuast, using local version")
 
 
 class CustomBuildExt(build_ext):
     def run(self):
-        global libraries
         global sources
-
-        if "--global-uast" in sys.argv:
-            libraries.append("uast")
-        else:
-            sources.append("bblfsh/libuast/uast.cc")
-            sources.append("bblfsh/libuast/roles.c")
 
         get_libuast()
         build_ext.run(self)
@@ -49,6 +41,14 @@ class CustomBuildExt(build_ext):
 
 def j(*paths):
     return os.path.join(*paths)
+
+
+def runorexit(cmd, errmsg=""):
+    log.info(">>", cmd)
+    if os.system(cmd) != 0:
+        sep = ". " if errmsg else ""
+        log.error(errmsg + sep + "Failed command: '%s'" % cmd)
+        sys.exit(1)
 
 
 def mkdir(path):
@@ -66,7 +66,7 @@ def rimraf(path):
 def mv(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("mv %s %s", src, dst)
+    log.info(">> mv %s %s", src, dst)
     shutil.rmtree(dst, ignore_errors=True)
     os.rename(src, dst)
 
@@ -74,7 +74,7 @@ def mv(src, dst):
 def cp(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("cp -p %s %s", src, dst)
+    log.info(">> cp %s %s", src, dst)
     shutil.rmtree(dst, ignore_errors=True)
     shutil.copy2(src, dst)
 
@@ -82,16 +82,17 @@ def cp(src, dst):
 def cpr(src, dst):
     src = src.format(**FORMAT_ARGS)
     dst = dst.format(**FORMAT_ARGS)
-    log.info("cp -pr %s %s", src, dst)
+    log.info(">> cp -pr %s %s", src, dst)
     if os.path.isdir(dst):
         shutil.rmtree(dst)
     shutil.copytree(src, dst, symlinks=True)
 
 
 def untar_url(url, path="."):
-    log.info("tar xf " + url)
+    log.info(">> tar xf " + url)
     with urlopen(url) as response:
-        response.tell = lambda: 0  # tarfile calls it only once in the beginning
+        # tarfile calls it only once in the beginning
+        response.tell = lambda: 0
         with tarfile.open(fileobj=response, mode=("r:" + url.rsplit(".", 1)[-1])) as tar:
             tar.extractall(path=path)
 
@@ -101,15 +102,15 @@ def call(*cmd):
     subprocess.check_call(cmd)
 
 
-def create_dirs():
-    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "protocol"))
-    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}", "uast"))
-    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol"))
-    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast"))
+def create_dirs(sdk_major):
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.%s" % sdk_major, "protocol"))
+    mkdir(j("proto", "gopkg.in", "bblfsh", "sdk.%s" % sdk_major, "uast"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "protocol"))
+    mkdir(j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "uast"))
     mkdir(j("bblfsh", "github", "com", "gogo", "protobuf", "gogoproto"))
 
 
-def create_inits():
+def create_inits(sdk_major):
     init_files = [
             j("bblfsh", "github", "__init__.py"),
             j("bblfsh", "github", "com", "__init__.py"),
@@ -120,9 +121,9 @@ def create_inits():
             j("bblfsh", "gopkg", "in", "__init__.py"),
             j("bblfsh", "gopkg", "in", "bblfsh", "__init__.py"),
             j("bblfsh", "gopkg", "in", "bblfsh", "sdk", "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "uast", "__init__.py"),
-            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", SDK_MAJOR, "protocol", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "uast", "__init__.py"),
+            j("bblfsh", "gopkg", "in", "bblfsh", "sdk", sdk_major, "protocol", "__init__.py"),
     ]
 
     for f in init_files:
@@ -133,20 +134,44 @@ def get_libuast():
     if not GET_LIBUAST:
         return
 
-    untar_url(
-        "https://github.com/bblfsh/libuast/archive/{LIBUAST_VERSION}/{LIBUAST_VERSION}.tar.gz"
-        .format(**FORMAT_ARGS))
-    mv("libuast-" + LIBUAST_VERSION.replace("v", ""), "libuast")
-    cpr(j("libuast", "src"), j("bblfsh", "libuast"))
-    rimraf("libuast")
+    gopath = os.environ.get("GOPATH")
+    if not gopath:
+        gopath = subprocess.check_output(
+                ['go', 'env', 'GOPATH']).decode("utf-8").strip()
+    if not gopath:
+        log.error("GOPATH must be set")
+        sys.exit(1)
+
+    py_dir = os.getcwd()
+    local_libuast = j(py_dir, "bblfsh", "libuast")
+    mkdir(local_libuast)
+
+    # Retrieve libuast
+    untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (LIBUAST_VERSION, LIBUAST_ARCH))
+    mv(LIBUAST_ARCH, local_libuast)
 
 
-def proto_download():
-    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_VERSION)
-    sdkdir = "sdk-" + SDK_VERSION[1:]
-    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_MAJOR}")
-    cp(j(sdkdir, "protocol", "generated.proto"), j(destdir, "protocol", "generated.proto"))
-    cp(j(sdkdir, "uast", "generated.proto"), j(destdir, "uast", "generated.proto"))
+def proto_download_v1():
+    url = "https://github.com/bblfsh/sdk/archive/%s.tar.gz" % SDK_V1_VERSION
+    untar_url(url)
+    sdkdir = "sdk-" + SDK_V1_VERSION[1:]
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V1_MAJOR}")
+    cp(j(sdkdir, "protocol", "generated.proto"),
+        j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "generated.proto"),
+        j(destdir, "uast", "generated.proto"))
+    rimraf(sdkdir)
+
+
+def proto_download_v2():
+    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz"
+              % SDK_V2_VERSION)
+    sdkdir = "sdk-" + SDK_V2_VERSION[1:]
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V2_MAJOR}")
+    cp(j(sdkdir, "protocol", "driver.proto"),
+       j(destdir, "protocol", "generated.proto"))
+    cp(j(sdkdir, "uast", "role", "generated.proto"),
+       j(destdir, "uast", "generated.proto"))
     rimraf(sdkdir)
 
 
@@ -177,23 +202,33 @@ def proto_compile():
     def protoc(proto_file, grpc=False):
         main_args = [protoc_module.__file__, "--python_out=bblfsh"]
         target_dir = j("bblfsh", *os.path.dirname(proto_file).split("."))
+
         if grpc:
             # using "." creates "gopkg.in" instead of "gopkg/in" directories
             main_args += ["--grpc_python_out=" + target_dir]
+
         main_args += ["-Iproto", sysinclude, j("proto", proto_file)]
-        log.info("%s -m grpc.tools.protoc " + " ".join(main_args[1:]), sys.executable)
+        log.info("%s -m grpc.tools.protoc " +
+                 " ".join(main_args[1:]), sys.executable)
         protoc_module.main(main_args)
+
         if grpc:
             # we need to move the file back to grpc_out
             grpc_garbage_dir = None
             target = j(target_dir, "generated_pb2_grpc.py")
+
             for root, dirnames, filenames in os.walk(target_dir):
                 for filename in filenames:
-                    if filename == "generated_pb2_grpc.py" and grpc_garbage_dir is not None:
+
+                    if filename == "generated_pb2_grpc.py" and\
+                            grpc_garbage_dir is not None:
                         mv(j(root, filename), target)
+
                 if os.path.samefile(root, target_dir):
                     grpc_garbage_dir = j(root, dirnames[0])
-            rimraf(grpc_garbage_dir)
+
+            if grpc_garbage_dir:
+                rimraf(grpc_garbage_dir)
 
             # grpc ignores "in" and we need to patch the import path
             def grpc_replacer(match):
@@ -215,20 +250,31 @@ def proto_compile():
               (from_import_re, from_import_replacer),
               (importlib_import_re, importlib_import_replacer))
 
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "protocol", "generated.proto"), True)
     protoc(j("github.com", "gogo", "protobuf", "gogoproto", "gogo.proto"))
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_MAJOR, "uast", "generated.proto"))
+
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "protocol", "generated.proto"), True)
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "uast", "generated.proto"))
+
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "uast", "generated.proto"))
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "protocol", "generated.proto"), True)
 
 
 def do_get_deps():
     get_libuast()
-    create_dirs()
-    create_inits()
-    proto_download()
+
+    create_dirs(SDK_V1_MAJOR)
+    create_dirs(SDK_V2_MAJOR)
+
+    create_inits(SDK_V1_MAJOR)
+    create_inits(SDK_V2_MAJOR)
+
+    proto_download_v1()
+    proto_download_v2()
     proto_compile()
 
 
 def clean():
+    rimraf("build")
     rimraf("gopkg.in")
     rimraf(j("bblfsh", "github"))
     rimraf(j("bblfsh", "gopkg"))
@@ -237,9 +283,12 @@ def clean():
 
 
 def main():
-    # The --global-uast flag allows to install the python driver using the installed uast library
+    # The --global-uast flag allows to install the python driver
+    # using the installed uast library
     if "--log" in sys.argv:
         logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.ERROR)
 
     if "--getdeps" in sys.argv:
         do_get_deps()
@@ -249,16 +298,27 @@ def main():
         clean()
         sys.exit()
 
+    libraries = []
+    static_lib_dir = j("bblfsh", "libuast")
+    static_libraries = ["{}/libuast".format(static_lib_dir)]
+
+    if sys.platform == 'win32':
+        libraries.extend(static_libraries)
+        libraries.extend(["legacy_stdio_definitions", "winmm", "ws2_32"])
+        extra_objects = []
+    else:  # POSIX
+        extra_objects = ['{}.a'.format(l) for l in static_libraries]
+
     libuast_module = Extension(
         "bblfsh.pyuast",
         libraries=libraries,
-        library_dirs=["/usr/lib", "/usr/local/lib"],
         extra_compile_args=["-std=c++11"],
-        include_dirs=[j("bblfsh", "libuast"), "/usr/local/include", "/usr/local/include/libxml2",
-                      "/usr/include", "/usr/include/libxml2"], sources=sources)
+        extra_objects=extra_objects,
+        include_dirs=[j("bblfsh", "libuast")],
+        sources=sources)
 
     setup(
-        cmdclass = {
+        cmdclass={
             "build_ext": CustomBuildExt,
         },
         name="bblfsh",
@@ -272,7 +332,8 @@ def main():
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],
-        install_requires=["grpcio>=1.13.0,<2.0", "grpcio-tools>=1.13.0,<2.0", "docker", "protobuf>=3.4.0"],
+        install_requires=["grpcio>=1.13.0", "grpcio-tools>=1.13.0",
+                          "docker", "protobuf>=3.4.0"],
         package_data={"": ["LICENSE", "README.md"]},
         ext_modules=[libuast_module],
         classifiers=[
@@ -286,7 +347,8 @@ def main():
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Topic :: Software Development :: Libraries"
-        ]
+        ],
+        zip_safe=False,
     )
 
 
