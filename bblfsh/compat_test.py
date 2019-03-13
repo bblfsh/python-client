@@ -141,7 +141,7 @@ class BblfshTests(unittest.TestCase):
                             "count(//uast:Positions/end/uast:Position[@col=49])")
         self.assertEqual(int(res), 2)
 
-    # get_str() already tested by testFiltertoken
+    # get_str() already tested by testFilterToken
 
     def testRoleIdName(self):
         self.assertEqual(role_id(role_name(1)), 1)
@@ -152,7 +152,6 @@ class BblfshTests(unittest.TestCase):
         root = Node()
         root.internal_type = 'root'
         root.start_position.offset = 0
-        root.start_position.line = 0
 
         son1 = Node()
         son1.internal_type = 'son1'
@@ -214,14 +213,13 @@ class BblfshTests(unittest.TestCase):
         n._internal_node["foo"] = "bar"
         self.assertEqual(n.properties["foo"], "bar")
 
-    # FIXME(juanjux): fails
-    # def testIteratorPositionOrder(self):
-    #     root = self._itTestTree()
-    #     it = iterator(root, TreeOrder.POSITION_ORDER)
-    #     self.assertIsNotNone(it)
-    #     expanded = [node.internal_type for node in it]
-    #     self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1',
-    #                                     'son1_2', 'son2_2', 'son2'])
+    def testIteratorPositionOrder(self):
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.POSITION_ORDER)
+        self.assertIsNotNone(it)
+        expanded = [node.internal_type for node in it]
+        self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1',
+                                        'son1_2', 'son2_2', 'son2'])
 
     def testFilterInsideIter(self):
         root = self.client.parse(__file__).uast
