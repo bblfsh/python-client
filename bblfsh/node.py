@@ -3,9 +3,9 @@ from collections import MutableSequence
 from typing import Union, List, cast, Optional, Any
 
 from bblfsh.pyuast import Context, NodeExt, uast
-from bblfsh.result_context import ResultMultiType
+from bblfsh.type_aliases import ResultMultiType
 
-class ResultTypeException(Exception):
+class NodeTypedGetException(Exception):
     pass
 
 class CompatPosition:
@@ -86,18 +86,18 @@ EMPTY_NODE_DICT = {
     "@children": [],
 }
 
+
 class NodeInstancingException(Exception):
     pass
 
+
 # XXX check if I can totally remove ctx from this
 class Node:
-    def __init__(self, node_ext: NodeExt = None, value: ResultMultiType=None,
-                 ctx: Context = None) -> None:
+    def __init__(self, node_ext: NodeExt = None, value: ResultMultiType=None) -> None:
 
         if node_ext and (value is not None):
             raise NodeInstancingException("Node creation can have node_ext or value, not both")
 
-        self._node_ext = node_ext
         if node_ext is None:
             self._internal_node = value if (value is not None) \
                 else copy.deepcopy(EMPTY_NODE_DICT)
@@ -106,28 +106,21 @@ class Node:
                                           % str(type(node_ext)))
         else:
             # generate self._internal_node from the NodeExt
-            self._ensure_load()
+            self._internal_node = node_ext.load()
 
         if isinstance(self._internal_node, dict):
             self._load_children()
 
-        self._ctx = ctx if ctx is not None else uast()
-
     def _load_children(self) -> None:
         "Get all properties of type node or dict and load them into the list"
         d = self.get_dict()
-        children = d["@children"]
+        children = d.get("@children", [])
         for k, v in d.items():
-            if k in ["@children", "@pos"]:
+            if k in ["@children", "@pos", "@role", "@type"]:
                 continue
+            # XXX get also dict/Node children on a list!
             if type(v) in [Node, dict]:
                 children.append(v)
-
-    def _ensure_load(self) -> None:
-        if self._node_ext is not None:
-            self._internal_node = self._node_ext.load()
-        if isinstance(self._internal_node, dict):
-            self._internal_node["@children"] = self._internal_node.get("@children", [])
 
     def __str__(self) -> str:
         return str(self.get())
@@ -136,14 +129,11 @@ class Node:
         return repr(self.get())
 
     def get(self) -> ResultMultiType:
-        self._ensure_load()
         return self._internal_node
 
     def _get_typed(self, *type_list: type) -> ResultMultiType:
-        self._ensure_load()
-
         if type(self._internal_node) not in type_list:
-            raise ResultTypeException("Expected {} result, but type is '{}'"
+            raise NodeTypedGetException("Expected {} result, but type is '{}'"
                                       .format(str(type_list), type(self._internal_node)))
         return self._internal_node
 

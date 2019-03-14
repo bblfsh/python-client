@@ -8,8 +8,8 @@ from bblfsh import (BblfshClient, iterator, TreeOrder,
                     Modes, role_id, role_name)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
-from bblfsh.result_context import (Node, NodeIterator,
-                                   ResultContext, ResultTypeException)
+from bblfsh.node import NodeTypedGetException
+from bblfsh.result_context import (Node, NodeIterator, ResultContext)
 from bblfsh.pyuast import uast
 
 
@@ -182,7 +182,7 @@ class BblfshTests(unittest.TestCase):
     def testFilterBadType(self) -> None:
         ctx = self._parse_fixture()
         res = next(ctx.filter("count(//uast:Positions/end/uast:Position[@col=49])"))
-        self.assertRaises(ResultTypeException, res.get_str)
+        self.assertRaises(NodeTypedGetException, res.get_str)
 
     def testRoleIdName(self) -> None:
         self.assertEqual(role_id(role_name(1)), 1)

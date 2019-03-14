@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Union, List, Any
+from typing import Union, List, Any, Optional
 
 import grpc
 
@@ -30,13 +30,12 @@ class CompatParseResponse:
         self._filename = filename
 
     @property
-    def uast(self) -> 'CompatNodeIterator':
+    def uast(self) -> Node:
         return self._res_context.uast
 
     @property
-    def ast(self) -> 'CompatNodeIterator':
+    def ast(self) -> Node:
         return self._res_context.ast
-        # return self.uast
 
     @property
     def ctx(self) -> ResultContext:
@@ -114,12 +113,14 @@ class CompatNodeIterator:
             nodeit: NodeIterator,
             only_nodes: bool = False
     ) -> None:
+        # XXX Remove
+        if not isinstance(nodeit, NodeIterator):
+            raise Exception("First argument to CompatNodeIterator is of type: %s" % str(type(nodeit)))
         self._nodeit = nodeit
-        self._ctx = nodeit._ctx
         self._only_nodes = only_nodes
         # Used to forward calls of the old Node object
         # Check if this, and properties(), are needed
-        self._last_node = None
+        self._last_node: Optional[Node] = None
 
     def __iter__(self) -> 'CompatNodeIterator':
         return self
@@ -147,7 +148,10 @@ class CompatNodeIterator:
         return ret_val
 
     def filter(self, query: str) -> 'CompatNodeIterator':
-        return CompatNodeIterator(NodeIterator(self._ctx.filter(query), self._ctx))
+        if not self._last_node:
+            return None
+
+        return filter(self._last_node, query)
 
     @property
     def properties(self) -> dict:
@@ -164,7 +168,7 @@ def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PR
         return CompatNodeIterator(n._nodeit.iterate(order), only_nodes=True)
     elif isinstance(n, Node):
         nat_it = native_iterator(n._internal_node, order)
-        return CompatNodeIterator(NodeIterator(nat_it, n._ctx), only_nodes=True)
+        return CompatNodeIterator(NodeIterator(nat_it), only_nodes=True)
     elif isinstance(n, dict):
         nat_it = native_iterator(n, order)
         return CompatNodeIterator(NodeIterator(nat_it, uast()), only_nodes=True)
@@ -173,21 +177,27 @@ def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PR
             "iterator on non node or iterator type (%s)" % str(type(n))
         )
 
+
 class FilterTypeException(Exception):
     pass
 
+
 def filter(n: Node, query: str) -> CompatNodeIterator:
+    # XXX remove
     if not isinstance(n, Node):
         raise FilterTypeException("Filter on non node or iterator type (%s)" % str(type(n)) )
+
     ctx = uast()
     return CompatNodeIterator(NodeIterator(ctx.filter(query, n._internal_node), ctx))
 
 
 def filter_nodes(n: Node, query: str) -> CompatNodeIterator:
-    return CompatNodeIterator(filter(n, query), only_nodes=True)
+    return CompatNodeIterator(filter(n, query)._nodeit, only_nodes=True)
+
 
 class TypedQueryException(Exception):
     pass
+
 
 def _scalariter2item(n: Node, query: str, wanted_type: type) -> Any:
     rlist = list(filter(n, query))

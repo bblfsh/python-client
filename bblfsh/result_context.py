@@ -19,9 +19,6 @@ class GetOnEmptyNodeException(Exception):
     pass
 
 
-ResultMultiType = Union[dict, int, float, bool, str, None]
-
-
 class ResultContext:
     def __init__(self, grpc_response: ParseResponse = None) -> None:
         if grpc_response:
@@ -55,11 +52,11 @@ class ResultContext:
 
     @property
     def uast(self) -> Node:
-        return Node(node_ext=self._ctx.root(), ctx=self._ctx)
+        return Node(node_ext=self._ctx.root())
 
     @property
     def ast(self) -> Node:
-        return Node(node_ext=self._ctx.root(), ctx=self._ctx)
+        return Node(node_ext=self._ctx.root())
 
     def __str__(self) -> str:
         return str(self.get_all())

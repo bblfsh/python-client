@@ -7,7 +7,7 @@ import docker
 
 from bblfsh.compat import (
     filter as xpath_filter, role_id, iterator, role_name, Node, TreeOrder, filter_bool,
-    filter_number, WrongTypeException, CompatNodeIterator
+    filter_number, FilterTypeException, CompatNodeIterator
 )
 from bblfsh.compat import CompatBblfshClient as BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running
@@ -65,12 +65,13 @@ class BblfshTests(unittest.TestCase):
         self._validate_resp(resp)
 
     def testBrokenFilter(self):
-        with self.assertRaises(WrongTypeException):
+        with self.assertRaises(FilterTypeException):
             xpath_filter(0, "foo")
 
     def testFilterInternalType(self):
         node = Node()
         node.internal_type = 'a'
+        res = xpath_filter(node, "//a")
         self.assertTrue(any(xpath_filter(node, "//a")))
         self.assertFalse(any(xpath_filter(node, "//b")))
 
@@ -240,15 +241,13 @@ class BblfshTests(unittest.TestCase):
 
         self.assertDictEqual(val_it1, val_it2)
 
-    # XXX uncomment
-    """
     def testManyFilters(self):
         root = self._parse_fixture().uast
         root.properties['k1'] = 'v2'
         root.properties['k2'] = 'v1'
 
         before = resource.getrusage(resource.RUSAGE_SELF)
-        for _ in range(1000):
+        for i in range(1000):
             xpath_filter(root, "//*[@roleIdentifier]")
 
         after = resource.getrusage(resource.RUSAGE_SELF)
@@ -258,13 +257,14 @@ class BblfshTests(unittest.TestCase):
 
     def testManyParses(self):
         before = resource.getrusage(resource.RUSAGE_SELF)
-        for _ in range(100):
+        # XXX change to 100 again
+        for _ in range(2000):
             self.client.parse(self.fixtures_file).uast
-
         after = resource.getrusage(resource.RUSAGE_SELF)
-
         self.assertLess(after[2] / before[2], 2.0)
 
+    # XXX uncomment
+    """
     def testManyParsesAndFilters(self):
         before = resource.getrusage(resource.RUSAGE_SELF)
         for _ in range(100):
