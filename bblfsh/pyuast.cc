@@ -295,7 +295,6 @@ static void PyUastIterExt_dealloc(PyObject *self) {
   auto it = (PyUastIterExt *)self;
   delete(it->iter);
 
-  Py_XDECREF(it->pyCtx);
   if (it->freeCtx && it->ctx) {
       delete(it->ctx);
   }
@@ -885,7 +884,6 @@ static void PyUastIter_dealloc(PyObject *self) {
   auto it = (PyUastIter *)self;
   delete(it->iter);
 
-  Py_XDECREF(it->pyCtx);
   if (it->freeCtx && it->ctx) {
       delete(it->ctx);
   }
