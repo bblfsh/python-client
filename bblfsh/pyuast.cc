@@ -103,6 +103,7 @@ extern "C"
 typedef struct {
   PyObject_HEAD
   ContextExt *ctx;
+  PyObject *pyCtx;
   uast::Iterator<NodeHandle> *iter;
   bool freeCtx;
 } PyUastIterExt;
@@ -269,8 +270,7 @@ public:
         NodeHandle unode = toHandle(node);
         if (unode == 0) unode = ctx->RootNode();
 
-        uast::Iterator<NodeHandle> *it = ctx->Filter(unode, query);
-
+        auto it = ctx->Filter(unode, query);
         return newIter(it, false);
     }
 
@@ -295,7 +295,10 @@ static void PyUastIterExt_dealloc(PyObject *self) {
   auto it = (PyUastIterExt *)self;
   delete(it->iter);
 
-  if (it->freeCtx && it->ctx) delete(it->ctx);
+  Py_XDECREF(it->pyCtx);
+  if (it->freeCtx && it->ctx) {
+      delete(it->ctx);
+  }
 
   it->freeCtx = false;
   it->ctx = nullptr;
@@ -305,6 +308,7 @@ static void PyUastIterExt_dealloc(PyObject *self) {
 typedef struct {
   PyObject_HEAD
   ContextExt *p;
+  PyObject *pyCtx;
 } PythonContextExt;
 
 static void PythonContextExt_dealloc(PyObject *self) {
@@ -337,9 +341,11 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
     PyObject* it = nullptr;
     try {
         it = self->p->Filter(node, query);
+        ((PythonContextExt *)it)->pyCtx = (PyObject *)self;
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
+    Py_INCREF((PyObject *)self);
     return it;
 }
 
@@ -699,6 +705,7 @@ Node* Node::lookupOrCreate(PyObject* obj) {
 typedef struct {
   PyObject_HEAD
   Context *ctx;
+  PyObject *pyCtx;
   uast::Iterator<Node*> *iter;
   bool freeCtx;
 } PyUastIter;
@@ -878,7 +885,10 @@ static void PyUastIter_dealloc(PyObject *self) {
   auto it = (PyUastIter *)self;
   delete(it->iter);
 
-  if (it->freeCtx && it->ctx) delete(it->ctx);
+  Py_XDECREF(it->pyCtx);
+  if (it->freeCtx && it->ctx) {
+      delete(it->ctx);
+  }
 
   it->freeCtx = false;
   it->ctx = nullptr;
@@ -888,6 +898,7 @@ static void PyUastIter_dealloc(PyObject *self) {
 typedef struct {
   PyObject_HEAD
   Context *p;
+  PyObject *pyCtx;
 } PythonContext;
 
 static void PythonContext_dealloc(PyObject *self) {
@@ -909,9 +920,11 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
     PyObject* it = nullptr;
     try {
         it = self->p->Filter(node, query);
+        ((PythonContext *)it)->pyCtx = (PyObject *)self;
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
+    Py_INCREF((PyObject *)self);
     return it;
 }
 

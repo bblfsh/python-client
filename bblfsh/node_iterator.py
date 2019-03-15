@@ -6,19 +6,17 @@ from bblfsh.tree_order import TreeOrder
 from bblfsh.type_aliases import ResultMultiType
 
 
-# XXX remove ctx if removed from Node
 class NodeIterator:
-    # savedCtx prevents the context from deallocating. This is because
+    # ctx is not used but prevents the context from deallocating (bug). This is because
     # currently the IteratorExt will go away if the context from which it was
     # called does.
-    # XXX type
-    def __init__(self, iter_ext: IteratorExt, savedCtx: Context = None) -> None:
+    def __init__(self, iter_ext: IteratorExt, ctx: Context = None) -> None:
         self._iter_ext = iter_ext
         # default, can be changed on self.iterate()
         self._order: TreeOrder = TreeOrder.PRE_ORDER
         # saves the last node for re-iteration with iterate()
         self._last_node: Optional[Node] = None
-        self._ctx = savedCtx
+        self.ctx = ctx
 
     def __iter__(self) -> 'NodeIterator':
         return self
@@ -39,4 +37,4 @@ class NodeIterator:
 
         TreeOrder.check_order(order)
         self._order = order
-        return NodeIterator(iterator((self._last_node._node_ext), order), self._ctx)
+        return NodeIterator(iterator((self._last_node.node_ext), order), self.ctx)

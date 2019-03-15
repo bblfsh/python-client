@@ -119,7 +119,7 @@ class BblfshTests(unittest.TestCase):
 
     def testFilterProperties(self) -> None:
         ctx = uast()
-        obj = {"k1":"v1", "k2": "v2"}
+        obj = {"k1": "v1", "k2": "v2"}
         self.assertTrue(any(ctx.filter("/*[@k1='v1']", obj)))
         self.assertTrue(any(ctx.filter("/*[@k2='v2']", obj)))
         self.assertFalse(any(ctx.filter("/*[@k2='v1']", obj)))

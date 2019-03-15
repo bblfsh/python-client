@@ -7,7 +7,7 @@ import docker
 
 from bblfsh.compat import (
     filter as xpath_filter, role_id, iterator, role_name, Node, TreeOrder, filter_bool,
-    filter_number, FilterTypeException, CompatNodeIterator
+    filter_number, CompatNodeIterator
 )
 from bblfsh.compat import CompatBblfshClient as BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running
@@ -48,7 +48,7 @@ class BblfshTests(unittest.TestCase):
 
     def testNativeParse(self):
         reply = self.client.native_parse(__file__)
-        assert(reply.ast)
+        assert reply.ast
 
     def testNonUTF8ParseError(self):
         with self.assertRaises(NonUTF8ContentException):
@@ -65,13 +65,12 @@ class BblfshTests(unittest.TestCase):
         self._validate_resp(resp)
 
     def testBrokenFilter(self):
-        with self.assertRaises(FilterTypeException):
+        with self.assertRaises(AttributeError):
             xpath_filter(0, "foo")
 
     def testFilterInternalType(self):
         node = Node()
         node.internal_type = 'a'
-        res = xpath_filter(node, "//a")
         self.assertTrue(any(xpath_filter(node, "//a")))
         self.assertFalse(any(xpath_filter(node, "//b")))
 
@@ -85,14 +84,18 @@ class BblfshTests(unittest.TestCase):
         uast = self._parse_fixture().uast
         it = xpath_filter(uast, "//*[@role='Identifier']")
         self.assertIsInstance(it, CompatNodeIterator)
-
-        l = list(it)
-        self.assertGreater(len(l), 0)
+        li = list(it)
+        self.assertGreater(len(li), 0)
 
         it = xpath_filter(uast, "//*[@role='Friend']")
         self.assertIsInstance(it, CompatNodeIterator)
-        l = list(it)
-        self.assertEqual(len(l), 0)
+        li = list(it)
+        self.assertEqual(len(li), 0)
+
+        it = xpath_filter(uast, "//*[@role='Identifier' and not(@role='Friend')]")
+        self.assertIsInstance(it, CompatNodeIterator)
+        li = list(it)
+        self.assertGreater(len(li), 0)
 
     def testFilterStartOffset(self):
         uast = self._parse_fixture().uast
@@ -211,7 +214,7 @@ class BblfshTests(unittest.TestCase):
 
     def testAddToNode(self):
         n = Node()
-        n._internal_node["foo"] = "bar"
+        n.internal_node["foo"] = "bar"
         self.assertEqual(n.properties["foo"], "bar")
 
     def testIteratorPositionOrder(self):
@@ -232,7 +235,9 @@ class BblfshTests(unittest.TestCase):
     def testItersMixingIterations(self):
         root = self.client.parse(__file__).uast
         it = iterator(root, TreeOrder.PRE_ORDER)
-        next(it); next(it); next(it)
+        next(it)
+        next(it)
+        next(it)
         n = next(it)
         it2 = iterator(n, TreeOrder.PRE_ORDER)
         next(it2)
@@ -257,14 +262,12 @@ class BblfshTests(unittest.TestCase):
 
     def testManyParses(self):
         before = resource.getrusage(resource.RUSAGE_SELF)
-        # XXX change to 100 again
-        for _ in range(2000):
-            self.client.parse(self.fixtures_file).uast
+        for _ in range(100):
+            _ = self.client.parse(self.fixtures_file).uast
+
         after = resource.getrusage(resource.RUSAGE_SELF)
         self.assertLess(after[2] / before[2], 2.0)
 
-    # XXX uncomment
-    """
     def testManyParsesAndFilters(self):
         before = resource.getrusage(resource.RUSAGE_SELF)
         for _ in range(100):
@@ -274,7 +277,6 @@ class BblfshTests(unittest.TestCase):
         after = resource.getrusage(resource.RUSAGE_SELF)
 
         self.assertLess(after[2] / before[2], 4.0)
-    """
 
     def testSupportedLanguages(self):
         res = self.client.supported_languages()
@@ -283,6 +285,26 @@ class BblfshTests(unittest.TestCase):
             for key in ('language', 'version', 'status', 'features'):
                 self.assertTrue(hasattr(l, key))
                 self.assertIsNotNone(getattr(l, key))
+
+    def testChildren(self):
+        n = Node()
+        n.internal_type = 'root'
+        c1 = {"@type": "child1"}
+        n.properties["child1"] = c1
+        self.assertDictEqual(n.children[0], c1)
+
+        c2 = {"@type": "child2"}
+        n.children.append(c2)
+        self.assertDictEqual(n.children[1], c2)
+        n.children.append(c2)
+        self.assertDictEqual(n.children[2], c2)
+
+        l = [{"@type": "list_child1"}, {"@type": "list_child2"}]
+        n.properties["some_list"] = l
+        self.assertDictEqual(n.children[3], l[0])
+        self.assertDictEqual(n.children[4], l[1])
+
+
 
 if __name__ == "__main__":
     unittest.main()

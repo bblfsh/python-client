@@ -1,5 +1,3 @@
-from typing import Union, Optional
-
 from bblfsh.aliases import ParseResponse
 from bblfsh.node import Node
 from bblfsh.node_iterator import NodeIterator
@@ -27,20 +25,20 @@ class ResultContext:
                     [error.text for error in grpc_response.errors])
                 )
             self._response = grpc_response
-            self._ctx = decode(grpc_response.uast, format=0)
+            self.ctx = decode(grpc_response.uast, format=0)
         else:
             self._response = None
-            self._ctx = uast()
+            self.ctx = uast()
 
     def filter(self, query: str) -> NodeIterator:
-        return NodeIterator(self._ctx.filter(query), self._ctx)
+        return NodeIterator(self.ctx.filter(query), self.ctx)
 
     def get_all(self) -> dict:
-        return self._ctx.load()
+        return self.ctx.load()
 
     def iterate(self, order: int) -> NodeIterator:
         TreeOrder.check_order(order)
-        return NodeIterator(iterator(self._ctx.root(), order), self._ctx)
+        return NodeIterator(iterator(self.ctx.root(), order), self.ctx)
 
     @property
     def language(self) -> str:
@@ -52,11 +50,11 @@ class ResultContext:
 
     @property
     def uast(self) -> Node:
-        return Node(node_ext=self._ctx.root())
+        return Node(node_ext=self.ctx.root())
 
     @property
     def ast(self) -> Node:
-        return Node(node_ext=self._ctx.root())
+        return Node(node_ext=self.ctx.root())
 
     def __str__(self) -> str:
         return str(self.get_all())

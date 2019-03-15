@@ -2,11 +2,13 @@ import copy
 from collections import MutableSequence
 from typing import Union, List, cast, Optional, Any
 
-from bblfsh.pyuast import Context, NodeExt, uast
+from bblfsh.pyuast import NodeExt
 from bblfsh.type_aliases import ResultMultiType
+
 
 class NodeTypedGetException(Exception):
     pass
+
 
 class CompatPosition:
     """
@@ -79,6 +81,7 @@ class CompatChildren(MutableSequence):
     def __str__(self) -> str:
         return str(self._children)
 
+
 EMPTY_NODE_DICT = {
     "@type": "",
     "@token": "",
@@ -91,36 +94,49 @@ class NodeInstancingException(Exception):
     pass
 
 
-# XXX check if I can totally remove ctx from this
 class Node:
-    def __init__(self, node_ext: NodeExt = None, value: ResultMultiType=None) -> None:
+    def __init__(self, node_ext: NodeExt = None, value: ResultMultiType = None) -> None:
 
         if node_ext and (value is not None):
             raise NodeInstancingException("Node creation can have node_ext or value, not both")
 
         if node_ext is None:
-            self._internal_node = value if (value is not None) \
+            self.internal_node = value if (value is not None) \
                 else copy.deepcopy(EMPTY_NODE_DICT)
         elif not isinstance(node_ext, NodeExt):
             raise NodeInstancingException("Node instanced with a non NodeExt first argument: %s"
                                           % str(type(node_ext)))
         else:
-            # generate self._internal_node from the NodeExt
-            self._internal_node = node_ext.load()
+            # generate self.internal_node from the NodeExt
+            self.internal_node = node_ext.load()
 
-        if isinstance(self._internal_node, dict):
+        self.node_ext = node_ext
+
+        if isinstance(self.internal_node, dict):
             self._load_children()
 
+    # This is for v1 "node.children" compatibility. It will update the children
+    # property with the dict or Node objects in properties or list/tuple properties
+    # when .children is accessed (because the user could change the node using get_dict()
+    # or .properties).
+    # Also, all these " in children" are O(1) so this will be slow for frequently accessing
+    # the children property on big nodes.
     def _load_children(self) -> None:
-        "Get all properties of type node or dict and load them into the list"
+        """Get all properties of type node or dict and load them into the list"""
         d = self.get_dict()
         children = d.get("@children", [])
         for k, v in d.items():
-            if k in ["@children", "@pos", "@role", "@type"]:
+            if k in ("@children", "@pos", "@role", "@type"):
                 continue
-            # XXX get also dict/Node children on a list!
-            if type(v) in [Node, dict]:
-                children.append(v)
+
+            tv = type(v)
+            if tv in (Node, dict):
+                if v not in children:
+                    children.append(v)
+            elif tv in (list, tuple):
+                # Get all node|dict types inside the list and add to children
+                children.extend([i for i in v if type(i) in (Node, dict) and i not in children])
+            # else ignore it
 
     def __str__(self) -> str:
         return str(self.get())
@@ -129,13 +145,13 @@ class Node:
         return repr(self.get())
 
     def get(self) -> ResultMultiType:
-        return self._internal_node
+        return self.internal_node
 
     def _get_typed(self, *type_list: type) -> ResultMultiType:
-        if type(self._internal_node) not in type_list:
+        if type(self.internal_node) not in type_list:
             raise NodeTypedGetException("Expected {} result, but type is '{}'"
-                                      .format(str(type_list), type(self._internal_node)))
-        return self._internal_node
+                                        .format(str(type_list), type(self.internal_node)))
+        return self.internal_node
 
     def get_bool(self) -> bool:
         return cast(bool, self._get_typed(bool))
@@ -184,6 +200,7 @@ class Node:
 
     @property
     def children(self) -> CompatChildren:
+        self._load_children()
         return CompatChildren(self)
 
     @property
@@ -229,5 +246,3 @@ class Node:
         self._add_position()
         end = self.get_dict()["@pos"]["end"]
         return CompatPosition(end)
-
-

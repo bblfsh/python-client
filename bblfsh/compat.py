@@ -6,7 +6,9 @@ import grpc
 
 import bblfsh.client as bcli
 from bblfsh import role_id, role_name
-from bblfsh.result_context import ResultContext, NodeIterator, Node
+from bblfsh.node import Node
+from bblfsh.node_iterator import NodeIterator
+from bblfsh.result_context import ResultContext
 from bblfsh.aliases import (
     ParseRequest, ParseResponse, DriverStub, ProtocolServiceStub,
     VersionRequest, SupportedLanguagesRequest, ModeType,
@@ -54,10 +56,9 @@ class CompatParseResponse:
     def filename(self) -> str:
         return self._filename
 
-    # FIXME(juanjux) get type
     @property
     def DESCRIPTOR(self) -> Any:
-        return self._res_context._ctx.DESCRIPTOR
+        return self._res_context.ctx.DESCRIPTOR
 
     @property
     def errors(selfs) -> List:
@@ -88,7 +89,7 @@ class CompatBblfshClient:
               timeout: float = None) -> CompatParseResponse:
 
         return self._parse(filename, language, contents, timeout,
-                            Mode.Value('ANNOTATED'))
+                           Mode.Value('ANNOTATED'))
 
     def native_parse(self, filename: str, language: str = None,
                      contents: str = None,
@@ -113,9 +114,6 @@ class CompatNodeIterator:
             nodeit: NodeIterator,
             only_nodes: bool = False
     ) -> None:
-        # XXX Remove
-        if not isinstance(nodeit, NodeIterator):
-            raise Exception("First argument to CompatNodeIterator is of type: %s" % str(type(nodeit)))
         self._nodeit = nodeit
         self._only_nodes = only_nodes
         # Used to forward calls of the old Node object
@@ -129,25 +127,24 @@ class CompatNodeIterator:
         next_val = next(self._nodeit)
 
         is_node = isinstance(next_val, Node)
-        val = next_val._internal_node if is_node else next_val
+        val = next_val.internal_node if is_node else next_val
 
         # Skip positions and non dicts/lists, the later if only_nodes = True
         skip = False
         if isinstance(val, dict):
             if "@type" not in val or val["@type"] == "uast:Positions":
                 skip = True
-        # elif self._only_nodes and not isinstance(val, list):
         elif self._only_nodes:
             skip = True
 
         if skip:
-            val = self.__next__()._internal_node
+            val = self.__next__().internal_node
 
         ret_val = next_val if is_node else Node(value=val)
         self._last_node = ret_val
         return ret_val
 
-    def filter(self, query: str) -> 'CompatNodeIterator':
+    def filter(self, query: str) -> Optional['CompatNodeIterator']:
         if not self._last_node:
             return None
 
@@ -167,7 +164,7 @@ def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PR
     if isinstance(n, CompatNodeIterator):
         return CompatNodeIterator(n._nodeit.iterate(order), only_nodes=True)
     elif isinstance(n, Node):
-        nat_it = native_iterator(n._internal_node, order)
+        nat_it = native_iterator(n.internal_node, order)
         return CompatNodeIterator(NodeIterator(nat_it), only_nodes=True)
     elif isinstance(n, dict):
         nat_it = native_iterator(n, order)
@@ -178,17 +175,9 @@ def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PR
         )
 
 
-class FilterTypeException(Exception):
-    pass
-
-
 def filter(n: Node, query: str) -> CompatNodeIterator:
-    # XXX remove
-    if not isinstance(n, Node):
-        raise FilterTypeException("Filter on non node or iterator type (%s)" % str(type(n)) )
-
     ctx = uast()
-    return CompatNodeIterator(NodeIterator(ctx.filter(query, n._internal_node), ctx))
+    return CompatNodeIterator(NodeIterator(ctx.filter(query, n.internal_node), ctx))
 
 
 def filter_nodes(n: Node, query: str) -> CompatNodeIterator:
@@ -207,7 +196,7 @@ def _scalariter2item(n: Node, query: str, wanted_type: type) -> Any:
 
     value = rlist[0]
     if isinstance(value, Node):
-        value = value._internal_node
+        value = value.internal_node
 
     value_type = type(value)
     if wanted_type == float and value_type == int:
