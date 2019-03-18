@@ -17,9 +17,7 @@ from bblfsh.aliases import (
 from bblfsh.pyuast import uast, iterator as native_iterator
 from bblfsh.tree_order import TreeOrder
 
-if "BBLFSH_COMPAT_SHUTUP" not in os.environ:
-    print("Warning: using deprecated bblfsh v1 compatibility layer.",
-          file=sys.stderr)
+print("Warning: using deprecated bblfsh v1 compatibility layer.", file=sys.stderr)
 
 
 class WrongTypeException(Exception):
@@ -109,15 +107,10 @@ class CompatBblfshClient:
 
 
 class CompatNodeIterator:
-    def __init__(
-            self,
-            nodeit: NodeIterator,
-            only_nodes: bool = False
-    ) -> None:
+    def __init__(self, nodeit: NodeIterator, only_nodes: bool = False) -> None:
         self._nodeit = nodeit
         self._only_nodes = only_nodes
         # Used to forward calls of the old Node object
-        # Check if this, and properties(), are needed
         self._last_node: Optional[Node] = None
 
     def __iter__(self) -> 'CompatNodeIterator':
@@ -158,8 +151,8 @@ class CompatNodeIterator:
             return {}
 
 
-def iterator(n: Union[Node, CompatNodeIterator], order: TreeOrder = TreeOrder.PRE_ORDER)\
-        -> CompatNodeIterator:
+def iterator(n: Union[Node, CompatNodeIterator, dict],
+        order: TreeOrder = TreeOrder.PRE_ORDER) -> CompatNodeIterator:
 
     if isinstance(n, CompatNodeIterator):
         return CompatNodeIterator(n._nodeit.iterate(order), only_nodes=True)
