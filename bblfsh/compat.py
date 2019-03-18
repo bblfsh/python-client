@@ -45,7 +45,7 @@ class CompatParseResponse:
 
     @property
     def elapsed(self) -> int:
-        # FIXME(juanjux): check if the can get this or measure ourselves
+        # FIXME(juanjux): check if the caller can get this, or measure it ourselves.
         return -1
 
     @property
