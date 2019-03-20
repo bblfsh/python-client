@@ -44,7 +44,12 @@ class CompatPosition:
     def offset(self, v: int) -> None:
         self._parent_pos["offset"] = v
 
-
+# This is for v1 "node.children" compatibility. It will update the children
+# property with the dict or Node objects in properties or list/tuple properties
+# when .children is accessed (because the user could change the node using get_dict()
+# or .properties).
+# Also, all these " in children" are O(1) so this will be slow for frequently accessing
+# the children property on big nodes.
 class CompatChildren(MutableSequence):
     def __init__(self, parent: "Node") -> None:
         self._par_dict = parent.get_dict()
