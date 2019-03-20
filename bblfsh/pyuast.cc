@@ -551,6 +551,7 @@ public:
         if (!keys) return nullptr;
 
         PyObject* key = PyList_GetItem(keys, i); // borrows
+        if (!key) return nullptr;
         const char * k = PyUnicode_AsUTF8(key);
 
         std::string* s = new std::string(k);

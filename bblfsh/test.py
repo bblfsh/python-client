@@ -36,7 +36,6 @@ class BblfshTests(unittest.TestCase):
         self._validate_ctx(ctx)
         return ctx
 
-    """
     def testVersion(self) -> None:
         version = self.client.version()
         self.assertTrue(hasattr(version, "version"))
@@ -188,7 +187,6 @@ class BblfshTests(unittest.TestCase):
     def testRoleIdName(self) -> None:
         self.assertEqual(role_id(role_name(1)), 1)
         self.assertEqual(role_name(role_id("IDENTIFIER")),  "IDENTIFIER")
-    """
 
     @staticmethod
     def _itTestTree() -> dict:
@@ -258,7 +256,6 @@ class BblfshTests(unittest.TestCase):
         self.assertListEqual(expanded, ['son1_1', 'son1_2', 'son1', 'son2_1',
                                         'son2_2', 'son2', 'root'])
 
-    """
     def testIteratorLevelOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.LEVEL_ORDER)
@@ -338,7 +335,6 @@ class BblfshTests(unittest.TestCase):
             for key in ('language', 'version', 'status', 'features'):
                 self.assertTrue(hasattr(l, key))
                 self.assertIsNotNone(getattr(l, key))
-    """
 
 
 if __name__ == "__main__":

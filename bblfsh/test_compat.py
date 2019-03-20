@@ -226,7 +226,7 @@ class BblfshTests(unittest.TestCase):
                                         'son1_2', 'son2_2', 'son2'])
 
     def testFilterInsideIter(self):
-        root = self.client.parse(__file__).uast
+        root = self._parse_fixture().uast
         it = iterator(root, TreeOrder.PRE_ORDER)
         self.assertIsNotNone(it)
         for n in it:
@@ -275,7 +275,6 @@ class BblfshTests(unittest.TestCase):
             xpath_filter(root, "//*[@role='Identifier']")
 
         after = resource.getrusage(resource.RUSAGE_SELF)
-
         self.assertLess(after[2] / before[2], 4.0)
 
     def testSupportedLanguages(self):
@@ -303,6 +302,16 @@ class BblfshTests(unittest.TestCase):
         n.properties["some_list"] = l
         self.assertDictEqual(n.children[3], l[0])
         self.assertDictEqual(n.children[4], l[1])
+
+    def testChildrenFile(self):
+        root = self._parse_fixture().uast
+        self.assertEqual(len(root.children), 10)
+        n = Node()
+        n.internal_type = 'child_node'
+        root.children.append(n)
+        self.assertEqual(len(root.children), 11)
+        last = root.children[-1]
+        self.assertDictEqual(last, n.internal_node)
 
 
 

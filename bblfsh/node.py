@@ -47,7 +47,26 @@ class CompatPosition:
 
 class CompatChildren(MutableSequence):
     def __init__(self, parent: "Node") -> None:
-        self._children = parent.get_dict()["@children"]
+        self._par_dict = parent.get_dict()
+        self._children = self._sync_children()
+
+    def _sync_children(self) -> None:
+        if "_children" not in self._par_dict:
+            self._par_dict["_children"] = []
+        children = self._par_dict["_children"]
+        for k, v in self._par_dict.items():
+            if k in ("_children", "@pos", "@role", "@type"):
+                continue
+
+            tv = type(v)
+            if tv in (Node, dict):
+                if v not in children:
+                    children.append(v)
+            elif tv in (list, tuple):
+                # Get all node|dict types inside the list and add to children
+                children.extend([i for i in v if type(i) in (Node, dict) and i not in children])
+            # else ignore it
+        return children
 
     @staticmethod
     def _node2dict(n: Union['Node', dict]) -> dict:
@@ -66,13 +85,16 @@ class CompatChildren(MutableSequence):
         del self._children[idx]
 
     def __setitem__(self, idx: Union[int, slice], val: Union['Node', dict]) -> None:
-        self._children[idx] = self._node2dict(val)
+        self._par_dict["_children"].__setitem__(idx, self._node2dict(val))
+        self._children = self._sync_children()
 
     def insert(self, idx: int, val: Union['Node', dict]) -> None:
-        self._children.insert(idx, self._node2dict(val))
+        self._par_dict["_children"].insert(idx, self._node2dict(val))
+        self._children = self._sync_children()
 
     def append(self, val: Union['Node', dict]) -> None:
-        self._children.append(self._node2dict(val))
+        self._par_dict["_children"].append(self._node2dict(val))
+        self._children = self._sync_children()
 
     def extend(self, items: List[Union['Node', dict]]) -> None:
         for i in items:
@@ -111,32 +133,6 @@ class Node:
             self.internal_node = node_ext.load()
 
         self.node_ext = node_ext
-
-        if isinstance(self.internal_node, dict):
-            self._load_children()
-
-    # This is for v1 "node.children" compatibility. It will update the children
-    # property with the dict or Node objects in properties or list/tuple properties
-    # when .children is accessed (because the user could change the node using get_dict()
-    # or .properties).
-    # Also, all these " in children" are O(1) so this will be slow for frequently accessing
-    # the children property on big nodes.
-    def _load_children(self) -> None:
-        """Get all properties of type node or dict and load them into the list"""
-        d = self.get_dict()
-        children = d.get("@children", [])
-        for k, v in d.items():
-            if k in ("@children", "@pos", "@role", "@type"):
-                continue
-
-            tv = type(v)
-            if tv in (Node, dict):
-                if v not in children:
-                    children.append(v)
-            elif tv in (list, tuple):
-                # Get all node|dict types inside the list and add to children
-                children.extend([i for i in v if type(i) in (Node, dict) and i not in children])
-            # else ignore it
 
     def __str__(self) -> str:
         return str(self.get())
@@ -200,7 +196,6 @@ class Node:
 
     @property
     def children(self) -> CompatChildren:
-        self._load_children()
         return CompatChildren(self)
 
     @property
