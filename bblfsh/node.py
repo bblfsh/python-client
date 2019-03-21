@@ -48,7 +48,7 @@ class CompatPosition:
 # property with the dict or Node objects in properties or list/tuple properties
 # when .children is accessed (because the user could change the node using get_dict()
 # or .properties).
-# Also, all these " in children" are O(1) so this will be slow for frequently accessing
+# Also, all these " in children" are O(n) so this will be slow for frequently accessing
 # the children property on big nodes.
 class CompatChildren(MutableSequence):
     def __init__(self, parent: "Node") -> None:
