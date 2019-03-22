@@ -17,7 +17,7 @@ from typing import Union, List, Any, Optional
 
 import grpc
 
-import bblfsh.client as bcli
+import bblfsh.client as newbbl
 from bblfsh import role_id, role_name
 from bblfsh.node import Node
 from bblfsh.node_iterator import NodeIterator
@@ -120,7 +120,7 @@ class CompatBblfshClient:
         Connects to the specified grpc endpoint which can be specified either as
         a grpc Channel object or a connection string (like "0.0.0.0:6432").
         """
-        self._bblfsh_cli = bcli.BblfshClient(endpoint)
+        self._bblfsh_cli = newbbl.BblfshClient(endpoint)
 
         self._channel = self._bblfsh_cli._channel
         self._stub_v1 = self._bblfsh_cli._stub_v1
