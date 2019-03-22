@@ -68,7 +68,6 @@ class BblfshClient:
         :param contents: The contents of the file. IF None, it is read from \
                          filename.
         :param mode:     UAST transformation mode.
-        :param raw:      Return raw binary UAST without decoding it.
         :param timeout: The request timeout in seconds.
         :type filename: str
         :type language: str
