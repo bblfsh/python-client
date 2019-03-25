@@ -12,7 +12,7 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "3.0.0"
+VERSION = "3.0.1"
 LIBUAST_VERSION = "v3.1.0"
 LIBUAST_ARCH = "linux-amd64"
 SDK_V1_VERSION = "v1.16.1"

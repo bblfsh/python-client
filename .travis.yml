@@ -29,6 +29,7 @@ install:
   - echo "[pypi]" >> .pypirc
   - echo "username=$PYPI_USER" >> .pypirc
   - echo "password=$PYPI_PASS" >> .pypirc
+  - cd ..
   - HOME=. python setup.py sdist upload
 script:
   - python3 setup.py build_ext -i
