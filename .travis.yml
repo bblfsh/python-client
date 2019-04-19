@@ -22,6 +22,9 @@ install:
   - python3 setup.py --getdeps --log
   - pip3 install . --upgrade
   - cd bblfsh && python3 -m unittest discover && cd ..
+script:
+  - python3 setup.py build_ext -i
+after_success:
   - if [[ -z "$TRAVIS_TAG" ]]; then exit 0; fi
   - if [[ $TRAVIS_PYTHON_VERSION != '3.6' ]]; then exit 0; fi # disable double uploads to pypi
   - echo "[distutils]" > $HOME/.pypirc
@@ -31,5 +34,3 @@ install:
   - echo "username=$PYPI_USER" >> $HOME/.pypirc
   - echo "password=$PYPI_PASS" >> $HOME/.pypirc
   - python setup.py sdist upload
-script:
-  - python3 setup.py build_ext -i
