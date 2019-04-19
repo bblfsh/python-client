@@ -16,6 +16,7 @@ install:
   - docker exec bblfshd bblfshctl driver install bblfsh/python-driver:$BBLFSH_PYTHON_VERSION
   - wget https://github.com/bblfsh/client-python/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
   - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
+  - if [[ ! -z "$TRAVIS_TAG" ]]; then sed -i -e "s/^VERSION\s*=\s*\"[^\"]\+\"/VERSION = \"${TRAVIS_TAG#v}\"/g" setup.py; fi
   - pip3 install --upgrade pip
   - pip3 install -r requirements.txt
   - python3 setup.py --getdeps --log

@@ -12,7 +12,9 @@ from urllib.request import urlopen
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-VERSION = "3.0.1"
+# The VERSION line is edited automatically during deployments.
+# You may change the contents of the string, but do not otherwise edit the line.
+VERSION = "3.x.x-dev"
 LIBUAST_VERSION = "v3.1.0"
 LIBUAST_ARCH = "linux-amd64"
 SDK_V1_VERSION = "v1.16.1"
