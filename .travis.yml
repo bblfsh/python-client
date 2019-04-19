@@ -2,7 +2,7 @@ language: python
 sudo: true
 dist: xenial
 env: 
-- BBLFSHD_VERSION=v2.9.1 BBLFSH_PYTHON_VERSION=v2.3.0
+- BBLFSHD_VERSION=v2.12.1 BBLFSH_PYTHON_VERSION=v2.9.0
 services:
   - docker
 cache:

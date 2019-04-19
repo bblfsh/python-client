@@ -15,11 +15,11 @@ from setuptools.command.build_ext import build_ext
 # The VERSION line is edited automatically during deployments.
 # You may change the contents of the string, but do not otherwise edit the line.
 VERSION = "3.x.x-dev"
-LIBUAST_VERSION = "v3.1.0"
+LIBUAST_VERSION = "v3.3.0"
 LIBUAST_ARCH = "linux-amd64"
-SDK_V1_VERSION = "v1.16.1"
+SDK_V1_VERSION = "v1.17.0"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
-SDK_V2_VERSION = "v2.15.0"
+SDK_V2_VERSION = "v2.16.4"
 SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
 
 FORMAT_ARGS = globals()
