@@ -33,5 +33,3 @@ install:
   - python setup.py sdist upload
 script:
   - python3 setup.py build_ext -i
-notifications:
-  email: false
