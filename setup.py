@@ -134,14 +134,6 @@ def get_libuast():
     if not GET_LIBUAST:
         return
 
-    gopath = os.environ.get("GOPATH")
-    if not gopath:
-        gopath = subprocess.check_output(
-                ['go', 'env', 'GOPATH']).decode("utf-8").strip()
-    if not gopath:
-        log.error("GOPATH must be set")
-        sys.exit(1)
-
     py_dir = os.getcwd()
     local_libuast = j(py_dir, "bblfsh", "libuast")
     mkdir(local_libuast)
