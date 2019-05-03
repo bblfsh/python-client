@@ -15,8 +15,7 @@ from setuptools.command.build_ext import build_ext
 # The VERSION line is edited automatically during deployments.
 # You may change the contents of the string, but do not otherwise edit the line.
 VERSION = "3.x.x-dev"
-LIBUAST_VERSION = "v3.3.0"
-LIBUAST_ARCH = "linux-amd64"
+LIBUAST_VERSION = "v3.3.1"
 SDK_V1_VERSION = "v1.17.0"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
 SDK_V2_VERSION = "v2.16.4"
@@ -132,6 +131,18 @@ def create_inits(sdk_major):
         open(f, "w").close()
 
 
+def get_libuast_arch():
+    """Return the os-arch tag to use when fetching libuast.
+    """
+
+    # See https://github.com/bblfsh/client-python/issues/156.
+    if sys.platform == 'win32':
+        return 'windows-amd64'
+    elif sys.platform:
+        return sys.platform + '-amd64'
+    return 'linux-amd64'
+
+
 def get_libuast():
     if not GET_LIBUAST:
         return
@@ -141,8 +152,9 @@ def get_libuast():
     mkdir(local_libuast)
 
     # Retrieve libuast
-    untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (LIBUAST_VERSION, LIBUAST_ARCH))
-    mv(LIBUAST_ARCH, local_libuast)
+    untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (
+        LIBUAST_VERSION, get_libuast_arch()))
+    mv(get_libuast_arch(), local_libuast)
 
 
 def proto_download_v1():
