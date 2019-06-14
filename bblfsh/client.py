@@ -99,6 +99,7 @@ class BblfshClient:
 
     @staticmethod
     def _scramble_language(lang: Optional[str]) -> Optional[str]:
+        # TODO: remove once aliases are integrated
         if lang is None:
             return None
         lang = lang.lower()

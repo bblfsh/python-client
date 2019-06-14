@@ -31,7 +31,7 @@ def run_query(uast, query: str, array: bool) -> None:
     if not result_iter:
         print("Nothing found")
 
-    result_list = [x.load() for x in result_iter]
+    result_list = [x.get() for x in result_iter]
 
     if array:
         pprint.pprint(result_list)
@@ -44,8 +44,11 @@ def run_query(uast, query: str, array: bool) -> None:
 
 def main() -> int:
     args = setup()
-    if not args.disable_bblfsh_autorun:
-        ensure_bblfsh_is_running()
+    # TODO: parse the address properly
+    localAddrs = ('localhost', '0.0.0.0', '127.0.0.1', '[::1]')
+    if args.endpoint.startswith(localAddrs) and not args.disable_bblfsh_autorun:
+        if not ensure_bblfsh_is_running():
+            return 1
 
     client = BblfshClient(args.endpoint)
     ctx = client.parse(args.file, args.language)

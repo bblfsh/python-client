@@ -22,7 +22,9 @@ def after_container_start(cont: docker.models.resource.Model, log: logging.Logge
 
 
 def ensure_bblfsh_is_running() -> bool:
+    # TODO: check if docker is installed
     log = logging.getLogger("bblfsh")
+    client = None
     try:
         client = docker.from_env(version="auto")
         container = client.containers.get("bblfshd")
@@ -37,7 +39,7 @@ def ensure_bblfsh_is_running() -> bool:
                 return False
     except docker.errors.DockerException as e:
         log.warning("Failed to connect to the Docker daemon and ensure "
-                    "that the Babelfish server is running. %s", e)
+                    "that the Babelfish server is running.\nTry setting --endpoint or --disable-bblfsh-autorun.\n%s", e)
         return False
 
     except AttributeError:
@@ -55,6 +57,7 @@ def ensure_bblfsh_is_running() -> bool:
         return False
 
     finally:
-        client.api.close()
+        if client is not None:
+            client.api.close()
 
     return True
