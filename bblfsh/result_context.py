@@ -49,12 +49,16 @@ class ResultContext:
         return self._response.filename
 
     @property
+    def root(self) -> Node:
+        return Node(node_ext=self.ctx.root(), ctx=self.ctx)
+
+    @property
     def uast(self) -> Node:
-        return Node(node_ext=self.ctx.root())
+        return self.root
 
     @property
     def ast(self) -> Node:
-        return Node(node_ext=self.ctx.root())
+        return self.root
 
     def __str__(self) -> str:
         return str(self.get_all())
