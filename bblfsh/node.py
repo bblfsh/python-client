@@ -2,7 +2,8 @@ import copy
 from collections import MutableSequence
 from typing import Union, List, cast, Optional, Any
 
-from bblfsh.pyuast import NodeExt
+from bblfsh.pyuast import Context, NodeExt, IteratorExt, iterator
+from bblfsh.tree_order import TreeOrder
 from bblfsh.type_aliases import ResultMultiType
 
 
@@ -122,7 +123,7 @@ class NodeInstancingException(Exception):
 
 
 class Node:
-    def __init__(self, node_ext: NodeExt = None, value: ResultMultiType = None) -> None:
+    def __init__(self, node_ext: NodeExt = None, ctx: Context = None, value: ResultMultiType = None) -> None:
 
         if node_ext and (value is not None):
             raise NodeInstancingException("Node creation can have node_ext or value, not both")
@@ -137,6 +138,7 @@ class Node:
             # generate self.internal_node from the NodeExt
             self.internal_node = node_ext.load()
 
+        self.ctx = ctx
         self.node_ext = node_ext
 
     def __str__(self) -> str:
@@ -172,8 +174,20 @@ class Node:
     def get_dict(self) -> dict:
         return cast(dict, self._get_typed(dict))
 
+    def _iterator(self, it: IteratorExt) -> 'NodeIterator':
+        # TODO: this avoids circular imports; any better way to make it work?
+        import bblfsh.node_iterator
+        return bblfsh.node_iterator.NodeIterator(it, self.ctx)
+
+    def iterate(self, order: int) -> 'NodeIterator':
+        TreeOrder.check_order(order)
+        return self._iterator(iterator(self.node_ext, order))
+
+    def filter(self, query: str) -> 'NodeIterator':
+        return self._iterator(self.ctx.filter(query, self.node_ext))
+
     # TODO(juanjux): backward compatibility methods, remove once v1
-    #  is definitely deprecated
+    #                is definitely deprecated
 
     @property
     def internal_type(self) -> str:

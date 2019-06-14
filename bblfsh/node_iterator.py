@@ -26,14 +26,14 @@ class NodeIterator:
 
         if isinstance(next_node, NodeExt):
             # save last node for potential re-iteration
-            self._last_node = Node(node_ext=next_node)
+            self._last_node = Node(node_ext=next_node, ctx=self.ctx)
             return self._last_node
         # non node (bool, str, etc)
         return next_node
 
     def iterate(self, order: int) -> 'NodeIterator':
         if self._last_node is None:
-            self._last_node = Node(node_ext=next(self._iter_ext))
+            self._last_node = Node(node_ext=next(self._iter_ext), ctx=self.ctx)
 
         TreeOrder.check_order(order)
         self._order = order
