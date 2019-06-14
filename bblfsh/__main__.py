@@ -10,7 +10,7 @@ def setup() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Query for a UAST to Babelfish and dump it to stdout."
     )
-    parser.add_argument("-e", "--endpoint", default="0.0.0.0:9432",
+    parser.add_argument("-e", "--endpoint", default="localhost:9432",
                         help="bblfsh gRPC endpoint.", type=str)
     parser.add_argument("-f", "--file", required=True,
                         help="File to parse.", type=str)

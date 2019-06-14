@@ -50,7 +50,7 @@ Please, read the [getting started](https://doc.bblf.sh/using-babelfish/getting-s
 ```python
 import bblfsh
 
-client = bblfsh.BblfshClient("0.0.0.0:9432")
+client = bblfsh.BblfshClient("localhost:9432")
 ctx = client.parse("/path/to/file.py")
 print(ctx)
 # or to get the results in a dictionary:

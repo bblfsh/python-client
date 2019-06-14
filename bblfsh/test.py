@@ -29,7 +29,7 @@ class BblfshTests(unittest.TestCase):
             client.api.close()
 
     def setUp(self) -> None:
-        self.client = BblfshClient("0.0.0.0:9432")
+        self.client = BblfshClient("localhost:9432")
 
     def _parse_fixture(self) -> ResultContext:
         ctx = self.client.parse(self.fixtures_file)
