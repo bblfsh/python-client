@@ -1,7 +1,7 @@
 ## client-python [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python) [![PyPI](https://img.shields.io/pypi/v/bblfsh.svg)](https://pypi.python.org/pypi/bblfsh)
 
 [Babelfish](https://doc.bblf.sh) Python client library provides functionality to both
-connect to the Babelfish bblfshd to parse code
+connect to the Babelfish daemon (`bblfshd`) to parse code
 (obtaining an [UAST](https://doc.bblf.sh/uast/uast-specification.html) as a result)
 and to analyse UASTs with the functionality provided by [libuast](https://github.com/bblfsh/libuast).
 
@@ -10,7 +10,7 @@ and to analyse UASTs with the functionality provided by [libuast](https://github
 The recommended way to install *client-python* is using our pip [package](https://pypi.python.org/pypi/bblfsh):
 
 ```sh
-pip install bblfsh
+pip3 install bblfsh
 ```
 
 ### From sources
@@ -18,20 +18,19 @@ pip install bblfsh
 ```bash
 git clone https://github.com/bblfsh/client-python.git
 cd client-python
-pip install -r requirements.txt
-python setup.py --getdeps
-python setup.py install
-# or: pip install .
+pip3 install -r requirements.txt
+python3 setup.py --getdeps
+python3 setup.py install
+# or: pip3 install .
 ```
 
 ### Dependencies
 
-You also will need a `curl` cli tool to dowload `libuast`, and a `g++` for building [libtuast Python bindings](https://github.com/bblfsh/client-python/blob/0037d762563ab49b3daac8a7577f7103a5628fc6/setup.py#L17).
+You also will need a `curl` cli tool to dowload `libuast`, and a `g++` for building [libuast Python bindings](https://github.com/bblfsh/client-python/blob/0037d762563ab49b3daac8a7577f7103a5628fc6/setup.py#L17).
 The command for Debian and derived distributions would be:
 
 ```bash
-sudo apt install curl
-sudo apt install build-essential
+sudo apt install curl build-essential
 ```
 
 ## Usage
@@ -87,13 +86,13 @@ for i in newiter: ...
 # Over individual node objects to change the iteration order of
 # a specific subtree:
 ctx = client.parse("file.py")
-first_node = next(ctx)
+first_node = ctx.root
 newiter = first_node.iterate(bblfsh.TreeOrder.POSITION_ORDER)
 for i in newiter: ...
 
 # You can also get the non semantic UAST or native AST:
-ctx = client.parse("file.py", mode=bblfsh.ModeDict["NATIVE"])
-# Possible values for ModeDict: DEFAULT_MODE, NATIVE, PREPROCESSED, ANNOTATED, SEMANTIC
+ctx = client.parse("file.py", mode=bblfsh.Modes.NATIVE)
+# Possible values for Modes: DEFAULT_MODE, NATIVE, PREPROCESSED, ANNOTATED, SEMANTIC
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/clients.html)
