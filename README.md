@@ -46,53 +46,73 @@ docker exec -it bblfshd bblfshctl driver install python bblfsh/python-driver:lat
 
 Please, read the [getting started](https://doc.bblf.sh/using-babelfish/getting-started.html) guide to learn more about how to use and deploy a bblfshd.
 
+### Parsing a file
+
 ```python
 import bblfsh
 
 client = bblfsh.BblfshClient("localhost:9432")
 ctx = client.parse("/path/to/file.py")
 print(ctx)
-# or to get the results in a dictionary:
-resdict = ctx.get_all()
-
-# "filter' allows you to use XPath queries to filter on result nodes:
-it = ctx.filter("//python:Call")
-for node in it:
-    print(node)
-    # or:
-    doSomething(node.get())
-
-# filter must be used when using XPath functions returning these types:
-# XPath queries can return different types (dicts, int, float, bool or str), 
-# calling get() with an item will return the right type, but if you must ensure
-# that you are getting the expected type (to avoid errors in the queries) there
-# are alterative typed versions:
-x = next(ctx.filter("boolean(//*[@startOffset or @endOffset])")).get_bool()
-y = next(ctx.filter("name(//*[1])")).get_str()
-z = next(ctx.filter("count(//*)")).get_int() # or get_float()
-
-# You can also iterate using iteration orders different than the 
-# default preorder using the `iterate` method on `parse` result or node objects:
-
-# Directly over parse results
-it = client.parse("/path/to/file.py").iterate(bblfsh.TreeOrder.POST_ORDER)
-for i in it: ...
-
-# Over filter results (which by default are already iterators with PRE_ORDER):
-ctx = client.parse("file.py")
-newiter = ctx.filter("//python:Call").iterate(bblfsh.TreeOrder.LEVEL_ORDER)
-for i in newiter: ...
-
-# Over individual node objects to change the iteration order of
-# a specific subtree:
-ctx = client.parse("file.py")
-first_node = ctx.root
-newiter = first_node.iterate(bblfsh.TreeOrder.POSITION_ORDER)
-for i in newiter: ...
 
 # You can also get the non semantic UAST or native AST:
 ctx = client.parse("file.py", mode=bblfsh.Modes.NATIVE)
 # Possible values for Modes: DEFAULT_MODE, NATIVE, PREPROCESSED, ANNOTATED, SEMANTIC
+```
+
+To get the UAST as a dictionary:
+
+```python
+ast = ctx.get_all()
+```
+
+### UAST filtering (XPath)
+
+`ctx.filter()` allows you to use XPath queries to filter on result nodes:
+
+```python
+it = ctx.filter("//python:Call")
+for node in it:
+    # print internal node:
+    print(node)
+    # or get as Python dictionary/value:
+    doSomething(node.get())
+```
+
+XPath queries can return different types (`dict`, `int`, `float`, `bool` or `str`), 
+calling `get()` with an item will return the right type, but if you must ensure
+that you are getting the expected type (to avoid errors in the queries) there
+are alternative typed versions:
+
+```python
+x = next(ctx.filter("boolean(//*[@startOffset or @endOffset])")).get_bool()
+y = next(ctx.filter("name(//*[1])")).get_str()
+z = next(ctx.filter("count(//*)")).get_int() # or get_float()
+```
+
+### Iteration
+
+You can also iterate using iteration orders different than the 
+default pre-order using the `iterate` method on `parse` result or node objects:
+
+```python
+# Directly over parse results
+it = client.parse("/path/to/file.py").iterate(bblfsh.TreeOrder.POST_ORDER)
+for node in it:
+    print(node)
+
+# Over filter results (which by default are already iterators with PRE_ORDER):
+ctx = client.parse("file.py")
+it = ctx.filter("//python:Call").iterate(bblfsh.TreeOrder.LEVEL_ORDER)
+for node in it: 
+    print(node)
+
+# Over individual node objects to change the iteration order of
+# a specific subtree:
+ast = ctx.root
+it = ast.iterate(bblfsh.TreeOrder.POSITION_ORDER)
+for node in it: 
+    print(node)
 ```
 
 Please read the [Babelfish clients](https://doc.bblf.sh/using-babelfish/clients.html)
