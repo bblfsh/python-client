@@ -67,7 +67,7 @@ for node in it:
 # calling get() with an item will return the right type, but if you must ensure
 # that you are getting the expected type (to avoid errors in the queries) there
 # are alterative typed versions:
-x = next(ctx.filter("boolean(//*[@strtOffset or @endOffset])")).get_bool()
+x = next(ctx.filter("boolean(//*[@startOffset or @endOffset])")).get_bool()
 y = next(ctx.filter("name(//*[1])")).get_str()
 z = next(ctx.filter("count(//*)")).get_int() # or get_float()
 
