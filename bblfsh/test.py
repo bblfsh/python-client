@@ -10,12 +10,12 @@ from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
 from bblfsh.node import NodeTypedGetException
 from bblfsh.result_context import (Node, NodeIterator, ResultContext)
-from bblfsh.pyuast import uast
-
+from bblfsh.pyuast import uast, decode
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
-    fixtures_file = "fixtures/test.py"
+    fixtures_pyfile = "fixtures/test.py"
+    fixtures_cfile = "fixtures/test.c"
 
     @classmethod
     def setUpClass(cls: t.Any) -> None:
@@ -32,7 +32,7 @@ class BblfshTests(unittest.TestCase):
         self.client = BblfshClient("localhost:9432")
 
     def _parse_fixture(self) -> ResultContext:
-        ctx = self.client.parse(self.fixtures_file)
+        ctx = self.client.parse(self.fixtures_pyfile)
         self._validate_ctx(ctx)
         return ctx
 
@@ -44,7 +44,7 @@ class BblfshTests(unittest.TestCase):
         self.assertTrue(version.build)
 
     def testNativeParse(self) -> None:
-        ctx = self.client.parse(self.fixtures_file, mode=Modes.NATIVE)
+        ctx = self.client.parse(self.fixtures_pyfile, mode=Modes.NATIVE)
         self._validate_ctx(ctx)
         self.assertIsNotNone(ctx)
 
@@ -67,12 +67,24 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(ctx.language, "python")
 
     def testUASTWithLanguage(self) -> None:
-        ctx = self.client.parse(self.fixtures_file, language="Python")
+        ctx = self.client.parse(self.fixtures_pyfile, language="Python")
         self._validate_ctx(ctx)
         self.assertEqual(ctx.language, "python")
 
+    def testUASTWithLanguageAlias(self) -> None:
+        ctx = self.client.parse(self.fixtures_cfile)
+        self._validate_ctx(ctx)
+        self.assertEqual(ctx.language, "c")
+
+        it = ctx.filter("//uast:FunctionGroup/Nodes/uast:Alias/Name/uast:Identifier/Name")
+        self.assertIsInstance(it, NodeIterator)
+
+        self.assertEqual(next(it).get(), "main")
+        self.assertEqual(next(it).get(), "fib")
+
+
     def testUASTFileContents(self) -> None:
-        with open(self.fixtures_file, "r") as fin:
+        with open(self.fixtures_pyfile, "r") as fin:
             contents = fin.read()
 
         ctx = self.client.parse("file.py", contents=contents)
@@ -83,13 +95,14 @@ class BblfshTests(unittest.TestCase):
             self.assertIsInstance(n.get_str(), str)
             self.assertEqual(n.get_str(), expected)
 
-        it = ctx.filter("//uast:RuntimeImport/Path/uast:Alias/Name/uast:Identifier/Name")
+        it = ctx.filter("//uast:RuntimeImport/Path/uast:Identifier/Name")
         self.assertIsInstance(it, NodeIterator)
 
         assert_strnode(next(it), "os")
         assert_strnode(next(it), "resource")
         assert_strnode(next(it), "unittest")
         assert_strnode(next(it), "docker")
+        assert_strnode(next(it), "bblfsh")
         assert_strnode(next(it), "bblfsh")
         self.assertRaises(StopIteration, next, it)
 
@@ -285,15 +298,17 @@ class BblfshTests(unittest.TestCase):
 
     def testItersMixingIterations(self) -> None:
         ctx = self._parse_fixture()
-        it = ctx.iterate(TreeOrder.PRE_ORDER)
-        next(it); next(it); next(it)
 
-        n = next(it)
+        it = ctx.iterate(TreeOrder.PRE_ORDER)
+        next(it); next(it); next(it); next(it)
+
+
         it2 = it.iterate(TreeOrder.PRE_ORDER)
         next(it2)
+
         a = next(it).get()
         b = next(it2).get()
-        self.assertListEqual(a, b)
+        self.assertEqual(a, b)
 
     def testManyFilters(self) -> None:
         ctx = self._parse_fixture()
@@ -310,7 +325,7 @@ class BblfshTests(unittest.TestCase):
     def testManyParses(self) -> None:
         before = resource.getrusage(resource.RUSAGE_SELF)
         for _ in range(100):
-            self.client.parse(self.fixtures_file)
+            self.client.parse(self.fixtures_pyfile)
 
         after = resource.getrusage(resource.RUSAGE_SELF)
 
@@ -320,7 +335,7 @@ class BblfshTests(unittest.TestCase):
     def testManyParsesAndFilters(self) -> None:
         before = resource.getrusage(resource.RUSAGE_SELF)
         for _ in range(100):
-            ctx = self.client.parse(self.fixtures_file)
+            ctx = self.client.parse(self.fixtures_pyfile)
             ctx.filter("//*[@role='Identifier']")
 
         after = resource.getrusage(resource.RUSAGE_SELF)
@@ -336,6 +351,48 @@ class BblfshTests(unittest.TestCase):
                 self.assertTrue(hasattr(l, key))
                 self.assertIsNotNone(getattr(l, key))
 
+    def testEncode(self) -> None:
+        ctx = self._parse_fixture()
+        self.assertEqual(ctx.ctx.encode(None, 0), ctx._response.uast)
+
+    def testEncodeWithEmptyContext(self) -> None:
+        ctx = ResultContext()
+        obj = {"k1": "v1", "k2": "v2"}
+        fmt = 1 # YAML
+
+        data = ctx.ctx.encode(obj, fmt)
+        self.assertDictEqual(obj, decode(data, format=fmt).load())
+
+    def testGetAll(self) -> None:
+        ctx = self._parse_fixture()
+
+        expected = ["os", "resource", "unittest", "docker", "bblfsh"]
+        actual = []
+        for k in ctx.get_all()["body"]:
+            if "@type" in k and k["@type"] == "uast:RuntimeImport" and "Path" in k:
+                path = k["Path"]
+                if "Name" in path:
+                    actual.append(k["Path"]["Name"])
+
+        self.assertListEqual(expected, actual)
+
+    def testLoad(self) -> None:
+        ctx = self._parse_fixture()
+
+        it = ctx.iterate(TreeOrder.PRE_ORDER)
+        next(it); next(it); next(it); next(it)
+
+        it2 = it.iterate(TreeOrder.PRE_ORDER)
+        n = next(it2)
+        node_ext = n.node_ext
+
+        obj = node_ext.load()
+        typ = obj["@type"]
+        self.assertEqual("uast:RuntimeImport", typ)
+
+        path = obj["Path"]
+        self.assertEqual("uast:Identifier", path["@type"])
+        self.assertEqual("os", path["Name"])
 
 if __name__ == "__main__":
     unittest.main()

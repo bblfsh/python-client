@@ -1,8 +1,6 @@
 language: python
 sudo: true
 dist: xenial
-env: 
-- BBLFSHD_VERSION=v2.12.1 BBLFSH_PYTHON_VERSION=v2.9.0
 services:
   - docker
 cache:
@@ -12,8 +10,9 @@ python:
   - "3.6"
   - "3.7"
 install:
-  - docker run --privileged -d -p 9432:9432 --name bblfshd bblfsh/bblfshd:$BBLFSHD_VERSION
-  - docker exec bblfshd bblfshctl driver install bblfsh/python-driver:$BBLFSH_PYTHON_VERSION
+  - docker run --privileged -d -p 9432:9432 --name bblfshd bblfsh/bblfshd
+  - docker exec bblfshd bblfshctl driver install bblfsh/python-driver
+  - docker exec bblfshd bblfshctl driver install bblfsh/cpp-driver
   - wget https://github.com/bblfsh/python-client/releases/download/v2.2.1/protobuf-python_3.4.1-1_amd64.deb
   - sudo dpkg -i protobuf-python_3.4.1-1_amd64.deb
   - if [[ ! -z "$TRAVIS_TAG" ]]; then sed -i -e "s/^VERSION\s*=\s*\"[^\"]\+\"/VERSION = \"${TRAVIS_TAG#v}\"/g" setup.py; fi

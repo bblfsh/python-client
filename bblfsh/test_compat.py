@@ -1,17 +1,15 @@
-import os
 import resource
 import unittest
 
-
 import docker
 
+from bblfsh.client import NonUTF8ContentException
+from bblfsh.compat import CompatBblfshClient as BblfshClient
 from bblfsh.compat import (
     filter as xpath_filter, role_id, iterator, role_name, Node, TreeOrder, filter_bool,
     filter_number, CompatNodeIterator
 )
-from bblfsh.compat import CompatBblfshClient as BblfshClient
 from bblfsh.launcher import ensure_bblfsh_is_running
-from bblfsh.client import NonUTF8ContentException
 
 
 class BblfshTests(unittest.TestCase):
@@ -252,7 +250,7 @@ class BblfshTests(unittest.TestCase):
         root.properties['k2'] = 'v1'
 
         before = resource.getrusage(resource.RUSAGE_SELF)
-        for i in range(1000):
+        for _ in range(1000):
             xpath_filter(root, "//*[@roleIdentifier]")
 
         after = resource.getrusage(resource.RUSAGE_SELF)
