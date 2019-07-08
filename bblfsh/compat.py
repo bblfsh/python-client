@@ -1,8 +1,8 @@
 """
-This file provides a compatibility layer with the old UAST V1 (or client-python
+This file provides a compatibility layer with the old UAST V1 (or python-client
 v2) API. You can see a summary of that API here:
 
-https://github.com/bblfsh/client-python/blob/d485273f457a174b40b820ad71195a739db04197/README.md
+https://github.com/bblfsh/python-client/blob/c17d9cb6cd3e55ad150bd1d62a1de2e228d7db04/README.md
 
 Note that this won't translate the XPath queries from the old projection to the new use;
 even when using this module you're expected to use expressions matching the new

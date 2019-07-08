@@ -135,7 +135,7 @@ def get_libuast_arch():
     """Return the os-arch tag to use when fetching libuast.
     """
 
-    # See https://github.com/bblfsh/client-python/issues/156.
+    # See https://github.com/bblfsh/python-client/issues/156.
     if sys.platform == 'win32':
         return 'windows-amd64'
     elif sys.platform:
@@ -333,8 +333,8 @@ def main():
         license="Apache 2.0",
         author="source{d}",
         author_email="language-analysis@sourced.tech",
-        url="https://github.com/bblfsh/client-python",
-        download_url="https://github.com/bblfsh/client-python",
+        url="https://github.com/bblfsh/python-client",
+        download_url="https://github.com/bblfsh/python-client",
         packages=find_packages(),
         exclude=["bblfsh/test.py"],
         keywords=["babelfish", "uast"],

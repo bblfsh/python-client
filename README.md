@@ -1,4 +1,4 @@
-## client-python [![Build Status](https://travis-ci.org/bblfsh/client-python.svg?branch=master)](https://travis-ci.org/bblfsh/client-python) [![PyPI](https://img.shields.io/pypi/v/bblfsh.svg)](https://pypi.python.org/pypi/bblfsh)
+## python-client [![Build Status](https://travis-ci.com/bblfsh/python-client.svg?branch=master)](https://travis-ci.com/bblfsh/python-client) [![PyPI](https://img.shields.io/pypi/v/bblfsh.svg)](https://pypi.python.org/pypi/bblfsh)
 
 [Babelfish](https://doc.bblf.sh) Python client library provides functionality to both
 connect to the Babelfish daemon (`bblfshd`) to parse code
@@ -7,7 +7,7 @@ and to analyse UASTs with the functionality provided by [libuast](https://github
 
 ## Installation
 
-The recommended way to install *client-python* is using our pip [package](https://pypi.python.org/pypi/bblfsh):
+The recommended way to install *python-client* is using our pip [package](https://pypi.python.org/pypi/bblfsh):
 
 ```sh
 pip3 install bblfsh
@@ -16,8 +16,8 @@ pip3 install bblfsh
 ### From sources
 
 ```bash
-git clone https://github.com/bblfsh/client-python.git
-cd client-python
+git clone https://github.com/bblfsh/python-client.git
+cd python-client
 pip3 install -r requirements.txt
 python3 setup.py --getdeps
 python3 setup.py install
@@ -26,7 +26,7 @@ python3 setup.py install
 
 ### Dependencies
 
-You also will need a `curl` cli tool to dowload `libuast`, and a `g++` for building [libuast Python bindings](https://github.com/bblfsh/client-python/blob/0037d762563ab49b3daac8a7577f7103a5628fc6/setup.py#L17).
+You also will need a `curl` cli tool to dowload `libuast`, and a `g++` for building [libuast Python bindings](https://github.com/bblfsh/python-client/blob/c17d9cb6cd3e55ad150bd1d62a1de2e228d7db04/setup.py#L26).
 The command for Debian and derived distributions would be:
 
 ```bash
