@@ -220,8 +220,8 @@ class BblfshTests(unittest.TestCase):
         it = iterator(root, TreeOrder.POSITION_ORDER)
         self.assertIsNotNone(it)
         expanded = [node.internal_type for node in it]
-        self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1',
-                                        'son1_2', 'son2_2', 'son2'])
+        self.assertListEqual(expanded, ['son1', 'son2_1', 'son1_1',
+                                        'son1_2', 'son2_2', 'son2', 'root'])
 
     def testFilterInsideIter(self):
         root = self._parse_fixture().uast
@@ -288,18 +288,18 @@ class BblfshTests(unittest.TestCase):
         n.internal_type = 'root'
         c1 = {"@type": "child1"}
         n.properties["child1"] = c1
-        self.assertDictEqual(n.children[0], c1)
+        self.assertDictEqual(n.children[0].get_dict(), c1)
 
         c2 = {"@type": "child2"}
         n.children.append(c2)
-        self.assertDictEqual(n.children[1], c2)
+        self.assertDictEqual(n.children[1].get_dict(), c2)
         n.children.append(c2)
-        self.assertDictEqual(n.children[2], c2)
+        self.assertDictEqual(n.children[2].get_dict(), c2)
 
         l = [{"@type": "list_child1"}, {"@type": "list_child2"}]
         n.properties["some_list"] = l
-        self.assertDictEqual(n.children[3], l[0])
-        self.assertDictEqual(n.children[4], l[1])
+        self.assertDictEqual(n.children[3].get_dict(), l[0])
+        self.assertDictEqual(n.children[4].get_dict(), l[1])
 
     def testChildrenFile(self):
         root = self._parse_fixture().uast
@@ -309,8 +309,7 @@ class BblfshTests(unittest.TestCase):
         root.children.append(n)
         self.assertEqual(len(root.children), 11)
         last = root.children[-1]
-        self.assertDictEqual(last, n.internal_node)
-
+        self.assertDictEqual(last.get_dict(), n.internal_node)
 
 
 if __name__ == "__main__":

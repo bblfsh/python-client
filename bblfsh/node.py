@@ -3,6 +3,8 @@ from collections import MutableSequence
 from typing import Union, List, cast, Optional, Any
 
 from bblfsh.pyuast import Context, NodeExt, IteratorExt, iterator
+
+from bblfsh.roles import role_id
 from bblfsh.tree_order import TreeOrder
 from bblfsh.type_aliases import ResultMultiType
 
@@ -14,7 +16,7 @@ class NodeTypedGetException(Exception):
 class CompatPosition:
     """
     v1 positions were extracted as node.[start|end]_position.[line|col|offset]. To
-    emulate that, this dictionary will be returned when accesing the old position
+    emulate that, this dictionary will be returned when accessing the old position
     properties and its setters will update the parent Node real position ones.
     """
 
@@ -56,7 +58,7 @@ class CompatChildren(MutableSequence):
         self._par_dict = parent.get_dict()
         self._children = self._sync_children()
 
-    def _sync_children(self) -> None:
+    def _sync_children(self) -> List["Node"]:
         if "_children" not in self._par_dict:
             self._par_dict["_children"] = []
         children = self._par_dict["_children"]
@@ -85,7 +87,7 @@ class CompatChildren(MutableSequence):
         return len(self._children)
 
     def __getitem__(self, idx: Union[int, slice]) -> Any:
-        return self._children[idx]
+        return Node(value=self._children[idx])
 
     def __delitem__(self, idx: Union[int, slice]) -> None:
         del self._children[idx]
@@ -214,12 +216,12 @@ class Node:
         return val
 
     @property
-    def children(self) -> CompatChildren:
+    def children(self) -> List["Node"]:
         return CompatChildren(self)
 
     @property
     def token(self) -> str:
-        return self.get_dict()["@token"]
+        return self.get_dict().get("@token", "")
 
     @token.setter
     def token(self, t: str) -> None:
@@ -228,35 +230,34 @@ class Node:
 
     @property
     def roles(self) -> List:
-        return self.get_dict().get("@role", [])
+        return [role_id(name) for name in self.get_dict().get("@role", [])]
 
     def _add_position(self) -> None:
         d = self.get_dict()
         if "@pos" not in d:
             d["@pos"] = {
                 "@type": "uast:Positions",
-                "start": {
-                    "@type": "uast:Position",
-                    "offset": -1,
-                    "line": -1,
-                    "col": -1,
-                },
-                "end": {
-                    "@type": "uast:Position",
-                    "offset": -1,
-                    "line": -1,
-                    "col": -1,
-                }
+                "start": Node._get_default_position(),
+                "end": Node._get_default_position()
             }
 
     @property
     def start_position(self) -> CompatPosition:
         self._add_position()
-        start = self.get_dict()["@pos"]["start"]
+        start = self.get_dict()["@pos"].get("start", Node._get_default_position())
         return CompatPosition(start)
 
     @property
     def end_position(self) -> CompatPosition:
         self._add_position()
-        end = self.get_dict()["@pos"]["end"]
+        end = self.get_dict()["@pos"].get("start", Node._get_default_position())
         return CompatPosition(end)
+
+    @staticmethod
+    def _get_default_position():
+        return {
+            "@type": "uast:Position",
+            "offset": 0,
+            "line": 0,
+            "col": 0,
+        }
