@@ -250,7 +250,7 @@ class Node:
     @property
     def end_position(self) -> CompatPosition:
         self._add_position()
-        end = self.get_dict()["@pos"].get("start", Node._get_default_position())
+        end = self.get_dict()["@pos"].get("end", Node._get_default_position())
         return CompatPosition(end)
 
     @staticmethod
