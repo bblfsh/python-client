@@ -824,9 +824,12 @@ public:
         ctx = impl->NewContext();
     }
     ~Context(){
+        // Deleting ctx also frees impl
         delete(ctx);
-        delete(impl);
+        ctx = nullptr;
+        impl = nullptr;
         delete(iface);
+        iface = nullptr;
     }
 
     // RootNode returns a root UAST node, if set.
