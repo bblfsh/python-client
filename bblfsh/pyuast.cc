@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <map>
+#include <unordered_map>
 
 #include <Python.h>
 #include <structmember.h>
@@ -600,7 +600,7 @@ class Context;
 
 class Interface : public uast::NodeCreator<Node*> {
 private:
-    std::map<PyObject*, Node*> obj2node;
+    std::unordered_map<PyObject*, Node*> obj2node;
 
     static PyObject* newBool(bool v) {
         if (v) Py_RETURN_TRUE;
