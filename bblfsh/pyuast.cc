@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
+#include <list>
 
 #include <Python.h>
 #include <structmember.h>
@@ -344,7 +345,7 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
-    Py_INCREF((PyObject *)self);
+
     return it;
 }
 
@@ -494,7 +495,6 @@ public:
         }
         if (obj) Py_DECREF(obj);
         if (str) delete str;
-
     }
 
     PyObject* toPy();
@@ -508,8 +508,7 @@ public:
             str = new std::string(s);
         }
 
-        std::string* s = new std::string(*str);
-        return s;
+        return str;
     }
     int64_t AsInt() {
         long long v = PyLong_AsLongLong(obj);
@@ -601,6 +600,7 @@ class Context;
 class Interface : public uast::NodeCreator<Node*> {
 private:
     std::unordered_map<PyObject*, Node*> obj2node;
+    std::list<Node*> nodes;
 
     static PyObject* newBool(bool v) {
         if (v) Py_RETURN_TRUE;
@@ -609,7 +609,7 @@ private:
     }
 
     // lookupOrCreate either creates a new object or returns existing one.
-    // In the second case it creates a new reference.
+    // In the first case it creates a new reference.
     Node* lookupOrCreate(PyObject* obj) {
         if (!obj || obj == Py_None) return nullptr;
 
@@ -626,6 +626,7 @@ private:
     Node* create(NodeKind kind, PyObject* obj) {
         Node* node = new Node(this, kind, obj);
         obj2node[obj] = node;
+        nodes.push_back(node);
         return node;
     }
 public:
@@ -637,9 +638,8 @@ public:
     ~Interface(){
         // Only needs to deallocate Nodes, since they own
         // the same object as used in the map key.
-        for (auto it : obj2node) {
-            delete(it.second);
-        }
+        for (auto node : nodes)
+            delete(node);
     }
 
     // toNode creates a new or returns an existing node associated with Python object.
@@ -824,11 +824,11 @@ public:
         ctx = impl->NewContext();
     }
     ~Context(){
-        // Deleting ctx also frees impl
+        // impl gets deleted when deleting ctx
         delete(ctx);
+        delete(iface);
         ctx = nullptr;
         impl = nullptr;
-        delete(iface);
         iface = nullptr;
     }
 
@@ -926,7 +926,7 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
-    Py_INCREF((PyObject *)self);
+
     return it;
 }
 
