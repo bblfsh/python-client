@@ -833,13 +833,9 @@ public:
         ctx = impl->NewContext();
     }
     ~Context(){
-        // impl gets deleted when deleting ctx
-        delete(ctx);
-        delete(impl);
-        delete(iface);
-        ctx = nullptr;
-        impl = nullptr;
-        iface = nullptr;
+        delete(ctx); ctx = nullptr;
+        delete(impl); impl = nullptr;
+        delete(iface); iface = nullptr;
     }
 
     // RootNode returns a root UAST node, if set.
