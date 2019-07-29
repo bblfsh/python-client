@@ -508,7 +508,8 @@ public:
             str = new std::string(s);
         }
 
-        return str;
+        std::string* s = new std::string(*str);
+        return s;
     }
     int64_t AsInt() {
         long long v = PyLong_AsLongLong(obj);
@@ -826,6 +827,7 @@ public:
     ~Context(){
         // impl gets deleted when deleting ctx
         delete(ctx);
+        delete(impl);
         delete(iface);
         ctx = nullptr;
         impl = nullptr;
