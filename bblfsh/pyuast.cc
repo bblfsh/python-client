@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
-#include <list>
 
 #include <Python.h>
 #include <structmember.h>
@@ -601,7 +600,6 @@ class Context;
 class Interface : public uast::NodeCreator<Node*> {
 private:
     std::unordered_map<PyObject*, Node*> obj2node;
-    std::list<Node*> nodes;
 
     static PyObject* newBool(bool v) {
         if (v) Py_RETURN_TRUE;
@@ -622,12 +620,22 @@ private:
         return node;
     }
 
-    // create makes a new object with a specified kind.
-    // Steals the reference.
-    Node* create(NodeKind kind, PyObject* obj) {
-        Node* node = new Node(this, kind, obj);
+    // create makes a new object with a specified kind, as long as it does
+    // not already exists. If it does, it just outputs the existing Node
+    // and decreases the ref count to obj
+    // Steals the reference iff the object does not already exists
+    Node* createIfNotExists(NodeKind kind, PyObject* obj) {
+        if (!obj || obj == Py_None) return nullptr;
+
+        Node* node = obj2node[obj];
+        // If obj is already cached, we do not want another reference to it
+        if (node) {
+            Py_DECREF(obj);
+            return node;
+        }
+
+        node = new Node(this, kind, obj);
         obj2node[obj] = node;
-        nodes.push_back(node);
         return node;
     }
 public:
@@ -639,8 +647,8 @@ public:
     ~Interface(){
         // Only needs to deallocate Nodes, since they own
         // the same object as used in the map key.
-        for (auto node : nodes)
-            delete(node);
+        for (auto it : obj2node)
+            delete(it.second);
     }
 
     // toNode creates a new or returns an existing node associated with Python object.
@@ -659,31 +667,31 @@ public:
 
     Node* NewObject(size_t size) {
         PyObject* m = PyDict_New();
-        return create(NODE_OBJECT, m);
+        return createIfNotExists(NODE_OBJECT, m);
     }
     Node* NewArray(size_t size) {
         PyObject* arr = PyList_New(size);
-        return create(NODE_ARRAY, arr);
+        return createIfNotExists(NODE_ARRAY, arr);
     }
     Node* NewString(std::string v) {
         PyObject* obj = PyUnicode_FromString(v.data());
-        return create(NODE_STRING, obj);
+        return createIfNotExists(NODE_STRING, obj);
     }
     Node* NewInt(int64_t v) {
         PyObject* obj = PyLong_FromLongLong(v);
-        return create(NODE_INT, obj);
+        return createIfNotExists(NODE_INT, obj);
     }
     Node* NewUint(uint64_t v) {
         PyObject* obj = PyLong_FromUnsignedLongLong(v);
-        return create(NODE_UINT, obj);
+        return createIfNotExists(NODE_UINT, obj);
     }
     Node* NewFloat(double v) {
         PyObject* obj = PyFloat_FromDouble(v);
-        return create(NODE_FLOAT, obj);
+        return createIfNotExists(NODE_FLOAT, obj);
     }
     Node* NewBool(bool v) {
         PyObject* obj = newBool(v);
-        return create(NODE_BOOL, obj);
+        return createIfNotExists(NODE_BOOL, obj);
     }
 };
 
