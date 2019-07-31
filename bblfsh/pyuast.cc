@@ -600,6 +600,11 @@ class Context;
 
 class Interface : public uast::NodeCreator<Node*> {
 private:
+    // Thread safety is ensured here by Python's GIL (Global Interpreter Lock), since only
+    // a method could enter in a C++ routine at a time. Note that the STL container used
+    // to cache the objects does not ensure two concurrent writes thread safety, but GIL in
+    // this case indirectly provides us that feature. Also ensures thread safety for the
+    // lookupOrCreate and createIfNotExists methods
     std::unordered_map<PyObject*, Node*> obj2node;
 
     static PyObject* newBool(bool v) {
