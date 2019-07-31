@@ -3,10 +3,15 @@ from enum import IntEnum
 
 class TreeOrder(IntEnum):
     _MIN = 0
-    PRE_ORDER = 0
-    POST_ORDER = 1
-    LEVEL_ORDER = 2
-    POSITION_ORDER = 3
+    # Gives no assurances over the iteration order of the tree
+    # Uses the fastest one available (the one that the tree
+    # natively supports)
+    ANY_ORDER = 0
+    PRE_ORDER = 1
+    POST_ORDER = 2
+    LEVEL_ORDER = 3
+    CHILDREN_ORDER = 4
+    POSITION_ORDER = 5
     _MAX = 3
 
     @staticmethod
