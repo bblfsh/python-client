@@ -620,15 +620,15 @@ private:
         return node;
     }
 
-    // create makes a new object with a specified kind, as long as it does
-    // not already exists. If it does, it just outputs the existing Node
-    // and decreases the ref count to obj
-    // Steals the reference iff the object does not already exists
+    // createIfNotExists creates and caches a node corresponding to the given object, if
+    // one does not already exist. This function takes ownership of the caller's reference
+    // to obj: If a new node is created, the reference is delegated to the cache; otherwise
+    // it is released.
     Node* createIfNotExists(NodeKind kind, PyObject* obj) {
         if (!obj || obj == Py_None) return nullptr;
 
         Node* node = obj2node[obj];
-        // If obj is already cached, we do not want another reference to it
+        // This object's node is already cached; release the reference.
         if (node) {
             Py_DECREF(obj);
             return node;
