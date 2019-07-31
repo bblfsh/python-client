@@ -631,6 +631,9 @@ private:
         Node* node = obj2node[obj];
         // This object's node is already cached; release the reference.
         if (node) {
+            // It is safe to DECREF here, since an INCREF has already happened at
+            // NewString (in PyUnicode_FromString), NewInt (in PyLong_FromLongLong),
+            // NewUint, NewFloat or NewBool
             Py_DECREF(obj);
             return node;
         }
@@ -667,10 +670,16 @@ public:
     }
 
     Node* NewObject(size_t size) {
+        // Object is going to be created and cached, since when
+        // we call PyDict_New we are retruned a new reference
+        // and therefore we are not going to use a cached one.
         PyObject* m = PyDict_New();
         return createIfNotExists(NODE_OBJECT, m);
     }
     Node* NewArray(size_t size) {
+        // Array is going to be created and cached, since when
+        // we call PyList_New we are retruned a new reference
+        // and therefore we are not going to use a cached one.
         PyObject* arr = PyList_New(size);
         return createIfNotExists(NODE_ARRAY, arr);
     }
