@@ -1016,6 +1016,109 @@ extern "C"
     };
 }
 
+
+// ==========================================
+//            Python Tree Order
+// ==========================================
+
+typedef struct {
+  PyObject_HEAD
+} PythonTreeOrder;
+
+static void PythonTreeOrder_dealloc(PyObject *self) {
+    Py_TYPE(self)->tp_free(self);
+}
+
+static PyObject *PythonTreeOrder_Any() {
+    return PyLong_FromLongLong(ANY_ORDER);
+}
+
+static PyObject *PythonTreeOrder_Pre() {
+    return PyLong_FromLongLong(PRE_ORDER);
+}
+
+static PyObject *PythonTreeOrder_Post() {
+    return PyLong_FromLongLong(POST_ORDER);
+}
+
+static PyObject *PythonTreeOrder_Level() {
+    return PyLong_FromLongLong(LEVEL_ORDER);
+}
+
+static PyObject *PythonTreeOrder_Children() {
+    return PyLong_FromLongLong(CHILDREN_ORDER);
+}
+
+static PyObject *PythonTreeOrder_Position() {
+    return PyLong_FromLongLong(POSITION_ORDER);
+}
+
+static PyMethodDef PythonTreeOrder_methods[] = {
+    {"ANY_ORDER", (PyCFunction) PythonTreeOrder_Any, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to any Order in libuast"
+    },
+    {"PRE_ORDER", (PyCFunction) PythonTreeOrder_Pre, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to pre-order in libuast"
+    },
+    {"POST_ORDER", (PyCFunction) PythonTreeOrder_Post, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to post-order in libuast"
+    },
+    {"LEVEL_ORDER", (PyCFunction) PythonTreeOrder_Level, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to level order (breadth first search) in libuast"
+    },
+    {"CHILDREN_ORDER", (PyCFunction) PythonTreeOrder_Children, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to children order (breadth first only in the first level) in libuast"
+    },
+    {"POSITION_ORDER", (PyCFunction) PythonTreeOrder_Position, METH_NOARGS | METH_STATIC,
+     "Return the value corresponding to position order (breadth first search) in libuast"
+    },
+    {nullptr}  // Sentinel
+};
+
+extern "C"
+{
+  static PyTypeObject PyTreeOrderType = {
+      PyVarObject_HEAD_INIT(nullptr, 0)
+      "pyuast.TreeOrder",             // tp_name
+      sizeof(PythonTreeOrder),        // tp_basicsize
+      0,                              // tp_itemsize
+      PythonTreeOrder_dealloc,        // tp_dealloc
+      0,                              // tp_print
+      0,                              // tp_getattr
+      0,                              // tp_setattr
+      0,                              // tp_reserved
+      0,                              // tp_repr
+      0,                              // tp_as_number
+      0,                              // tp_as_sequence
+      0,                              // tp_as_mapping
+      0,                              // tp_hash
+      0,                              // tp_call
+      0,                              // tp_str
+      0,                              // tp_getattro
+      0,                              // tp_setattro
+      0,                              // tp_as_buffer
+      Py_TPFLAGS_DEFAULT,             // tp_flags
+      "Tree Order enum",              // tp_doc
+      0,                              // tp_traverse
+      0,                              // tp_clear
+      0,                              // tp_richcompare
+      0,                              // tp_weaklistoffset
+      0,                              // tp_iter: __iter()__ method
+      0,                              // tp_iternext: next() method
+      PythonTreeOrder_methods,        // tp_methods
+      0,                              // tp_members
+      0,                              // tp_getset
+      0,                              // tp_base
+      0,                              // tp_dict
+      0,                              // tp_descr_get
+      0,                              // tp_descr_set
+      0,                              // tp_dictoffset
+      0,                              // tp_init
+      PyType_GenericAlloc,            // tp_alloc
+      0,                              // tp_new
+    };
+}
+
 // ==========================================
 //            Global functions
 // ==========================================
@@ -1110,6 +1213,8 @@ PyInit_pyuast(void)
   if (PyType_Ready(&PythonContextType) < 0) return nullptr;
   if (PyType_Ready(&PyUastIterType) < 0) return nullptr;
 
+  if (PyType_Ready(&PyTreeOrderType) < 0) return nullptr;
+
   PyObject* m = PyModule_Create(&module_def);
 
   Py_INCREF(&PythonContextType);
@@ -1126,6 +1231,9 @@ PyInit_pyuast(void)
 
   Py_INCREF(&PyUastIterType);
   PyModule_AddObject(m, "Iterator", (PyObject *)&PyUastIterType);
+
+  Py_INCREF(&PyTreeOrderType);
+  PyModule_AddObject(m, "TreeOrder", (PyObject *)&PyTreeOrderType);
 
   return m;
 }
