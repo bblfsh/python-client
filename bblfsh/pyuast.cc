@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <map>
+#include <unordered_map>
 
 #include <Python.h>
 #include <structmember.h>
@@ -344,6 +344,7 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
+
     Py_INCREF((PyObject *)self);
     return it;
 }
@@ -494,7 +495,6 @@ public:
         }
         if (obj) Py_DECREF(obj);
         if (str) delete str;
-
     }
 
     PyObject* toPy();
@@ -600,7 +600,12 @@ class Context;
 
 class Interface : public uast::NodeCreator<Node*> {
 private:
-    std::map<PyObject*, Node*> obj2node;
+    // Thread safety is ensured here by Python's GIL (Global Interpreter Lock), since only
+    // a method could enter in a C++ routine at a time.
+    // The STL container used to cache the objects does not support concurrent writes, but
+    // Python's GIL (Global Interpreter Lock) ensures lookupOrCreate and createIfNotExists
+    // will not execute concurrently, avoiding concurrent writers to the cache.
+    std::unordered_map<PyObject*, Node*> obj2node;
 
     static PyObject* newBool(bool v) {
         if (v) Py_RETURN_TRUE;
@@ -609,7 +614,7 @@ private:
     }
 
     // lookupOrCreate either creates a new object or returns existing one.
-    // In the second case it creates a new reference.
+    // In the first case it creates a new reference.
     Node* lookupOrCreate(PyObject* obj) {
         if (!obj || obj == Py_None) return nullptr;
 
@@ -621,10 +626,24 @@ private:
         return node;
     }
 
-    // create makes a new object with a specified kind.
-    // Steals the reference.
-    Node* create(NodeKind kind, PyObject* obj) {
-        Node* node = new Node(this, kind, obj);
+    // createIfNotExists creates and caches a node corresponding to the given object, if
+    // one does not already exist. This function takes ownership of the caller's reference
+    // to obj: If a new node is created, the reference is delegated to the cache; otherwise
+    // it is released.
+    Node* createIfNotExists(NodeKind kind, PyObject* obj) {
+        if (!obj || obj == Py_None) return nullptr;
+
+        Node* node = obj2node[obj];
+        // This object's node is already cached; release the reference.
+        if (node) {
+            // It is safe to DECREF here, since an INCREF has already happened at
+            // NewString (in PyUnicode_FromString), NewInt (in PyLong_FromLongLong),
+            // NewUint, NewFloat or NewBool
+            Py_DECREF(obj);
+            return node;
+        }
+
+        node = new Node(this, kind, obj);
         obj2node[obj] = node;
         return node;
     }
@@ -637,9 +656,8 @@ public:
     ~Interface(){
         // Only needs to deallocate Nodes, since they own
         // the same object as used in the map key.
-        for (auto it : obj2node) {
+        for (auto it : obj2node)
             delete(it.second);
-        }
     }
 
     // toNode creates a new or returns an existing node associated with Python object.
@@ -657,32 +675,38 @@ public:
     }
 
     Node* NewObject(size_t size) {
+        // Object is going to be created and cached, since when
+        // we call PyDict_New we returned a new reference
+        // and therefore we are not going to use a cached one.
         PyObject* m = PyDict_New();
-        return create(NODE_OBJECT, m);
+        return createIfNotExists(NODE_OBJECT, m);
     }
     Node* NewArray(size_t size) {
+        // Array is going to be created and cached, since when
+        // we call PyList_New we returned a new reference
+        // and therefore we are not going to use a cached one.
         PyObject* arr = PyList_New(size);
-        return create(NODE_ARRAY, arr);
+        return createIfNotExists(NODE_ARRAY, arr);
     }
     Node* NewString(std::string v) {
         PyObject* obj = PyUnicode_FromString(v.data());
-        return create(NODE_STRING, obj);
+        return createIfNotExists(NODE_STRING, obj);
     }
     Node* NewInt(int64_t v) {
         PyObject* obj = PyLong_FromLongLong(v);
-        return create(NODE_INT, obj);
+        return createIfNotExists(NODE_INT, obj);
     }
     Node* NewUint(uint64_t v) {
         PyObject* obj = PyLong_FromUnsignedLongLong(v);
-        return create(NODE_UINT, obj);
+        return createIfNotExists(NODE_UINT, obj);
     }
     Node* NewFloat(double v) {
         PyObject* obj = PyFloat_FromDouble(v);
-        return create(NODE_FLOAT, obj);
+        return createIfNotExists(NODE_FLOAT, obj);
     }
     Node* NewBool(bool v) {
         PyObject* obj = newBool(v);
-        return create(NODE_BOOL, obj);
+        return createIfNotExists(NODE_BOOL, obj);
     }
 };
 
@@ -824,9 +848,9 @@ public:
         ctx = impl->NewContext();
     }
     ~Context(){
-        delete(ctx);
-        delete(impl);
-        delete(iface);
+        delete(ctx); ctx = nullptr;
+        delete(impl); impl = nullptr;
+        delete(iface); iface = nullptr;
     }
 
     // RootNode returns a root UAST node, if set.
@@ -923,6 +947,7 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
+
     Py_INCREF((PyObject *)self);
     return it;
 }
