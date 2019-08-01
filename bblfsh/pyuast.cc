@@ -601,10 +601,10 @@ class Context;
 class Interface : public uast::NodeCreator<Node*> {
 private:
     // Thread safety is ensured here by Python's GIL (Global Interpreter Lock), since only
-    // a method could enter in a C++ routine at a time. Note that the STL container used
-    // to cache the objects does not ensure two concurrent writes thread safety, but GIL in
-    // this case indirectly provides us that feature. Also ensures thread safety for the
-    // lookupOrCreate and createIfNotExists methods
+    // a method could enter in a C++ routine at a time.
+    // The STL container used to cache the objects does not support concurrent writes, but
+    // Python's GIL (Global Interpreter Lock) ensures lookupOrCreate and createIfNotExists
+    // will not execute concurrently, avoiding concurrent writers to the cache.
     std::unordered_map<PyObject*, Node*> obj2node;
 
     static PyObject* newBool(bool v) {
@@ -676,14 +676,14 @@ public:
 
     Node* NewObject(size_t size) {
         // Object is going to be created and cached, since when
-        // we call PyDict_New we are retruned a new reference
+        // we call PyDict_New we returned a new reference
         // and therefore we are not going to use a cached one.
         PyObject* m = PyDict_New();
         return createIfNotExists(NODE_OBJECT, m);
     }
     Node* NewArray(size_t size) {
         // Array is going to be created and cached, since when
-        // we call PyList_New we are retruned a new reference
+        // we call PyList_New we returned a new reference
         // and therefore we are not going to use a cached one.
         PyObject* arr = PyList_New(size);
         return createIfNotExists(NODE_ARRAY, arr);
