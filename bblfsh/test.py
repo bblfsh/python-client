@@ -450,8 +450,8 @@ class BblfshTests(unittest.TestCase):
     # it = pick a it from its
     # node = next(it)
     #
-    # Instead of testing with a while, we can just delete ctx, it, before
-    # doing the next(it)
+    # Instead of testing with a while, we can just delete ctx before doing
+    # something with the iterator
     def testOrphanFilter(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.filter("//uast:RuntimeImport")
@@ -485,6 +485,9 @@ class BblfshTests(unittest.TestCase):
     #
     # it = pick a it from its
     # node = next(it)
+    #
+    # Instead of testing with a while, we can just delete ctx before doing
+    # something with the iterator
     def testOrphanIterator(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
@@ -516,6 +519,9 @@ class BblfshTests(unittest.TestCase):
     #
     # node = pick a node from ext_refs
     # node.load()
+    #
+    # Instead of testing with a while, we can just delete ctx, it, etc before
+    # doing something with the node
     def testLoadOrphanNode(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
@@ -544,12 +550,16 @@ class BblfshTests(unittest.TestCase):
     #
     # nodes = []
     # for file in files:
-    #    it = client.parse(file).iterate(TreeOrder.PRE_ORDER)
-    #    node = next(it)
+    #    node = client.parse(file)
+    #                 .iterate(TreeOrder.PRE_ORDER)
+    #                 .root
     #    nodes.append(node)
     #
     # node = pick a node from nodes
     # node.filter("blablablah")
+    #
+    # Instead of testing with a while, we can just delete ctx before
+    # doing the filter with the node
     def testFilterOrphanNode(self) -> None:
         ctx = self._parse_fixture()
         root = ctx.root
