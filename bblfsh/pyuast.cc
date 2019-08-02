@@ -345,7 +345,6 @@ static PyObject *PythonContextExt_filter(PythonContextExt *self, PyObject *args,
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
 
-    Py_INCREF((PyObject *)self);
     return it;
 }
 
@@ -948,7 +947,6 @@ static PyObject *PythonContext_filter(PythonContext *self, PyObject *args, PyObj
         PyErr_SetString(PyExc_RuntimeError, e.what());
     }
 
-    Py_INCREF((PyObject *)self);
     return it;
 }
 
