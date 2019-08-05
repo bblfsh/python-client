@@ -220,6 +220,7 @@ class BblfshTests(unittest.TestCase):
                     "col": end_col
                 }
             }
+
         root = {"@type": "root"}
         set_position(root, 0,1,1, 1,1,2)
 
@@ -253,6 +254,15 @@ class BblfshTests(unittest.TestCase):
         return [n["@type"] for n in
                 filter(lambda x: isinstance(x, dict), iterator)]
 
+    @staticmethod
+    def _get_positions(iterator: NodeIterator) -> t.List[str]:
+        nodes = [ n.get() for n in iterator ]
+        start_positions = [ n["@pos"]["start"] for n in
+                            filter(lambda x: isinstance(x, dict) and
+                                   "@pos" in x.keys() and
+                                   "start" in x["@pos"].keys(), nodes) ]
+        return [ (n["offset"], n["line"], n["col"]) for n in start_positions ]
+
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.PRE_ORDER)
@@ -278,12 +288,29 @@ class BblfshTests(unittest.TestCase):
                                         'son1_2', 'son2_1', 'son2_2'])
 
     def testIteratorPositionOrder(self) -> None:
+        # Check first our homemade tree
         root = self._itTestTree()
         it = iterator(root, TreeOrder.POSITION_ORDER)
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
         self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1',
                                         'son1_2', 'son2_2', 'son2'])
+        # Check that when using the positional order the positions we get are
+        # in fact sorted by (offset, line, col)
+        ctx = self._parse_fixture()
+        it = ctx.iterate(TreeOrder.POSITION_ORDER)
+        positions = self._get_positions(it)
+        self.assertListEqual(positions, sorted(positions))
+
+    def testAnyOrder(self) -> None:
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.ANY_ORDER)
+        self.assertIsNotNone(it)
+        expanded = self._get_nodetypes(it)
+        # We only can test that the order gives us all the nodes
+        self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1',
+                                         'son1_2', 'son2_1', 'son2_2'})
+
 
     def _validate_ctx(self, ctx: ResultContext) -> None:
         self.assertIsNotNone(ctx)
