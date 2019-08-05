@@ -255,13 +255,17 @@ class BblfshTests(unittest.TestCase):
                 filter(lambda x: isinstance(x, dict), iterator)]
 
     @staticmethod
-    def _get_positions(iterator: NodeIterator) -> t.List[str]:
+    def _get_nodes(iterator: NodeIterator) -> t.List[dict]:
+        return [n.get() for n in iterator]
+
+    @staticmethod
+    def _get_positions(iterator: NodeIterator):
         nodes = [ n.get() for n in iterator ]
         start_positions = [ n["@pos"]["start"] for n in
                             filter(lambda x: isinstance(x, dict) and
                                    "@pos" in x.keys() and
                                    "start" in x["@pos"].keys(), nodes) ]
-        return [ (n["offset"], n["line"], n["col"]) for n in start_positions ]
+        return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in start_positions ]
 
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
@@ -311,6 +315,16 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1',
                                          'son1_2', 'son2_1', 'son2_2'})
 
+    # Iterating from the root node should give the same result as
+    # iterating from the tree, for every available node
+    def testNodeIteratorEqualsCtxIterator(self) -> None:
+        ctx = self._parse_fixture()
+        root = ctx.root
+
+        for order in TreeOrder:
+            itCtx  = ctx.iterate(order)
+            itRoot = root.iterate(order)
+            self.assertListEqual(self._get_nodes(itCtx), self._get_nodes(itRoot))
 
     def _validate_ctx(self, ctx: ResultContext) -> None:
         self.assertIsNotNone(ctx)
