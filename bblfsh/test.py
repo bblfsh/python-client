@@ -435,11 +435,11 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual("uast:Identifier", path["@type"])
         self.assertEqual("os", path["Name"])
 
-    # This test is intended to test that filter iterators work correctly
-    # once the context they come from has been DECREFed, i.e. chunks of
-    # code as the following one work correctly: python would decref the
-    # itetators, contexts, etc once we are out of while the loop, nodes
-    # should still be alive
+    # The following testOrphan{x} methods verifies that iterators and nodes work
+    # correctly once the context they come from has been DECREFed. Loading an
+    # (external) node and filtering it after the context / iterators have been
+    # DECREFed are also checked. As an example, the following code should work
+    # in Python:
     #
     # its = []
     # for file in files:
@@ -472,22 +472,6 @@ class BblfshTests(unittest.TestCase):
         typ = obj["@type"]
         self.assertEqual("uast:RuntimeImport", typ)
 
-    # This test is intended to test that iterators work correctly once
-    # the context they come from has been DECREFed, i.e. chunks of code
-    # as the following one work correctly: python would decref the
-    # itetators, contexts, etc once we are out of while the loop, nodes
-    # should still be alive
-    #
-    # its = []
-    # for file in files:
-    #    it = client.parse(file).iterate(TreeOrder.POST_ORDER)
-    #    its.append(it)
-    #
-    # it = pick a it from its
-    # node = next(it)
-    #
-    # Instead of testing with a while, we can just delete ctx before doing
-    # something with the iterator
     def testOrphanIterator(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
@@ -505,23 +489,6 @@ class BblfshTests(unittest.TestCase):
         obj = next(it)
         self.assertIsInstance(obj, Node)
 
-    # This test is intended to test that loading an external node can be done
-    # after the context, iterators, etc it comes from have been DECREFed, i.e.
-    # that chunks of code as the following one work correctly: python would
-    # DECREF the itetators, contexts, etc once we are out of while the loop,
-    # nodes should still be alive
-    #
-    # ext_refs = []
-    # for file in files:
-    #    it = client.parse(file).iterate(TreeOrder.PRE_ORDER)
-    #    node = next(it)
-    #    ext_refs.append(node.node_ext)
-    #
-    # node = pick a node from ext_refs
-    # node.load()
-    #
-    # Instead of testing with a while, we can just delete ctx, it, etc before
-    # doing something with the node
     def testLoadOrphanNode(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
@@ -542,24 +509,6 @@ class BblfshTests(unittest.TestCase):
         typ = obj["@type"]
         self.assertEqual("uast:RuntimeImport", typ)
 
-    # This test is intended to test that we can call filter over a node when
-    # the context, iterators, etc it has come from have been DECREFed, i.e.
-    # chunk of codes as the following one work correctly: python would DECREF
-    # the itetators, contexts, etc once we are out of while the loop, and we
-    # could still call the filter method
-    #
-    # nodes = []
-    # for file in files:
-    #    node = client.parse(file)
-    #                 .iterate(TreeOrder.PRE_ORDER)
-    #                 .root
-    #    nodes.append(node)
-    #
-    # node = pick a node from nodes
-    # node.filter("blablablah")
-    #
-    # Instead of testing with a while, we can just delete ctx before
-    # doing the filter with the node
     def testFilterOrphanNode(self) -> None:
         ctx = self._parse_fixture()
         root = ctx.root
