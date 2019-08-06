@@ -268,6 +268,10 @@ class BblfshTests(unittest.TestCase):
                                    "start" in x["@pos"].keys(), nodes) ]
         return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in start_positions ]
 
+    def decrefAndGC(self, obj) -> None:
+        del obj
+        gc.collect()
+
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.PRE_ORDER)
@@ -456,8 +460,7 @@ class BblfshTests(unittest.TestCase):
     def testOrphanFilter(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.filter("//uast:RuntimeImport")
-        del ctx
-        gc.collect()
+        self.decrefAndGC(ctx)
         # We should be able to retrieve values from the iterator
         # after the context has been DECREFed but the iterator
         # still exists
@@ -467,8 +470,7 @@ class BblfshTests(unittest.TestCase):
 
         # Chaining calls has the same effect as splitting
         # the effect across different lines as above
-        del it
-        gc.collect()
+        self.decrefAndGC(it)
         it = self._parse_fixture().filter("//uast:RuntimeImport")
         next(it)
         obj = next(it).get()
@@ -478,8 +480,7 @@ class BblfshTests(unittest.TestCase):
     def testOrphanIterator(self) -> None:
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
-        del ctx
-        gc.collect()
+        self.decrefAndGC(ctx)
         # We should be able to retrieve values from the iterator
         # after the context has been DECREFed but the iterator
         # still exists
@@ -488,8 +489,7 @@ class BblfshTests(unittest.TestCase):
 
         # Chaining calls has the same effect as splitting
         # the effect across different lines as above
-        del it
-        gc.collect()
+        self.decrefAndGC(it)
         it = self._parse_fixture().iterate(TreeOrder.POST_ORDER)
         obj = next(it)
         self.assertIsInstance(obj, Node)
@@ -499,20 +499,17 @@ class BblfshTests(unittest.TestCase):
         it = ctx.iterate(TreeOrder.PRE_ORDER)
         # The underlying ctx should not be deallocated even if ctx goes
         # out of scope because the iterator is still alive
-        del ctx
-        gc.collect()
+        self.decrefAndGC(ctx)
         next(it); next(it); next(it);
         node = next(it)
-        del it
-        gc.collect()
+        self.decrefAndGC(it)
         # Context should not have been deallocated yet because we
         # want to iterate from the node onwards
         it2 = node.iterate(TreeOrder.PRE_ORDER)
         node_ext = node.node_ext
         # node could be deallocated here also, if we by, any chance,
         # we happen to be storing only the external nodes
-        del node
-        gc.collect()
+        self.decrefAndGC(node)
         obj = node_ext.load()
         typ = obj["@type"]
         self.assertEqual("uast:RuntimeImport", typ)
@@ -520,8 +517,7 @@ class BblfshTests(unittest.TestCase):
     def testFilterOrphanNode(self) -> None:
         ctx = self._parse_fixture()
         root = ctx.root
-        del ctx
-        gc.collect()
+        self.decrefAndGC(ctx)
         # filter should work here over the tree even if we ctx has
         # been DECREFed by the interpreter (it has gone out of scope)
         it = root.filter("//uast:RuntimeImport")
