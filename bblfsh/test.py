@@ -1,6 +1,7 @@
 import resource
 import typing as t
 import unittest
+import gc
 
 import docker
 
@@ -456,6 +457,7 @@ class BblfshTests(unittest.TestCase):
         ctx = self._parse_fixture()
         it = ctx.filter("//uast:RuntimeImport")
         del ctx
+        gc.collect()
         # We should be able to retrieve values from the iterator
         # after the context has been DECREFed but the iterator
         # still exists
@@ -466,6 +468,7 @@ class BblfshTests(unittest.TestCase):
         # Chaining calls has the same effect as splitting
         # the effect across different lines as above
         del it
+        gc.collect()
         it = self._parse_fixture().filter("//uast:RuntimeImport")
         next(it)
         obj = next(it).get()
@@ -476,6 +479,7 @@ class BblfshTests(unittest.TestCase):
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.PRE_ORDER)
         del ctx
+        gc.collect()
         # We should be able to retrieve values from the iterator
         # after the context has been DECREFed but the iterator
         # still exists
@@ -485,6 +489,7 @@ class BblfshTests(unittest.TestCase):
         # Chaining calls has the same effect as splitting
         # the effect across different lines as above
         del it
+        gc.collect()
         it = self._parse_fixture().iterate(TreeOrder.POST_ORDER)
         obj = next(it)
         self.assertIsInstance(obj, Node)
@@ -495,9 +500,11 @@ class BblfshTests(unittest.TestCase):
         # The underlying ctx should not be deallocated even if ctx goes
         # out of scope because the iterator is still alive
         del ctx
+        gc.collect()
         next(it); next(it); next(it);
         node = next(it)
         del it
+        gc.collect()
         # Context should not have been deallocated yet because we
         # want to iterate from the node onwards
         it2 = node.iterate(TreeOrder.PRE_ORDER)
@@ -505,6 +512,7 @@ class BblfshTests(unittest.TestCase):
         # node could be deallocated here also, if we by, any chance,
         # we happen to be storing only the external nodes
         del node
+        gc.collect()
         obj = node_ext.load()
         typ = obj["@type"]
         self.assertEqual("uast:RuntimeImport", typ)
@@ -513,6 +521,7 @@ class BblfshTests(unittest.TestCase):
         ctx = self._parse_fixture()
         root = ctx.root
         del ctx
+        gc.collect()
         # filter should work here over the tree even if we ctx has
         # been DECREFed by the interpreter (it has gone out of scope)
         it = root.filter("//uast:RuntimeImport")
