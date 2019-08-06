@@ -11,6 +11,7 @@ from bblfsh.client import NonUTF8ContentException
 from bblfsh.node import NodeTypedGetException
 from bblfsh.result_context import (Node, NodeIterator, ResultContext)
 from bblfsh.pyuast import uast, decode
+from functools import cmp_to_key
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
@@ -267,6 +268,19 @@ class BblfshTests(unittest.TestCase):
                                    "start" in x["@pos"].keys(), nodes) ]
         return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in start_positions ]
 
+    @staticmethod
+    def _position_sort(x, y):
+        (a, b, c) = x
+        (e, f, g) = y
+
+        if a == 0 or e == 0 or (b == 0 and c == 0) or (f == 0 and g == 0):
+            if b != c:
+                return b - f
+            else:
+                return c - g
+        else:
+            return a - b
+
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.PRE_ORDER)
@@ -304,7 +318,8 @@ class BblfshTests(unittest.TestCase):
         ctx = self._parse_fixture()
         it = ctx.iterate(TreeOrder.POSITION_ORDER)
         positions = self._get_positions(it)
-        self.assertListEqual(positions, sorted(positions))
+        sorted_pos = sorted(positions, key = cmp_to_key(self._position_sort))
+        self.assertListEqual(positions, sorted_pos)
 
     def testAnyOrder(self) -> None:
         root = self._itTestTree()
