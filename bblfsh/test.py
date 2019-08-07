@@ -2,7 +2,7 @@ import resource
 import typing as t
 import unittest
 import gc
-
+import bblfsh
 import docker
 
 from bblfsh import (BblfshClient, iterator, TreeOrder,
@@ -13,6 +13,7 @@ from bblfsh.node import NodeTypedGetException
 from bblfsh.result_context import (Node, NodeIterator, ResultContext)
 from bblfsh.pyuast import uast, decode
 from functools import cmp_to_key
+
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
@@ -531,6 +532,33 @@ class BblfshTests(unittest.TestCase):
         obj = next(it).get()
         typ = obj["@type"]
         self.assertEqual("uast:RuntimeImport", typ)
+
+    def testPythonContextIterate(self) -> None:
+        # C++ memory context
+        ctxC = self._parse_fixture()
+        # Python memory context
+        pyDict = ctxC.root.get()
+        ctxPy = bblfsh.context(pyDict)
+
+        for treeOrder in TreeOrder:
+            itC = ctxC.iterate(treeOrder)
+            itPy = ctxPy.iterate(treeOrder)
+
+            for nodeC, nodePy in zip(itC, itPy):
+                self.assertEqual(nodeC.get(), nodePy)
+
+    def testPythonContextFilter(self) -> None:
+        # C++ memory context
+        ctxC = self._parse_fixture()
+        # Python memory context
+        pyDict = ctxC.root.get()
+        ctxPy = bblfsh.context(pyDict)
+
+        itC = ctxC.filter("//*[@role='Identifier']")
+        itPy = ctxPy.filter("//*[@role='Identifier']")
+
+        for nodeC, nodePy in zip(itC, itPy):
+            self.assertEqual(nodeC.get(), nodePy)
 
 
 if __name__ == "__main__":
