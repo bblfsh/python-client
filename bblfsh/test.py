@@ -560,6 +560,16 @@ class BblfshTests(unittest.TestCase):
         for nodeC, nodePy in zip(itC, itPy):
             self.assertEqual(nodeC.get(), nodePy)
 
+    def testEncodeDecodePythonContext(self) -> None:
+        # C++ memory context
+        ctxC = self._parse_fixture()
+        # Python memory context
+        pyDict = ctxC.root.get()
+        ctxPy = bblfsh.context(pyDict)
+        encoded = ctxPy.encode(fmt = 1) # YAML
+        decoded = decode(encoded, format = 1)
+
+        self.assertEqual(encoded, decoded.load())
 
 if __name__ == "__main__":
     unittest.main()

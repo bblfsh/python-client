@@ -15,5 +15,9 @@ class Context:
         TreeOrder.check_order(order)
         return iterator(self.root, order)
 
+    def encode(self, fmt: int):
+        encoded = self.ctx.encode(self.root, fmt)
+        return encoded
+
 def context(root: dict) -> Context:
     return Context(root)
