@@ -330,6 +330,14 @@ class BblfshTests(unittest.TestCase):
         self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1',
                                          'son1_2', 'son2_1', 'son2_2'})
 
+    def testAnyOrder(self) -> None:
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.CHILDREN_ORDER)
+        self.assertIsNotNone(it)
+        expanded = self._get_nodetypes(it)
+        # We only can test that the order gives us all the nodes
+        self.assertEqual(set(expanded), {'son1', 'son2'})
+
     # Iterating from the root node should give the same result as
     # iterating from the tree, for every available node
     def testNodeIteratorEqualsCtxIterator(self) -> None:
