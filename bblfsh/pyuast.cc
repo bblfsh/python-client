@@ -1066,7 +1066,6 @@ static PyObject *PythonContext_new(PyObject *self, PyObject *args) {
     // TODO: optionally accept root object
     if (!PyArg_ParseTuple(args, "")) return nullptr;
 
-
     PythonContext *pyU = PyObject_New(PythonContext, &PythonContextType);
     if (!pyU) return nullptr;
 
