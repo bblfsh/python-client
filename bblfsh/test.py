@@ -270,16 +270,21 @@ class BblfshTests(unittest.TestCase):
 
     @staticmethod
     def _position_sort(x, y):
-        (a, b, c) = x
-        (e, f, g) = y
+        (off1, line1, col1) = x
+        (off2, line2, col2) = y
 
-        if a == 0 or e == 0 or (b == 0 and c == 0) or (f == 0 and g == 0):
-            if b != c:
-                return b - f
-            else:
-                return c - g
+        def has_offset(off, line, col):
+            off != 0 or (line == 1 and col == 1)
+
+        # Extracted from here
+        # https://github.com/bblfsh/sdk/blob/a2cab92/uast/uast.go#L124
+        if has_offset(off1, line1, col1) and has_offset(off2, line2, col2):
+            return off1 - off2
         else:
-            return a - b
+            if line1 != line2:
+                return line1 - line2
+
+            return col1 - col2
 
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
@@ -336,7 +341,7 @@ class BblfshTests(unittest.TestCase):
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
         # We only can test that the order gives us all the nodes
-        self.assertEqual(set(expanded), {'son1', 'son2'})
+        self.assertEqual(expanded, ['son1', 'son2'])
 
     # Iterating from the root node should give the same result as
     # iterating from the tree, for every available node
