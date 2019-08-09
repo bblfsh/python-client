@@ -9,7 +9,7 @@ from bblfsh import (BblfshClient, iterator, TreeOrder,
                     Modes, role_id, role_name)
 from bblfsh.launcher import ensure_bblfsh_is_running
 from bblfsh.client import NonUTF8ContentException
-from bblfsh.node import NodeTypedGetException
+from bblfsh.node import (NodeTypedGetException, NodePosition, Position)
 from bblfsh.result_context import (Node, NodeIterator, ResultContext)
 from bblfsh.pyuast import uast, decode
 
@@ -38,11 +38,11 @@ class BblfshTests(unittest.TestCase):
         return ctx
 
     def testVersion(self) -> None:
-        version = self.client.version()
+        version = self.client.version().version
+
         self.assertTrue(hasattr(version, "version"))
         self.assertTrue(version.version)
         self.assertTrue(hasattr(version, "build"))
-        self.assertTrue(version.build)
 
     def testNativeParse(self) -> None:
         ctx = self.client.parse(self.fixtures_pyfile, mode=Modes.NATIVE)
@@ -76,6 +76,7 @@ class BblfshTests(unittest.TestCase):
         ctx = self.client.parse(self.fixtures_cfile)
         self._validate_ctx(ctx)
         self.assertEqual(ctx.language, "c")
+
 
         it = ctx.filter("//uast:FunctionGroup/Nodes/uast:Alias/Name/uast:Identifier/Name")
         self.assertIsInstance(it, NodeIterator)
@@ -219,6 +220,12 @@ class BblfshTests(unittest.TestCase):
                     "offset": end_offset,
                     "line": end_line,
                     "col": end_col
+                },
+                "middle": {
+                    "@type": "uast:Position",
+                    "offset": (start_offset + end_offset) / 2,
+                    "line":  (start_line + end_line) / 2,
+                    "col": (start_col + end_col) / 2
                 }
             }
 
@@ -261,40 +268,76 @@ class BblfshTests(unittest.TestCase):
 
     @staticmethod
     def _get_positions(iterator: NodeIterator):
-        nodes = [ n.get() for n in iterator ]
-        start_positions = [ n["@pos"]["start"] for n in
-                            filter(lambda x: isinstance(x, dict) and
-                                   "@pos" in x.keys() and
-                                   "start" in x["@pos"].keys(), nodes) ]
-        return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in start_positions ]
+        nodes = [ n for n in iterator ]
+        start_positions = [ n.position.start for n in
+                            filter(lambda x: x != None and
+                                   len(x.position) > 0 and
+                                   x.position["start"] != None,
+                                   nodes) ]
+        return [ (n.offset, n.line, n.col) for n in start_positions ]
 
     def decrefAndGC(self, obj) -> None:
         del obj
         gc.collect()
+
+    def testNodePosition(self) -> None:
+        pos = NodePosition(start = Position({"offset": 123}))
+        pos.end = Position({"offset": 999})
+        pos.op = Position({"offset": 342})
+        self.assertEqual(123, pos.start.offset)
+        self.assertEqual(999, pos.end.offset)
+        self.assertEqual(342, pos["op"].offset)
+
+    def testCustomNodePosition(self) -> None:
+        root = self._itTestTree()
+        nodes = [ n for n in iterator(root, TreeOrder.POSITION_ORDER) ]
+        start_positions = [ n.position.start for n in
+                            filter(lambda x: x != None and
+                                   isinstance(x, Node) and
+                                   len(x.position) > 0 and
+                                   x.position.start != None,
+                                   nodes) ]
+        end_positions = [ n.position.end for n in
+                            filter(lambda x: x != None and
+                                   isinstance(x, Node) and
+                                   len(x.position) > 0 and
+                                   x.position.end != None,
+                                   nodes) ]
+        middle_positions = [ n.position.middle for n in
+                            filter(lambda x: x != None and
+                                   isinstance(x, Node) and
+                                   len(x.position) > 0 and
+                                   x.position.middle != None,
+                                   nodes) ]
+
+        for i in range(len(middle_positions)):
+            self.assertEqual((start_positions[i].offset + end_positions[i].offset) / 2, middle_positions[i].offset)
+
+
 
     def testIteratorPreOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.PRE_ORDER)
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
-        self.assertListEqual(expanded, ['root', 'son1', 'son1_1', 'son1_2',
-                                        'son2', 'son2_1', 'son2_2'])
+        self.assertListEqual(expanded,
+                             ['root', 'son1', 'son1_1', 'son1_2', 'son2', 'son2_1', 'son2_2'])
 
     def testIteratorPostOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.POST_ORDER)
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
-        self.assertListEqual(expanded, ['son1_1', 'son1_2', 'son1', 'son2_1',
-                                        'son2_2', 'son2', 'root'])
+        self.assertListEqual(expanded,
+                             ['son1_1', 'son1_2', 'son1', 'son2_1', 'son2_2', 'son2', 'root'])
 
     def testIteratorLevelOrder(self) -> None:
         root = self._itTestTree()
         it = iterator(root, TreeOrder.LEVEL_ORDER)
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
-        self.assertListEqual(expanded, ['root', 'son1', 'son2', 'son1_1',
-                                        'son1_2', 'son2_1', 'son2_2'])
+        self.assertListEqual(expanded,
+                             ['root', 'son1', 'son2', 'son1_1', 'son1_2', 'son2_1', 'son2_2'])
 
     def testIteratorPositionOrder(self) -> None:
         # Check first our homemade tree
@@ -302,8 +345,7 @@ class BblfshTests(unittest.TestCase):
         it = iterator(root, TreeOrder.POSITION_ORDER)
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
-        self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1',
-                                        'son1_2', 'son2_2', 'son2'])
+        self.assertListEqual(expanded, ['root', 'son1', 'son2_1', 'son1_1', 'son1_2', 'son2_2', 'son2'])
         # Check that when using the positional order the positions we get are
         # in fact sorted by (offset, line, col)
         ctx = self._parse_fixture()
@@ -317,8 +359,7 @@ class BblfshTests(unittest.TestCase):
         self.assertIsNotNone(it)
         expanded = self._get_nodetypes(it)
         # We only can test that the order gives us all the nodes
-        self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1',
-                                         'son1_2', 'son2_1', 'son2_2'})
+        self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1', 'son1_2', 'son2_1', 'son2_2'})
 
     # Iterating from the root node should give the same result as
     # iterating from the tree, for every available node
@@ -393,9 +434,22 @@ class BblfshTests(unittest.TestCase):
         res = self.client.supported_languages()
         self.assertGreater(len(res), 0)
         for l in res:
-            for key in ('language', 'version', 'status', 'features'):
+            for key in ('name', 'language', 'version', 'status', 'features'):
                 self.assertTrue(hasattr(l, key))
                 self.assertIsNotNone(getattr(l, key))
+
+    def testSupportedLanguagesWithAliases(self) -> None:
+        langs_with_aliases = {'csharp', 'cpp', 'javascript', 'bash'}
+        res = self.client.supported_languages()
+        self.assertGreater(len(res), 0)
+        for l in res:
+            for key in ('name', 'language', 'version', 'status', 'features'):
+                self.assertTrue(hasattr(l, key))
+                self.assertIsNotNone(getattr(l, key))
+            if getattr(l, 'language') in langs_with_aliases:
+                self.assertTrue(hasattr(l, 'aliases'))
+                self.assertGreater(len(getattr(l, 'aliases')), 0)
+
 
     def testEncode(self) -> None:
         ctx = self._parse_fixture()

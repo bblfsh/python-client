@@ -9,108 +9,69 @@ from bblfsh.tree_order import TreeOrder
 from bblfsh.type_aliases import ResultMultiType
 
 
-class NodeTypedGetException(Exception):
-    pass
-
-
-class CompatPosition:
-    """
-    v1 positions were extracted as node.[start|end]_position.[line|col|offset]. To
-    emulate that, this dictionary will be returned when accessing the old position
-    properties and its setters will update the parent Node real position ones.
-    """
-
-    def __init__(self, parent_pos: dict) -> None:
-        self._parent_pos = parent_pos
+class Position:
+    def __init__(self, pos: dict) -> None:
+        self._pos = pos
 
     @property
     def line(self) -> int:
-        return self._parent_pos["line"]
+        return self._pos["line"]
 
     @line.setter
     def line(self, v: int) -> None:
-        self._parent_pos["line"] = v
+        self._pos["line"] = v
 
     @property
     def col(self) -> int:
-        return self._parent_pos["col"]
+        return self._pos["col"]
 
     @col.setter
     def col(self, v: int) -> None:
-        self._parent_pos["col"] = v
+        self._pos["col"] = v
 
     @property
     def offset(self) -> int:
-        return self._parent_pos["offset"]
+        return self._pos["offset"]
 
     @offset.setter
     def offset(self, v: int) -> None:
-        self._parent_pos["offset"] = v
+        self._pos["offset"] = v
 
-# This is for v1 "node.children" compatibility. It will update the children
-# property with the dict or Node objects in properties or list/tuple properties
-# when .children is accessed (because the user could change the node using get_dict()
-# or .properties).
-# Also, all these " in children" are O(n) so this will be slow for frequently accessing
-# the children property on big nodes.
-class CompatChildren(MutableSequence):
-    def __init__(self, parent: "Node") -> None:
-        self._par_dict = parent.get_dict()
-        self._children = self._sync_children()
+    @property
+    def type(self) -> str:
+        return "uast:Position"
 
-    def _sync_children(self) -> List["Node"]:
-        if "_children" not in self._par_dict:
-            self._par_dict["_children"] = []
-        children = self._par_dict["_children"]
-        for k, v in self._par_dict.items():
-            if k in ("_children", "@pos", "@role", "@type"):
-                continue
 
-            tv = type(v)
-            if tv in (Node, dict):
-                if v not in children:
-                    children.append(v)
-            elif tv in (list, tuple):
-                # Get all node|dict types inside the list and add to children
-                children.extend([i for i in v if type(i) in (Node, dict) and i not in children])
-            # else ignore it
-        return children
+class NodePosition:
+    def __init__(self, **kwargs) -> None:
+        for key, value in kwargs.items():
+            self.__dict__[key] = value
 
-    @staticmethod
-    def _node2dict(n: Union['Node', dict]) -> dict:
-        if isinstance(n, Node):
-            # Convert to dict before appending
-            return n.get_dict()
-        return n
+    def __len__(self):
+        return len(self.__dict__)
 
-    def __len__(self) -> int:
-        return len(self._children)
+    def __getitem__(self, key):
+        return self.__dict__.get(key, None)
 
-    def __getitem__(self, idx: Union[int, slice]) -> Any:
-        return Node(value=self._children[idx])
+    def __setitem__(self, key, item):
+        self.__dict__[key] = item
 
-    def __delitem__(self, idx: Union[int, slice]) -> None:
-        del self._children[idx]
+    def __contains__(self, item):
+        return item in self.__dict__
 
-    def __setitem__(self, idx: Union[int, slice], val: Union['Node', dict]) -> None:
-        self._par_dict["_children"].__setitem__(idx, self._node2dict(val))
-        self._children = self._sync_children()
+    def __iter__(self):
+        return iter(self.__dict__)
 
-    def insert(self, idx: int, val: Union['Node', dict]) -> None:
-        self._par_dict["_children"].insert(idx, self._node2dict(val))
-        self._children = self._sync_children()
+    @property
+    def type(self) -> str:
+        return "uast:Positions"
 
-    def append(self, val: Union['Node', dict]) -> None:
-        self._par_dict["_children"].append(self._node2dict(val))
-        self._children = self._sync_children()
 
-    def extend(self, items: List[Union['Node', dict]]) -> None:
-        for i in items:
-            self.append(i)
+class NodeTypedGetException(Exception):
+    pass
 
-    def __str__(self) -> str:
-        return str(self._children)
-
+class NodeInstancingException(Exception):
+    pass
 
 EMPTY_NODE_DICT = {
     "@type": "",
@@ -118,11 +79,6 @@ EMPTY_NODE_DICT = {
     "@role": [],
     "@children": [],
 }
-
-
-class NodeInstancingException(Exception):
-    pass
-
 
 class Node:
     def __init__(self, node_ext: NodeExt = None, ctx: Context = None, value: ResultMultiType = None) -> None:
@@ -177,7 +133,6 @@ class Node:
         return cast(dict, self._get_typed(dict))
 
     def _iterator(self, it: IteratorExt) -> 'NodeIterator':
-        # TODO: this avoids circular imports; any better way to make it work?
         import bblfsh.node_iterator
         return bblfsh.node_iterator.NodeIterator(it, self.ctx)
 
@@ -188,36 +143,40 @@ class Node:
     def filter(self, query: str) -> 'NodeIterator':
         return self._iterator(self.ctx.filter(query, self.node_ext))
 
-    # TODO(juanjux): backward compatibility methods, remove once v1
-    #                is definitely deprecated
-
-    @property
-    def internal_type(self) -> str:
-        return self.get_dict()["@type"]
-
-    @internal_type.setter
-    def internal_type(self, t: str) -> None:
-        d = self.get_dict()
-        d["@type"] = t
-
     @property
     def properties(self) -> dict:
         return self.get_dict()
 
-    def _is_dict_list(self, key: str) -> Optional[List]:
-        val = self.get_dict().get(key, None)
-        if not val or not isinstance(val, List):
-            return None
+    @property
+    def type(self) -> str:
+        return self.get_dict()["@type"]
 
-        for i in val:
-            if not isinstance(i, dict):
-                return None
-
-        return val
+    @type.setter
+    def type(self, t: str) -> None:
+        d = self.get_dict()
+        d["@type"] = t
 
     @property
     def children(self) -> List["Node"]:
-        return CompatChildren(self)
+        d = self.get_dict()
+
+        if "_children" not in d:
+            d["_children"] = []
+
+        children = d["_children"]
+        for k, v in d.items():
+            if k in ("_children", "@pos", "@role", "@type"):
+                continue
+
+            tv = type(v)
+            if tv in (Node, dict):
+                if v not in children:
+                    children.append(v)
+            elif tv in (list, tuple):
+                # Get all node|dict types inside the list and add to children
+                children.extend([i for i in v if type(i) in (Node, dict) and i not in children])
+
+        return children
 
     @property
     def token(self) -> str:
@@ -232,32 +191,15 @@ class Node:
     def roles(self) -> List:
         return [role_id(name) for name in self.get_dict().get("@role", [])]
 
-    def _add_position(self) -> None:
+    @property
+    def position(self) -> NodePosition:
+        pos = NodePosition()
+
         d = self.get_dict()
         if "@pos" not in d:
-            d["@pos"] = {
-                "@type": "uast:Positions",
-                "start": Node._get_default_position(),
-                "end": Node._get_default_position()
-            }
+            return pos
 
-    @property
-    def start_position(self) -> CompatPosition:
-        self._add_position()
-        start = self.get_dict()["@pos"].get("start", Node._get_default_position())
-        return CompatPosition(start)
+        for key, value in d["@pos"].items():
+            pos[key] = Position(value)
 
-    @property
-    def end_position(self) -> CompatPosition:
-        self._add_position()
-        end = self.get_dict()["@pos"].get("end", Node._get_default_position())
-        return CompatPosition(end)
-
-    @staticmethod
-    def _get_default_position():
-        return {
-            "@type": "uast:Position",
-            "offset": 0,
-            "line": 0,
-            "col": 0,
-        }
+        return pos

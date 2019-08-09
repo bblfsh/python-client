@@ -3,9 +3,9 @@ from typing import Optional, Union, List
 
 import grpc
 
-from bblfsh.aliases import (ParseRequest, DriverStub, ProtocolServiceStub,
-                            VersionRequest, SupportedLanguagesRequest, ModeType,
-                            VersionResponse)
+from bblfsh.aliases import (ParseRequest, VersionRequest, VersionResponse,
+                            Manifest, SupportedLanguagesRequest, ModeType,
+                            DriverStub, DriverHostStub)
 from bblfsh.result_context import ResultContext
 
 
@@ -32,8 +32,8 @@ class BblfshClient:
         else:
             self._channel = grpc.endpoint
 
-        self._stub_v1 = ProtocolServiceStub(self._channel)
-        self._stub_v2 = DriverStub(self._channel)
+        self._stub = DriverStub(self._channel)
+        self._hoststub = DriverHostStub(self._channel)
 
     @staticmethod
     def _ensure_utf8(text: bytes) -> str:
@@ -80,12 +80,12 @@ class BblfshClient:
         contents = self._get_contents(contents, filename)
         request = ParseRequest(filename=os.path.basename(filename),
                                content=contents, mode=mode,
-                               language=self._scramble_language(language))
-        response = self._stub_v2.Parse(request, timeout=timeout)
+                               language=language)
+        response = self._stub.Parse(request, timeout=timeout)
         return ResultContext(response)
 
-    def supported_languages(self) -> List[str]:
-        sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())
+    def supported_languages(self) -> List[Manifest]:
+        sup_response = self._hoststub.SupportedLanguages(SupportedLanguagesRequest())
         return sup_response.languages
 
     def version(self) -> VersionResponse:
@@ -95,18 +95,7 @@ class BblfshClient:
         :return: A dictionary with the keys "version" for the semantic version and
                  "build" for the build timestamp.
         """
-        return self._stub_v1.Version(VersionRequest())
-
-    @staticmethod
-    def _scramble_language(lang: Optional[str]) -> Optional[str]:
-        # TODO: remove once aliases are integrated
-        if lang is None:
-            return None
-        lang = lang.lower()
-        lang = lang.replace(" ", "-")
-        lang = lang.replace("+", "p")
-        lang = lang.replace("#", "sharp")
-        return lang
+        return self._hoststub.ServerVersion(VersionRequest())
 
     def close(self) -> None:
         """
@@ -114,4 +103,4 @@ class BblfshClient:
         not supported.
         """
         self._channel.close()
-        self._channel = self._stub_v1 = self._stub_v2 = None
+        self._channel = self._stub = self._hoststub = None
