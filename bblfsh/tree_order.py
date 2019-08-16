@@ -1,5 +1,5 @@
 from enum import IntEnum
-from bblfsh.pyuast import AnyOrder, PreOrder, PostOrder, LevelOrder, PositionOrder
+from bblfsh.pyuast import AnyOrder, PreOrder, PostOrder, LevelOrder, ChildrenOrder, PositionOrder
 
 class TreeOrder(IntEnum):
     # Gives no assurances over the iteration order of the tree
@@ -9,6 +9,7 @@ class TreeOrder(IntEnum):
     PRE_ORDER      = PreOrder
     POST_ORDER     = PostOrder
     LEVEL_ORDER    = LevelOrder
+    CHILDREN_ORDER = ChildrenOrder
     POSITION_ORDER = PositionOrder
 
     @staticmethod

@@ -12,6 +12,7 @@ from bblfsh.client import NonUTF8ContentException
 from bblfsh.node import NodeTypedGetException
 from bblfsh.result_context import (Node, NodeIterator, ResultContext)
 from bblfsh.pyuast import uast, decode
+from functools import cmp_to_key
 
 class BblfshTests(unittest.TestCase):
     BBLFSH_SERVER_EXISTED = None
@@ -261,12 +262,11 @@ class BblfshTests(unittest.TestCase):
 
     @staticmethod
     def _get_positions(iterator: NodeIterator):
-        nodes = [ n.get() for n in iterator ]
-        start_positions = [ n["@pos"]["start"] for n in
-                            filter(lambda x: isinstance(x, dict) and
-                                   "@pos" in x.keys() and
-                                   "start" in x["@pos"].keys(), nodes) ]
-        return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in start_positions ]
+        startPositions = [ n["@pos"]["start"] for n in
+                           filter(lambda x: isinstance(x, dict) and
+                                  "@pos" in x.keys() and
+                                  "start" in x["@pos"].keys(), iterator) ]
+        return [ (int(n["offset"]), int(n["line"]), int(n["col"])) for n in startPositions ]
 
     def decrefAndGC(self, obj) -> None:
         del obj
@@ -306,10 +306,10 @@ class BblfshTests(unittest.TestCase):
                                         'son1_2', 'son2_2', 'son2'])
         # Check that when using the positional order the positions we get are
         # in fact sorted by (offset, line, col)
-        ctx = self._parse_fixture()
-        it = ctx.iterate(TreeOrder.POSITION_ORDER)
+        it = iterator(root, TreeOrder.POSITION_ORDER)
         positions = self._get_positions(it)
-        self.assertListEqual(positions, sorted(positions))
+        self.assertListEqual(positions, [(0,1,1), (2,2,2), (5,5,1), (10,10,1),
+                                         (10,10,1), (15,15,1), (100,100,1)])
 
     def testAnyOrder(self) -> None:
         root = self._itTestTree()
@@ -319,6 +319,14 @@ class BblfshTests(unittest.TestCase):
         # We only can test that the order gives us all the nodes
         self.assertEqual(set(expanded), {'root', 'son1', 'son2', 'son1_1',
                                          'son1_2', 'son2_1', 'son2_2'})
+
+    def testChildrenOrder(self) -> None:
+        root = self._itTestTree()
+        it = iterator(root, TreeOrder.CHILDREN_ORDER)
+        self.assertIsNotNone(it)
+        expanded = self._get_nodetypes(it)
+        # We only can test that the order gives us all the nodes
+        self.assertEqual(expanded, ['son1', 'son2'])
 
     # Iterating from the root node should give the same result as
     # iterating from the tree, for every available node
@@ -347,7 +355,6 @@ class BblfshTests(unittest.TestCase):
 
         it = ctx.iterate(TreeOrder.PRE_ORDER)
         next(it); next(it); next(it); next(it)
-
 
         it2 = it.iterate(TreeOrder.PRE_ORDER)
         next(it2)
