@@ -200,6 +200,8 @@ class Node:
             return pos
 
         for key, value in d["@pos"].items():
+            if key == "@type":
+                continue
             pos[key] = Position(value)
 
         return pos
