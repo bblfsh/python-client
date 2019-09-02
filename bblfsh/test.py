@@ -407,15 +407,22 @@ class BblfshTests(unittest.TestCase):
 
     def testEncode(self) -> None:
         ctx = self._parse_fixture()
+        # This test is here for backward compatibility purposes,
+        # in case someone was relying on encoding contexts this way
         self.assertEqual(ctx.ctx.encode(None, 0), ctx._response.uast)
+        self.assertEqual(ctx.encode(), ctx._response.uast)
 
     def testEncodeWithEmptyContext(self) -> None:
         ctx = ResultContext()
         obj = {"k1": "v1", "k2": "v2"}
         fmt = 1 # YAML
 
+        # This test is here for backward compatibility purposes,
+        # in case someone was relying on encoding contexts this way
         data = ctx.ctx.encode(obj, fmt)
-        self.assertDictEqual(obj, decode(data, format=fmt).load())
+        other_data = ctx.encode(obj, fmt)
+        self.assertDictEqual(obj, decode(data, format = fmt).load())
+        self.assertDictEqual(obj, decode(other_data, format = fmt).load())
 
     def testGetAll(self) -> None:
         ctx = self._parse_fixture()
@@ -560,16 +567,17 @@ class BblfshTests(unittest.TestCase):
         for nodeC, nodePy in zip(itC, itPy):
             self.assertEqual(nodeC.get(), nodePy)
 
-    def testEncodeDecodePythonContext(self) -> None:
+    def testBinaryEncodeDecodePythonContext(self) -> None:
+        # Binary encoding should be invertible
         # C++ memory context
         ctxC = self._parse_fixture()
         # Python memory context
         pyDict = ctxC.root.get()
         ctxPy = bblfsh.context(pyDict)
-        encoded = ctxPy.encode(fmt = 1) # YAML
-        decoded = decode(encoded, format = 1)
+        encoded = ctxPy.encode(fmt = 0) # Binary encoding
+        decoded = decode(encoded, format = 0)
 
-        self.assertEqual(encoded, decoded.load())
+        self.assertEqual(pyDict, decoded.load())
 
 if __name__ == "__main__":
     unittest.main()

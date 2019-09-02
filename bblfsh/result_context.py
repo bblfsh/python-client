@@ -40,6 +40,11 @@ class ResultContext:
         TreeOrder.check_order(order)
         return NodeIterator(iterator(self.ctx.root(), order), self.ctx)
 
+    # Encode in binary format by default
+    def encode(self, node: dict = None, fmt: int = 0):
+        encoded = self.ctx.encode(node, fmt)
+        return encoded
+
     @property
     def language(self) -> str:
         return self._response.language
@@ -65,3 +70,25 @@ class ResultContext:
 
     def __repr__(self) -> str:
         return repr(self.get_all())
+
+
+# Python context
+class Context:
+    def __init__(self, root: dict) -> None:
+        self.ctx = uast()
+        self.root = root
+
+    def filter(self, query: str) -> dict:
+        return self.ctx.filter(query, self.root)
+
+    def iterate(self, order: int) -> iterator:
+        TreeOrder.check_order(order)
+        return iterator(self.root, order)
+
+    def encode(self, fmt: int = 0):
+        encoded = self.ctx.encode(self.root, fmt)
+        return encoded
+
+
+def context(root: dict) -> Context:
+    return Context(root)
