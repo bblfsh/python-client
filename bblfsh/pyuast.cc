@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
-
+#include <iostream>
 #include <Python.h>
 #include <structmember.h>
 
@@ -1048,17 +1048,25 @@ static PyObject *PythonContextExt_decode(PyObject *self, PyObject *args, PyObjec
     int res = PyObject_GetBuffer(obj, &buf, PyBUF_C_CONTIGUOUS);
     if (res != 0) return nullptr;
 
-    uast::Buffer ubuf(buf.buf, (size_t)(buf.len));
+    PythonContextExt *pyU = nullptr;
 
-    uast::Context<NodeHandle>* ctx = uast::Decode(ubuf, format);
-    PyBuffer_Release(&buf);
+    try {
+      uast::Buffer ubuf(buf.buf, (size_t)(buf.len));
+      uast::Context<NodeHandle>* ctx = uast::Decode(ubuf, format);
+      pyU = PyObject_New(PythonContextExt, &PythonContextExtType);
 
-    PythonContextExt *pyU = PyObject_New(PythonContextExt, &PythonContextExtType);
-    if (!pyU) {
-      delete(ctx);
-      return nullptr;
+      if (!pyU) {
+        delete(ctx);
+        return nullptr;
+      } else {
+        pyU->p = new ContextExt(ctx);
+      }
+    } catch (const std::exception& e) {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      pyU = nullptr;
     }
-    pyU->p = new ContextExt(ctx);
+
+    PyBuffer_Release(&buf);
     return (PyObject*)pyU;
 }
 
