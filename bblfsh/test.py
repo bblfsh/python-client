@@ -579,5 +579,11 @@ class BblfshTests(unittest.TestCase):
 
         self.assertEqual(pyDict, decoded.load())
 
+    def testInvalidDecodeBytes(self) -> None:
+        with self.assertRaises(RuntimeError):
+            decode(b'', format = 0)
+        with self.assertRaises(RuntimeError):
+            decode(b'abcdef', format = 0)
+
 if __name__ == "__main__":
     unittest.main()
