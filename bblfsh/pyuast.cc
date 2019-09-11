@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
-#include <iostream>
+
 #include <Python.h>
 #include <structmember.h>
 
@@ -1057,7 +1057,6 @@ static PyObject *PythonContextExt_decode(PyObject *self, PyObject *args, PyObjec
 
       if (!pyU) {
         delete(ctx);
-        return nullptr;
       } else {
         pyU->p = new ContextExt(ctx);
       }
