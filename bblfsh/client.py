@@ -55,7 +55,7 @@ class BblfshClient:
 
     def parse(self, filename: str, language: Optional[str]=None,
               contents: Optional[str]=None, mode: Optional[ModeType]=None,
-              timeout: Optional[int]=None) -> ResultContext:
+              timeout: int=60) -> ResultContext:
         """
         Queries the Babelfish server and receives the UAST response for the specified
         file.
@@ -68,13 +68,16 @@ class BblfshClient:
         :param contents: The contents of the file. IF None, it is read from \
                          filename.
         :param mode:     UAST transformation mode.
-        :param timeout: The request timeout in seconds.
+        :param timeout: The request timeout in seconds. Zero or negative \
+                        means no timeout.
         :type filename: str
         :type language: str
         :type contents: str
         :type timeout: float
         :return: UAST object.
         """
+        if timeout is None or timeout <= 0:
+                timeout = None
 
         # TODO: handle syntax errors
         contents = self._get_contents(contents, filename)
