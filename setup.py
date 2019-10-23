@@ -15,11 +15,22 @@ from setuptools.command.build_ext import build_ext
 # The VERSION line is edited automatically during deployments.
 # You may change the contents of the string, but do not otherwise edit the line.
 VERSION = "3.x.x-dev"
+
+# LIBUAST_URL is a format url which points to the libuast package
+# (see LIBUAST_VERSION and get_libuast_arch()). The url is used to download
+# and install uast library.
+LIBUAST_URL = "https://github.com/bblfsh/libuast/releases/download/{version}/libuast-{arch}.tar.gz"
 LIBUAST_VERSION = "v3.4.2"
+
 SDK_V1_VERSION = "v1.17.0"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
-SDK_V2_VERSION = "v2.16.4"
-SDK_V2_MAJOR = SDK_V2_VERSION.split('.')[0]
+
+# SDK_URL is a format url which points to the sdk package.
+# The url is used to download and install python bindings for bblfsh sdk.
+SDK_URL = "https://github.com/bblfsh/sdk/archive/{version}.tar.gz"
+SDK_V3_VERSION  = "v3.3.0"
+SDK_V3_PROTOCOL = "v2" # package gopkg.in.bblfsh.sdk.v2.protocol
+
 
 FORMAT_ARGS = globals()
 
@@ -152,8 +163,7 @@ def get_libuast():
     mkdir(local_libuast)
 
     # Retrieve libuast
-    untar_url("https://github.com/bblfsh/libuast/releases/download/%s/libuast-%s.tar.gz" % (
-        LIBUAST_VERSION, get_libuast_arch()))
+    untar_url(LIBUAST_URL.format(version=LIBUAST_VERSION, arch=get_libuast_arch()))
     mv(get_libuast_arch(), local_libuast)
 
 
@@ -170,10 +180,10 @@ def proto_download_v1():
 
 
 def proto_download_v2():
-    untar_url("https://github.com/bblfsh/sdk/archive/%s.tar.gz"
-              % SDK_V2_VERSION)
-    sdkdir = "sdk-" + SDK_V2_VERSION[1:]
-    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V2_MAJOR}")
+    untar_url(SDK_URL.format(version=SDK_V3_VERSION))
+    sdkdir = "sdk-" + SDK_V3_VERSION[1:]
+    destdir = j("proto", "gopkg.in", "bblfsh", "sdk.{SDK_V3_PROTOCOL}")
+
     cp(j(sdkdir, "protocol", "driver.proto"),
        j(destdir, "protocol", "generated.proto"))
     cp(j(sdkdir, "uast", "role", "generated.proto"),
@@ -261,18 +271,18 @@ def proto_compile():
     protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "protocol", "generated.proto"), True)
     protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V1_MAJOR, "uast", "generated.proto"))
 
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "uast", "generated.proto"))
-    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V2_MAJOR, "protocol", "generated.proto"), True)
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V3_PROTOCOL, "uast", "generated.proto"))
+    protoc(j("gopkg.in", "bblfsh", "sdk." + SDK_V3_PROTOCOL, "protocol", "generated.proto"), True)
 
 
 def do_get_deps():
     get_libuast()
 
     create_dirs(SDK_V1_MAJOR)
-    create_dirs(SDK_V2_MAJOR)
+    create_dirs(SDK_V3_PROTOCOL)
 
     create_inits(SDK_V1_MAJOR)
-    create_inits(SDK_V2_MAJOR)
+    create_inits(SDK_V3_PROTOCOL)
 
     proto_download_v1()
     proto_download_v2()

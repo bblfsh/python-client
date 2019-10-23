@@ -41,10 +41,18 @@ class BblfshTests(unittest.TestCase):
 
     def testVersion(self) -> None:
         version = self.client.version()
+
         self.assertTrue(hasattr(version, "version"))
         self.assertTrue(version.version)
         self.assertTrue(hasattr(version, "build"))
         self.assertTrue(version.build)
+
+    def testServerVersion(self) -> None:
+        version = self.client.server_version().version
+
+        self.assertTrue(hasattr(version, "version"))
+        self.assertTrue(version.version)
+        self.assertTrue(hasattr(version, "build"))
 
     def testNativeParse(self) -> None:
         ctx = self.client.parse(self.fixtures_pyfile, mode=Modes.NATIVE)
@@ -404,6 +412,18 @@ class BblfshTests(unittest.TestCase):
             for key in ('language', 'version', 'status', 'features'):
                 self.assertTrue(hasattr(l, key))
                 self.assertIsNotNone(getattr(l, key))
+
+    def testSupportedLanguageManifests(self) -> None:
+        langs_with_aliases = {'csharp', 'cpp', 'javascript', 'bash'}
+        res = self.client.supported_language_manifests()
+        self.assertGreater(len(res), 0)
+        for l in res:
+            for key in ('name', 'language', 'version', 'status', 'features'):
+                self.assertTrue(hasattr(l, key))
+                self.assertIsNotNone(getattr(l, key))
+            if getattr(l, 'language') in langs_with_aliases:
+                self.assertTrue(hasattr(l, 'aliases'))
+                self.assertGreater(len(getattr(l, 'aliases')), 0)
 
     def testEncode(self) -> None:
         ctx = self._parse_fixture()

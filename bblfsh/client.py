@@ -3,9 +3,21 @@ from typing import Optional, Union, List
 
 import grpc
 
-from bblfsh.aliases import (ParseRequest, DriverStub, ProtocolServiceStub,
-                            VersionRequest, SupportedLanguagesRequest, ModeType,
-                            VersionResponse)
+from bblfsh.aliases import (
+    ParseRequest,
+    DriverStub,
+    DriverHostStub,
+    ProtocolServiceStub,
+    VersionRequest,
+    VersionRequestV2,
+    SupportedLanguagesRequest,
+    SupportedLanguagesRequestV2,
+    ModeType,
+    VersionResponse,
+    VersionResponseV2,
+    Manifest
+)
+
 from bblfsh.result_context import ResultContext
 
 
@@ -34,6 +46,7 @@ class BblfshClient:
 
         self._stub_v1 = ProtocolServiceStub(self._channel)
         self._stub_v2 = DriverStub(self._channel)
+        self._hoststub_v2 = DriverHostStub(self._channel)
 
     @staticmethod
     def _ensure_utf8(text: bytes) -> str:
@@ -91,6 +104,10 @@ class BblfshClient:
         sup_response = self._stub_v1.SupportedLanguages(SupportedLanguagesRequest())
         return sup_response.languages
 
+    def supported_language_manifests(self) -> List[Manifest]:
+        sup_response = self._hoststub_v2.SupportedLanguages(SupportedLanguagesRequestV2())
+        return sup_response.languages
+
     def version(self) -> VersionResponse:
         """
         Queries the Babelfish server for version and runtime information.
@@ -99,6 +116,16 @@ class BblfshClient:
                  "build" for the build timestamp.
         """
         return self._stub_v1.Version(VersionRequest())
+
+    def server_version(self) -> VersionResponseV2:
+        """
+        Queries the Babelfish server for version information.
+
+        :return: A VersionResponse class contains a "version" dictionary
+                 with the keys "version" for the semantic version
+                 and "build" for the build timestamp.
+        """
+        return self._hoststub_v2.ServerVersion(VersionRequestV2())
 
     @staticmethod
     def _scramble_language(lang: Optional[str]) -> Optional[str]:
@@ -117,4 +144,4 @@ class BblfshClient:
         not supported.
         """
         self._channel.close()
-        self._channel = self._stub_v1 = self._stub_v2 = None
+        self._channel = self._stub_v1 = self._stub_v2 = self._hoststub_v2 = None
