@@ -20,7 +20,7 @@ VERSION = "3.x.x-dev"
 # (see LIBUAST_VERSION and get_libuast_arch()). The url is used to download
 # and install uast library.
 LIBUAST_URL = "https://github.com/bblfsh/libuast/releases/download/{version}/libuast-{arch}.tar.gz"
-LIBUAST_VERSION = "v3.4.2"
+LIBUAST_VERSION = "v3.4.3"
 
 SDK_V1_VERSION = "v1.17.0"
 SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
@@ -28,7 +28,7 @@ SDK_V1_MAJOR = SDK_V1_VERSION.split('.')[0]
 # SDK_URL is a format url which points to the sdk package.
 # The url is used to download and install python bindings for bblfsh sdk.
 SDK_URL = "https://github.com/bblfsh/sdk/archive/{version}.tar.gz"
-SDK_V3_VERSION  = "v3.3.0"
+SDK_V3_VERSION  = "v3.3.1"
 SDK_V3_PROTOCOL = "v2" # package gopkg.in.bblfsh.sdk.v2.protocol
 
 
